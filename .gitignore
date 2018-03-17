@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+
+# Ignore Visual Studio Stuff
+x64/
+.vs/
+
+# Re-include Models
+!**/Models/*.obj
