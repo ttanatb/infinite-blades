@@ -11,13 +11,13 @@
 #include "WICTextureLoader.h"
 #include <vector>
 
-class TanatTestScene 
+class DefaultTestScene 
 	: public DXCore
 {
 
 public:
-	TanatTestScene(HINSTANCE hInstance);
-	~TanatTestScene();
+	DefaultTestScene(HINSTANCE hInstance);
+	~DefaultTestScene();
 
 	// Overridden setup and game loop methods, which
 	// will be called automatically
@@ -33,7 +33,6 @@ public:
 	void OnMouseWheel(float wheelDelta,   int x, int y);
 private:
 	bool isMoving = true;
-
 
 	// Initialization helper methods - feel free to customize, combine, etc.
 	void LoadShaderMeshMat();

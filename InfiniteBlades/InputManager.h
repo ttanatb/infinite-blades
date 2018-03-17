@@ -19,7 +19,7 @@ public:
 
 	void Update();
 	void AddKeyToPollFor(char key);
-	void AddKeysToPollFor(char* keyArr, int count);
+	void AddKeysToPollFor(char* keyArr, size_t count);
 
 	bool GetKey(char key);
 	bool GetKeyDown(char key);

@@ -145,9 +145,9 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DefaultTestScene.cpp" />
     <ClCompile Include="DXCore.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
-    <ClCompile Include="TanatScene.cpp" />
     <ClCompile Include="GameEntity.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -159,10 +159,10 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="DefaultTestScene.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="DXCore.h" />
     <ClInclude Include="ShaderManager.h" />
-    <ClInclude Include="TanatScene.h" />
     <ClInclude Include="GameEntity.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Lights.h" />

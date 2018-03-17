@@ -1,4 +1,4 @@
-#include "TanatScene.h"
+#include "DefaultTestScene.h"
 
 //remove later
 #include <iostream>
@@ -14,7 +14,7 @@ using namespace DirectX;
 //
 // hInstance - the application's OS-level handle (unique ID)
 // --------------------------------------------------------
-TanatTestScene::TanatTestScene(HINSTANCE hInstance)
+DefaultTestScene::DefaultTestScene(HINSTANCE hInstance)
 
 //feed the handle, the name, width, and height
 	: DXCore(hInstance, "Infinite Blades", 1280, 720,
@@ -28,13 +28,6 @@ TanatTestScene::TanatTestScene(HINSTANCE hInstance)
 {
 	// Initialize fields
 	camera = nullptr;
-
-#if defined(DEBUG) || defined(_DEBUG)
-	// Do we want a console window?  Probably only in debug mode
-	CreateConsoleWindow(500, 120, 32, 120);
-	printf("Console window created successfully.  Feel free to printf() here.\n");
-#endif
-
 }
 
 // --------------------------------------------------------
@@ -42,7 +35,7 @@ TanatTestScene::TanatTestScene(HINSTANCE hInstance)
 //  - Release all DirectX objects created here
 //  - Delete any objects to prevent memory leaks
 // --------------------------------------------------------
-TanatTestScene::~TanatTestScene()
+DefaultTestScene::~DefaultTestScene()
 {
 	// Release any (and all!) DirectX objects
 	// we've made in the Game class
@@ -60,7 +53,7 @@ TanatTestScene::~TanatTestScene()
 // Called once per program, after DirectX and the window
 // are initialized but before the game loop.
 // --------------------------------------------------------
-void TanatTestScene::Init()
+void DefaultTestScene::Init()
 {
 	LoadShaderMeshMat();
 	CreateEntities();
@@ -84,7 +77,7 @@ void TanatTestScene::Init()
 // Loads shaders, loads texture to build materials, and loads meshes
 // then adds them to the respective managers
 // --------------------------------------------------------
-void TanatTestScene::LoadShaderMeshMat()
+void DefaultTestScene::LoadShaderMeshMat()
 {
 	//shaders
 	shaderMngr = ShaderManager::GetInstancce();
@@ -114,7 +107,7 @@ void TanatTestScene::LoadShaderMeshMat()
 	meshMngr->AddMesh("cube", "Assets/Models/cube.obj");
 }
 
-void TanatTestScene::CreateEntities()
+void DefaultTestScene::CreateEntities()
 {
 	//create camera
 	camera = new Camera((float)width, (float)height, vec3(0.0f, 0.0f, -5.0f), 0.0f, 0.0f);
@@ -136,7 +129,7 @@ void TanatTestScene::CreateEntities()
 		vec3(1, 1, 1), vec3(45, 0, 45), vec3(0.7f, 0.6f, 0.8f)));
 }
 
-void TanatTestScene::InitInput()
+void DefaultTestScene::InitInput()
 {
 	inputMngr = InputManager::GetInstance();
 	char* usedChars = "WSAD XT";
@@ -147,7 +140,7 @@ void TanatTestScene::InitInput()
 // Handle resizing DirectX "stuff" to match the new window size.
 // For instance, updating our projection matrix's aspect ratio.
 // --------------------------------------------------------
-void TanatTestScene::OnResize()
+void DefaultTestScene::OnResize()
 {
 	// Handle base-level DX resize stuff
 	DXCore::OnResize();
@@ -159,7 +152,7 @@ void TanatTestScene::OnResize()
 // --------------------------------------------------------
 // Update your game here - user input, move objects, AI, etc.
 // --------------------------------------------------------
-void TanatTestScene::Update(float deltaTime, float totalTime)
+void DefaultTestScene::Update(float deltaTime, float totalTime)
 {
 	inputMngr->Update();
 
@@ -207,7 +200,7 @@ void TanatTestScene::Update(float deltaTime, float totalTime)
 // --------------------------------------------------------
 // Clear the screen, redraw everything, present to the user
 // --------------------------------------------------------
-void TanatTestScene::Draw(float deltaTime, float totalTime)
+void DefaultTestScene::Draw(float deltaTime, float totalTime)
 {
 	// Background color (Cornflower Blue in this case) for clearing
 	const float color[4] = { 0.4f, 0.6f, 0.75f, 0.0f };
@@ -261,7 +254,7 @@ void TanatTestScene::Draw(float deltaTime, float totalTime)
 // from the OS-level messages anyway, so these helpers have
 // been created to provide basic mouse input if you want it.
 // --------------------------------------------------------
-void TanatTestScene::OnMouseDown(WPARAM buttonState, int x, int y)
+void DefaultTestScene::OnMouseDown(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
 	//left click
@@ -280,7 +273,7 @@ void TanatTestScene::OnMouseDown(WPARAM buttonState, int x, int y)
 // --------------------------------------------------------
 // Helper method for mouse release
 // --------------------------------------------------------
-void TanatTestScene::OnMouseUp(WPARAM buttonState, int x, int y)
+void DefaultTestScene::OnMouseUp(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
 
@@ -294,7 +287,7 @@ void TanatTestScene::OnMouseUp(WPARAM buttonState, int x, int y)
 // if the mouse is currently over the window, or if we're 
 // currently capturing the mouse.
 // --------------------------------------------------------
-void TanatTestScene::OnMouseMove(WPARAM buttonState, int x, int y)
+void DefaultTestScene::OnMouseMove(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
 	if (buttonState & 0x0001) {
@@ -312,7 +305,7 @@ void TanatTestScene::OnMouseMove(WPARAM buttonState, int x, int y)
 // WheelDelta may be positive or negative, depending 
 // on the direction of the scroll
 // --------------------------------------------------------
-void TanatTestScene::OnMouseWheel(float wheelDelta, int x, int y)
+void DefaultTestScene::OnMouseWheel(float wheelDelta, int x, int y)
 {
 	// Add any custom code here...
 }

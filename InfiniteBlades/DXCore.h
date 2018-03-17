@@ -18,6 +18,7 @@ public:
 		unsigned int windowWidth,	// Width of the window's client area
 		unsigned int windowHeight,	// Height of the window's client area
 		bool debugTitleBarStats);	// Show extra stats (fps) in title bar?
+	DXCore() { };
 	~DXCore();
 
 	// Static requirements for OS-level message processing
@@ -51,6 +52,8 @@ public:
 	virtual void OnMouseMove (WPARAM buttonState, int x, int y) { }
 	virtual void OnMouseWheel(float wheelDelta,   int x, int y) { }
 	
+	// Helper function for allocating a console window
+	static void CreateConsoleWindow(int bufferLines, int bufferColumns, int windowLines, int windowColumns);
 protected:
 	HINSTANCE	hInstance;		// The handle to the application
 	HWND		hWnd;			// The handle to the window itself
@@ -69,10 +72,6 @@ protected:
 
 	ID3D11RenderTargetView* backBufferRTV;
 	ID3D11DepthStencilView* depthStencilView;
-
-	// Helper function for allocating a console window
-	void CreateConsoleWindow(int bufferLines, int bufferColumns, int windowLines, int windowColumns);
-
 private:
 	// Timing related data
 	double perfCounterSeconds;

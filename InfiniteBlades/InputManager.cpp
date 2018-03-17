@@ -40,7 +40,7 @@ void InputManager::AddKeyToPollFor(char key)
 	keyCount += 1;
 }
 
-void InputManager::AddKeysToPollFor(char * keyArr, int count)
+void InputManager::AddKeysToPollFor(char * keyArr, size_t count)
 {
 	for (size_t i = 0; i < count; ++i) {
 		AddKeyToPollFor(keyArr[i]);

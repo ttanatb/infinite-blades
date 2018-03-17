@@ -50,9 +50,6 @@
     <ClCompile Include="DXCore.cpp">
       <Filter>Source Files\System</Filter>
     </ClCompile>
-    <ClCompile Include="TanatScene.cpp">
-      <Filter>Source Files\Scenes</Filter>
-    </ClCompile>
     <ClCompile Include="SimpleShader.cpp">
       <Filter>Source Files\System</Filter>
     </ClCompile>
@@ -71,6 +68,9 @@
     <ClCompile Include="ShaderManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="DefaultTestScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Mesh.h">
@@ -87,9 +87,6 @@
     </ClInclude>
     <ClInclude Include="DXCore.h">
       <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="TanatScene.h">
-      <Filter>Header Files\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="Definitions.h">
       <Filter>Header Files\Definitions</Filter>
@@ -114,6 +111,9 @@
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultTestScene.h">
+      <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

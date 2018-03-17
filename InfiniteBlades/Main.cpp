@@ -1,6 +1,8 @@
-
 #include <Windows.h>
-#include "TanatScene.h"
+#include "DefaultTestScene.h"
+
+
+//**TO CHANGE SCENES: MAKE SURE TO INCLUDE THEM HERE**
 
 // --------------------------------------------------------
 // Entry point for a graphical (non-console) Windows application
@@ -44,9 +46,19 @@ int WINAPI WinMain(
 		}
 	}
 
+#if defined(DEBUG) || defined(_DEBUG)
+	// Do we want a console window?  Probably only in debug mode
+	DXCore::CreateConsoleWindow(500, 120, 32, 120);
+	printf("Console window created successfully.  Feel free to printf() here.\n");
+#endif
+	//DefaultTestScene dxGame;
+
 	// Create the Game object using
 	// the app handle we got from WinMain
-	TanatTestScene dxGame(hInstance);
+
+
+	//**TO CHANGE SCENES: MAKE SURE TO CHANGE THE FOLLOWING LINE**
+	DefaultTestScene dxGame(hInstance);
 
 	// Result variable for function calls below
 	HRESULT hr = S_OK;
