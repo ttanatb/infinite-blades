@@ -41,7 +41,6 @@ Camera::Camera(float width, float height, vec3 pos, float rotX, float rotY)
 	this->rotY = rotY;
 	position = pos;
 	shouldCalcViewMat = false;
-	inputPtr = Input::GetInstance();
 
 	CalcDirection();
 	CalcViewMatTransposed();
@@ -50,20 +49,20 @@ Camera::Camera(float width, float height, vec3 pos, float rotX, float rotY)
 
 void Camera::Update()
 {
-	if (inputPtr->GetKey('A')) 
-		MoveAlongRight(-0.01f);
-	if (inputPtr->GetKey('D'))
-		MoveAlongRight(+0.01f);
+	//if (inputPtr->GetKey('A')) 
+	//	MoveAlongRight(-0.01f);
+	//if (inputPtr->GetKey('D'))
+	//	MoveAlongRight(+0.01f);
 
-	if (inputPtr->GetKey('W'))
-		MoveAlongForward(+0.01f);
-	if (inputPtr->GetKey('S'))
-		MoveAlongForward(-0.01f);
+	//if (inputPtr->GetKey('W'))
+	//	MoveAlongForward(+0.01f);
+	//if (inputPtr->GetKey('S'))
+	//	MoveAlongForward(-0.01f);
 
-	if (inputPtr->GetKey(' '))
-		Move(0, +0.01f, 0);
-	if (inputPtr->GetKey('X'))
-		Move(0, -0.01f, 0);
+	//if (inputPtr->GetKey(' '))
+	//	Move(0, +0.01f, 0);
+	//if (inputPtr->GetKey('X'))
+	//	Move(0, -0.01f, 0);
 
 	if (shouldCalcViewMat)
 		CalcViewMatTransposed();

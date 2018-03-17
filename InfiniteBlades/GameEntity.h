@@ -21,13 +21,19 @@ private:
 	void Init();
 public:
 	GameEntity();
-	GameEntity(Mesh* mesh = nullptr, vec3 position = vec3(0.0f, 0.0f, 0.0f), vec4 rotation = vec4(0.0f, 0.0f, 0.0f, 1.0f), vec3 scale = vec3(1.0f, 1.0f, 1.0f));
-	GameEntity(Mesh* mesh = nullptr, vec3 position = vec3(0.0f,0.0f,0.0f), vec3 rotation = vec3(0.0f, 0.0f, 0.0f), vec3 scale = vec3(1.0f, 1.0f, 1.0f));
+	GameEntity(Mesh * mesh, Material* material, 
+		vec3 position = vec3(0,0,0), 
+		vec3 rotation = vec3(0,0,0), 
+		vec3 scale = vec3(1,1,1));
+
+	GameEntity(Mesh * mesh, Material* material,
+		vec3 position = vec3(0, 0, 0),
+		vec3 rotation = vec3(0, 0, 0),
+		float scale = 1);
 
 	void Update();
 
-	DirectX::XMFLOAT4X4* GetWorldMat();
-	DirectX::XMMATRIX GetXMWorldMat();
+	mat4* GetWorldMat();
 	vec3 GetPosition();
 	vec4 GetRotation();
 	vec3 GetRotEuler();

@@ -22,11 +22,22 @@ Material::~Material()
 	if (samplerPtr != nullptr) samplerPtr->Release();
 }
 
-void Material::PrepareMaterial(mat4* viewMat, mat4* projMat, mat4* worldMat)
+SimpleVertexShader * Material::GetVertexShader()
+{
+	return vertexShader;
+}
+
+SimplePixelShader * Material::GetPixelShader()
+{
+	return pixelShader;
+}
+
+void Material::PrepareMaterial(mat4* worldMat)
 {
 	vertexShader->SetMatrix4x4("world", *worldMat);
 	vertexShader->CopyAllBufferData();
 	vertexShader->SetShader();
+
 	pixelShader->SetSamplerState("basicSampler", samplerPtr);
 	pixelShader->SetShaderResourceView("diffuseTexture", srvPtr);
 	pixelShader->CopyAllBufferData();

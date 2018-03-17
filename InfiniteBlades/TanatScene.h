@@ -1,23 +1,23 @@
 #pragma once
 
 #include "DXCore.h"
-#include "SimpleShader.h"
-#include "Input.h"
-#include "GameEntity.h"
+#include "ShaderManager.h"
+#include "InputManager.h"
 #include "MaterialManager.h"
 #include "MeshManager.h"
+#include "GameEntity.h"
 #include "Camera.h"
-#include <vector>
 #include "Lights.h"
 #include "WICTextureLoader.h"
+#include <vector>
 
-class Game 
+class TanatTestScene 
 	: public DXCore
 {
 
 public:
-	Game(HINSTANCE hInstance);
-	~Game();
+	TanatTestScene(HINSTANCE hInstance);
+	~TanatTestScene();
 
 	// Overridden setup and game loop methods, which
 	// will be called automatically
@@ -32,15 +32,13 @@ public:
 	void OnMouseMove (WPARAM buttonState, int x, int y);
 	void OnMouseWheel(float wheelDelta,   int x, int y);
 private:
+	bool isMoving = true;
+
 
 	// Initialization helper methods - feel free to customize, combine, etc.
-	void LoadShaders(); 
-	void CreateMatrices();
-	void LoadMeshAndMat();
-	void CreateGameEntities();
+	void LoadShaderMeshMat();
+	void CreateEntities();
 	void InitInput();
-
-	Input* inputMngr;
 
 	vec4 ambientLight;
 	DirectionalLight directionalLight;
@@ -50,15 +48,14 @@ private:
 	//Some Managers
 	MaterialManager* matMngr;
 	MeshManager* meshMngr;
+	InputManager* inputMngr;
+	ShaderManager* shaderMngr;
+
 	//camera
 	Camera* camera;
 
 	// Game entities
 	std::vector<GameEntity*> gameEntities;
-
-	// Wrappers for DirectX shaders to provide simplified functionality
-	SimpleVertexShader* vertexShader;
-	SimplePixelShader* pixelShader;
 
 	// Keeps track of the old mouse position.  Useful for 
 	// determining how far the mouse moved in a single frame.

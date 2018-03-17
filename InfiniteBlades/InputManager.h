@@ -3,17 +3,18 @@
 #include <Windows.h>
 #include <map>
 #include <iostream>
-class Input {
+class InputManager {
 private:
-	Input();
-	~Input();
+	InputManager();
+	~InputManager();
 
-	static Input* instance;// = nullptr;
+	static InputManager* instance;// = nullptr;
 	std::vector<char> keysToPollFor;
 	std::map<char, short> keyStates;
+	std::map<char, short> prevKeyStates;
 	int keyCount;
 public:
-	static Input* GetInstance();
+	static InputManager* GetInstance();
 	static void ReleaseInstance();
 
 	void Update();

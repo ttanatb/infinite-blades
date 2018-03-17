@@ -1,7 +1,5 @@
 #include "Mesh.h"
 
-Mesh* Mesh::cubeMeshPtr = nullptr;
-
 Mesh::Mesh(Vertex * vertices, int vertexCount, int * indices, int indexCount, ID3D11Device * device)
 {
 	this->indexCount = indexCount;
@@ -180,50 +178,6 @@ Mesh::~Mesh()
 ID3D11Buffer * Mesh::GetVertexBuffer() { return vertexBuffer; }
 ID3D11Buffer * Mesh::GetIndexBuffer() {	return indexBuffer; }
 int Mesh::GetIndexCount() { return indexCount; }
-
-void Mesh::CreateCube(ID3D11Device* device, float size, Color c)
-{
-	Vertex vertices[] =
-	{
-		{ vec3(-size, -size, -size), vec3(0, 0, -1.0f), vec2(0,0) }, //0
-		{ vec3(-size, -size, +size), vec3(0, 0, -1.0f), vec2(0,0) }, //1
-		{ vec3(-size, +size, -size), vec3(0, 0, -1.0f), vec2(0,0) }, //2
-		{ vec3(-size, +size, +size), vec3(0, 0, -1.0f), vec2(0,0) }, //3
-		{ vec3(+size, -size, -size), vec3(0, 0, -1.0f), vec2(0,0) }, //4
-		{ vec3(+size, -size, +size), vec3(0, 0, -1.0f), vec2(0,0) }, //5
-		{ vec3(+size, +size, -size), vec3(0, 0, -1.0f), vec2(0,0) }, //6
-		{ vec3(+size, +size, +size), vec3(0, 0, -1.0f), vec2(0,0) }, //7
-	};
-
-	int indices[] = 
-	{
-		1, 5, 3,	//front
-		3, 5, 7,
-		4, 0, 6,	//back
-		6, 0, 2,
-		0, 1, 2,	//left
-		2, 1, 3,
-		5, 4, 7,	//right
-		7, 4, 6,
-		3, 7, 2,	//up
-		2, 7, 6,
-		0, 4, 1,	//down
-		1, 4, 5,
-	};
-
-	cubeMeshPtr = new Mesh(vertices, 8, indices, 36, device);
-}
-
-void Mesh::ReleasePrimitives()
-{
-	if (cubeMeshPtr != nullptr)
-		delete(cubeMeshPtr);
-}
-
-Mesh * Mesh::GetCubeMeshPtr()
-{
-	return cubeMeshPtr;
-}
 
 void Mesh::CreateBuffers(Vertex * vertices, int vertexCount, int * indices, int indexCount, ID3D11Device * device)
 {

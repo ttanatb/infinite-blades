@@ -2,8 +2,10 @@
 
 using namespace DirectX;
 
-GameEntity::GameEntity()
+void GameEntity::Init()
 {
+	children = std::vector<GameEntity*>();
+
 	position = vec3(0.0f, 0.0f, 0.0f);
 	rotation = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	scale = vec3(1.0f, 1.0f, 1.0f);
@@ -12,44 +14,37 @@ GameEntity::GameEntity()
 	XMStoreFloat4x4(&worldMatrix, mat);
 	XMStoreFloat4x4(&parentWorldMatrix, mat);
 	meshPtr = nullptr;
-	children = std::vector<GameEntity*>();
+	matPtr = nullptr;
 }
 
-GameEntity::GameEntity(Mesh * mesh, vec3 position, vec4 rotation, vec3 scale)
+GameEntity::GameEntity()
 {
-	meshPtr = mesh;
-
-	this->position = position;
-	this->rotation = rotation;
-	this->scale = scale;
-
-	XMVECTOR quaternion = XMLoadFloat4(&rotation);
-
-	XMMATRIX mat = XMMatrixMultiply((XMMatrixMultiply(XMMatrixScaling(scale.x, scale.y, scale.z),
-		XMMatrixRotationQuaternion(quaternion))),
-		XMMatrixTranslation(position.x, position.y, position.z));
-	XMStoreFloat4x4(&worldMatrix, mat);
-	XMStoreFloat4x4(&parentWorldMatrix, mat);
-	children = std::vector<GameEntity*>();
+	Init();
 }
 
-GameEntity::GameEntity(Mesh * mesh, vec3 position, vec3 rotation, vec3 scale)
+GameEntity::GameEntity(Mesh * mesh, Material* material, vec3 position, vec3 rotation, vec3 scale)
 {
+	Init();
 	meshPtr = mesh;
-
+	matPtr = material;
 	this->position = position;
 	this->scale = scale;
 
 	XMVECTOR quaternion = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	XMStoreFloat4(&(this->rotation), quaternion);
+}
 
-	//scale x rotation x translation
-	XMMATRIX mat = XMMatrixMultiply((XMMatrixMultiply(XMMatrixScaling(scale.x, scale.y, scale.z),
-		XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z))),
-		XMMatrixTranslation(position.x, position.y, position.z));
-	XMStoreFloat4x4(&worldMatrix, mat);
-	XMStoreFloat4x4(&parentWorldMatrix, mat);
-	children = std::vector<GameEntity*>();
+GameEntity::GameEntity(Mesh * mesh, Material * material, vec3 position, vec3 rotation, float scale)
+{
+	Init();
+
+	meshPtr = mesh;
+	matPtr = material;
+	this->position = position;
+	this->scale = vec3(scale, scale, scale);
+
+	XMVECTOR quaternion = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
+	XMStoreFloat4(&(this->rotation), quaternion);
 }
 
 void GameEntity::Update()
@@ -72,46 +67,24 @@ void GameEntity::Update()
 	}
 }
 
-DirectX::XMFLOAT4X4* GameEntity::GetWorldMat()
-{
-	return &worldMatTransposed;
-}
-
-DirectX::XMMATRIX GameEntity::GetXMWorldMat()
-{
-	return DirectX::XMMATRIX();
-}
-
+mat4* GameEntity::GetWorldMat() { return &worldMatTransposed; }
 vec3 GameEntity::GetPosition() { return position; }
 vec4 GameEntity::GetRotation() { return rotation; }
-vec3 GameEntity::GetRotEuler()
-{
-	return vec3();
-}
-
 vec3 GameEntity::GetScale() { return scale; }
-
-
-
-Mesh * GameEntity::GetMesh()
-{
-	return meshPtr;
+vec3 GameEntity::GetRotEuler() 
+{ 
+	
+	return vec3(); 
 }
 
-void GameEntity::SetMesh(Mesh* mesh)
-{
-	meshPtr = mesh;
-}
 
-Material * GameEntity::GetMat()
-{
-	return matPtr;
-}
 
-void GameEntity::SetMat(Material * newMat)
-{
-	matPtr = newMat;
-}
+
+Mesh * GameEntity::GetMesh() { return meshPtr; }
+void GameEntity::SetMesh(Mesh* mesh) { meshPtr = mesh; }
+
+Material * GameEntity::GetMat() { return matPtr; }
+void GameEntity::SetMat(Material * newMat) { matPtr = newMat; }
 
 void GameEntity::SetParent(GameEntity * parent)
 {

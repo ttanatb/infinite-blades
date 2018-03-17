@@ -1,6 +1,5 @@
 #pragma once
-#include "Input.h"
-#include "Color.h"
+#include "Definitions.h"
 #include <iostream>
 class Camera {
 private:
@@ -22,7 +21,6 @@ private:
 
 	bool shouldCalcViewMat;
 
-	Input* inputPtr = nullptr;
 public:
 	Camera(float width, float height, vec3 pos, float rotX, float rotY);
 
