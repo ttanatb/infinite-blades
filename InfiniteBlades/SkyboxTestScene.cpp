@@ -39,28 +39,12 @@ void SkyboxTestScene::Init()
 	//intialize sphere
 	sphere = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("concrete"),
 		vec3(0, 0, 0), vec3(45, 45, 90), 1.0f);
-	//intialize skybox
-	D3D11_SAMPLER_DESC samplerDesc = {}; // The {} part zeros out the struct!
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-	samplerDesc.MaxAnisotropy = 16;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX; // Setting this allows for mip maps to work! (if they exist)
-	//restrizer description
-	D3D11_RASTERIZER_DESC rs = {};
-	rs.FillMode = D3D11_FILL_SOLID;
-	rs.CullMode = D3D11_CULL_FRONT;
-	//depth stencil
-	D3D11_DEPTH_STENCIL_DESC ds = {};
-	ds.DepthEnable = true;
-	ds.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	ds.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	
 	//skybox shaders
 	SimpleVertexShader* vs = shaderMngr->GetVertexShader("SkyBoxVS");
 	SimplePixelShader* ps = shaderMngr->GetPixelShader("SkyBoxPS");
 
-	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds", device, samplerDesc, rs, ds, vs, ps);
+	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds", device, vs, ps, meshMngr->GetMesh("cube"));
 
 	directionalLight = { vec4(0.1f, 0.5f, 0.1f, 1.0f),
 		vec3(1.0f, 1.0f, 0.0f) };
@@ -143,19 +127,9 @@ void SkyboxTestScene::Draw(float deltaTime, float totalTime)
 	context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 	context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
 
-
-
-	//render the sky(after all opaque geometry)
-	ID3D11Buffer* skyVB = meshMngr->GetMesh("sphere")->GetVertexBuffer();
-	ID3D11Buffer* skyIB = meshMngr->GetMesh("sphere")->GetIndexBuffer();
-	context->IASetVertexBuffers(0, 1, &skyVB, &stride, &offset);
-	context->IASetIndexBuffer(skyIB, DXGI_FORMAT_R32_UINT, 0);
-	//set pixel and vertex shader
-	skybox->prepeareSkybox(camera);
-	//set rastarizer and depth
-	context->RSSetState(skybox->getRastState());
-	context->OMSetDepthStencilState(skybox->getDepthState(), 0);
-	context->DrawIndexed(meshMngr->GetMesh("sphere")->GetIndexCount(), 0, 0);
+	//render skybox
+	skybox->Render(context, camera, stride, offset);
+	
 	// At the end of the frame, reset render states
 	context->RSSetState(0);
 	context->OMSetDepthStencilState(0, 0);
@@ -189,6 +163,7 @@ void SkyboxTestScene::LoaderShaderMeshMat()
 	meshMngr = MeshManager::GetInstancce();
 	meshMngr->Init(device);
 	meshMngr->AddMesh("sphere", "Assets/Models/sphere.obj");
+	meshMngr->AddMesh("cube", "Assets/Models/cube.obj");
 
 }
 

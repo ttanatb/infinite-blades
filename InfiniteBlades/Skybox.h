@@ -3,7 +3,7 @@
 #include "SimpleShader.h"
 #include "DXCore.h"
 #include "Camera.h"
-
+#include "Mesh.h"
 // For the DirectX Math library
 using namespace DirectX;
 
@@ -11,20 +11,22 @@ class Skybox
 {
 public:
 	Skybox(wchar_t* fileName, ID3D11Device* device, 
-		D3D11_SAMPLER_DESC samplerDesc,
-		D3D11_RASTERIZER_DESC rs,
-		D3D11_DEPTH_STENCIL_DESC ds,
 		SimpleVertexShader* vs,
-		SimplePixelShader* ps);
-	void prepeareSkybox(Camera* camera);
-	SimpleVertexShader* getVertexShader();
-	SimplePixelShader* getPixelShader();
-	ID3D11ShaderResourceView* getShaderResourceView();
-	ID3D11SamplerState* getSamplerState();
-	ID3D11DepthStencilState* getDepthState();
-	ID3D11RasterizerState* getRastState();
+		SimplePixelShader* ps,
+		Mesh* mesh);
+	void PrepeareSkybox(Camera* camera);
+	SimpleVertexShader* GetVertexShader();
+	SimplePixelShader* GetPixelShader();
+	ID3D11ShaderResourceView* GetShaderResourceView();
+	ID3D11SamplerState* GetSamplerState();
+	ID3D11DepthStencilState* GetDepthState();
+	ID3D11RasterizerState* GetRastState();
+	void Render(ID3D11DeviceContext* context, Camera* camera, UINT& stride, UINT& offset);
 	~Skybox();
 private:
+	ID3D11Buffer* skyVB;
+	ID3D11Buffer* skyIB;
+	Mesh* skyMesh;
 	ID3D11ShaderResourceView* shaderResourceView;
 	ID3D11SamplerState* sampler;
 	ID3D11RasterizerState* rastState;
