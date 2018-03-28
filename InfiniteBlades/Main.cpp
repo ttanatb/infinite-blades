@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include "DefaultTestScene.h"
+#include "GameplayScene.h"
 
 
 //**TO CHANGE SCENES: MAKE SURE TO INCLUDE THEM HERE**
@@ -58,7 +59,8 @@ int WINAPI WinMain(
 
 
 	//**TO CHANGE SCENES: MAKE SURE TO CHANGE THE FOLLOWING LINE**
-	DefaultTestScene dxGame(hInstance);
+	//DefaultTestScene dxGame(hInstance);
+	GameplayScene dxGame(hInstance);
 
 	// Result variable for function calls below
 	HRESULT hr = S_OK;

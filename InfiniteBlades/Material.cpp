@@ -15,7 +15,7 @@ Material::Material(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	device->CreateSamplerState(&samplerDesc, &samplerPtr);
 }
-
+ 
 Material::~Material()
 {
 	if (srvPtr != nullptr) srvPtr->Release();

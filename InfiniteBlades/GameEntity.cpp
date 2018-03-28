@@ -22,6 +22,10 @@ GameEntity::GameEntity()
 	Init();
 }
 
+GameEntity::~GameEntity()
+{
+}
+
 GameEntity::GameEntity(Mesh * mesh, Material* material, vec3 position, vec3 rotation, vec3 scale)
 {
 	Init();

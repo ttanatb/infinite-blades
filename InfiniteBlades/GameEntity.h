@@ -3,7 +3,7 @@
 #include "Material.h"
 #include <vector>
 class GameEntity {
-private:
+protected:
 	mat4 worldMatrix;// = MAT4_IDENTITY;
 	mat4 worldMatTransposed;
 
@@ -21,6 +21,8 @@ private:
 	void Init();
 public:
 	GameEntity();
+	virtual ~GameEntity();
+
 	GameEntity(Mesh * mesh, Material* material, 
 		vec3 position = vec3(0,0,0), 
 		vec3 rotation = vec3(0,0,0), 
