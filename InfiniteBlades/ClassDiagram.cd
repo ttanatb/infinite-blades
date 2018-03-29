@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Camera" Collapsed="true">
+    <Position X="11.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BBQCAAAEAIAAIBwAQIABIAiAEQADAAAAAACAABBAgAA=</HashCode>
+      <FileName>Camera.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameEntity" Collapsed="true">
+    <Position X="8.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABQIAQAABDCBEARAABCQIAEDAEAAAgBAIEBKAgAABAA=</HashCode>
+      <FileName>GameEntity.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Material" Collapsed="true">
+    <Position X="13.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAABAAAEAAAAEAAAAAQAAAEAACABEAAAAAABABA=</HashCode>
+      <FileName>Material.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mesh" Collapsed="true">
+    <Position X="13.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAEAEAAAARAAACAAAAABAAAAEAAQAAABAAAAA=</HashCode>
+      <FileName>Mesh.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DXCore" Collapsed="true">
+    <Position X="8.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAYCiCECAAcAA4SAUAEgIEgAARAEAACKJgMCAAACAQI=</HashCode>
+      <FileName>DXCore.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ISimpleShader" Collapsed="true">
+    <Position X="1" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QABUAgADAgQAQkgJCCBAAEggEIBAQSIBBAAAAEQABAk=</HashCode>
+      <FileName>SimpleShader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SimpleVertexShader" Collapsed="true">
+    <Position X="3.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAQAAAAAEAAgAAAAAAAAAAEAAADAAAAQEACACE=</HashCode>
+      <FileName>SimpleShader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SimplePixelShader" Collapsed="true">
+    <Position X="3.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAEAAgAAEAAAAAAAAABABAAAAAEAAAAE=</HashCode>
+      <FileName>SimpleShader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SimpleDomainShader" Collapsed="true">
+    <Position X="3.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAoAAAAAAAEAAgAAAAAAIAAAAAAABAAAAAEAAAAE=</HashCode>
+      <FileName>SimpleShader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SimpleHullShader" Collapsed="true">
+    <Position X="3.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAEAAoAAAAAAAAAAAAAABAAAAAkAAAAE=</HashCode>
+      <FileName>SimpleShader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SimpleGeometryShader" Collapsed="true">
+    <Position X="3.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAgAAAAAAAEAAhAAAQUACABgAAAABAAAAgEAAAAE=</HashCode>
+      <FileName>SimpleShader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SimpleComputeShader" Collapsed="true">
+    <Position X="3.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAgAIAQAAAUAAgAABAQEAAAAABAARAAAAAEAEIAE=</HashCode>
+      <FileName>SimpleShader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DefaultTestScene" Collapsed="true">
+    <Position X="9.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AESAAABAAgEEAgCAQAgAAAEIABAAAAAoIAADABCCAAE=</HashCode>
+      <FileName>DefaultTestScene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameplayScene" Collapsed="true">
+    <Position X="7.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AESAAAAAAgEEAgCAQAgAAAEJABAAAAArIAADABCCAAE=</HashCode>
+      <FileName>GameplayScene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShaderManager" Collapsed="true">
+    <Position X="11.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAKECgCAAGCAAQBAAAAAAAAAIBAgAABAAECQAgBAAA=</HashCode>
+      <FileName>ShaderManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="InputManager" Collapsed="true">
+    <Position X="11.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAQAACAAAAgAAAAAAAAAAAQAJgRAAAMQAAAAIAAAQAA=</HashCode>
+      <FileName>InputManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MaterialManager" Collapsed="true">
+    <Position X="11.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABACECACAAEAAIAAAAAAAAAAAABEAAAAAAACAAIAQAA=</HashCode>
+      <FileName>MaterialManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MeshManager" Collapsed="true">
+    <Position X="11.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAECACIIEhAAAAAAAQAAAAAABAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>MeshManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Player" Collapsed="true">
+    <Position X="8.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAAQAAAAAIAFASgAAAACAAACABAAAAAASAQCgADA=</HashCode>
+      <FileName>Player.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="SimpleShaderVariable" Collapsed="true">
+    <Position X="5.25" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAABAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>SimpleShader.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SimpleConstantBuffer" Collapsed="true">
+    <Position X="5.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAgAAAAAAAAAYAgAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>SimpleShader.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SimpleSRV" Collapsed="true">
+    <Position X="5.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>SimpleShader.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SimpleSampler" Collapsed="true">
+    <Position X="5.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>SimpleShader.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="DirectionalLight" Collapsed="true">
+    <Position X="10" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>Lights.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PointLight" Collapsed="true">
+    <Position X="8.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>Lights.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Vertex" Collapsed="true">
+    <Position X="6.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgAAAAAAAAAAAIAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>Vertex.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
