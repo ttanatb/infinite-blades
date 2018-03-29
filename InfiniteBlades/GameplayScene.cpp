@@ -42,6 +42,7 @@ GameplayScene::~GameplayScene()
 	for (size_t i = 0; i < gameEntities.size(); ++i)
 		delete gameEntities[i];
 	if (camera != nullptr) delete camera;
+	if (skybox != nullptr) delete skybox;
 
 	MaterialManager::ReleaseInstance();
 	MeshManager::ReleaseInstance();
@@ -58,6 +59,7 @@ void GameplayScene::Init()
 	LoadShaderMeshMat();
 	CreateEntities();
 	InitInput();
+
 
 	directionalLight = { vec4(0.8f, 0.85f, 0.9f, 1.0f),
 						 vec3(-0.2f, -1.0f, 0.3f) };
@@ -80,6 +82,8 @@ void GameplayScene::LoadShaderMeshMat()
 	shaderMngr->Init(device, context);
 	shaderMngr->AddVertexShader("vBasic");
 	shaderMngr->AddPixelShader("pBasic");
+	shaderMngr->AddVertexShader("SkyBoxVS");
+	shaderMngr->AddPixelShader("SkyBoxPS");
 
 	//hoisting shaders
 	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasic");
@@ -113,7 +117,7 @@ void GameplayScene::LoadShaderMeshMat()
 void GameplayScene::CreateEntities()
 {
 	//create camera
-	camera = new Camera((float)width, (float)height, vec3(0.0f, 3.5f, 0.0f), 0.35f, 0.0f);
+	camera = new Camera((float)width, (float)height, vec3(0.0f, 2.5f, 0.0f), 0.20f, 0.0f);
 
 	for (int i = 0; i < 4; i++) {
 		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("snow"), matMngr->GetMat("snow"),
@@ -141,6 +145,12 @@ void GameplayScene::CreateEntities()
 
 	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"));
 	gameEntities.push_back(player);
+
+	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds", 
+		device, 
+		shaderMngr->GetVertexShader("SkyBoxVS"),
+		shaderMngr->GetPixelShader("SkyBoxPS"),
+		meshMngr->GetMesh("cube"));
 }
 
 void GameplayScene::InitInput()
@@ -216,6 +226,9 @@ void GameplayScene::Draw(float deltaTime, float totalTime)
 	context->ClearRenderTargetView(backBufferRTV, color);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+
 	//draw all the entities
 	for (size_t i = 0; i < gameEntities.size(); ++i)
 	{
@@ -239,14 +252,20 @@ void GameplayScene::Draw(float deltaTime, float totalTime)
 		//prepare per-object data
 		matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
 
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
-
 		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
 		context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
 		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
 	}
+
+	//render skybox
+	skybox->Render(context, camera, stride, offset);
+
+	// At the end of the frame, reset render states
+	context->RSSetState(0);
+	context->OMSetDepthStencilState(0, 0);
+
+	swapChain->Present(0, 0);
 
 	swapChain->Present(0, 0);
 }

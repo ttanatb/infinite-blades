@@ -11,6 +11,7 @@
 #include "WICTextureLoader.h"
 #include <vector>
 #include "Player.h"
+#include "Skybox.h"
 
 class GameplayScene 
 	: public DXCore
@@ -56,6 +57,7 @@ private:
 
 	//Player
 	Player* player;
+	Skybox* skybox;
 
 	// Game entities
 	std::vector<GameEntity*> gameEntities;
