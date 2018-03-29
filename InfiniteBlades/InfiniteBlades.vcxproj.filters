@@ -33,6 +33,12 @@
     <Filter Include="Source Files\Managers">
       <UniqueIdentifier>{55ff1803-b508-4c65-8a47-c8baf70191eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Gameplay">
+      <UniqueIdentifier>{1e7132c9-d06c-4d03-a047-2b0abcf54cf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gameplay">
+      <UniqueIdentifier>{62bdbb8a-ef5d-45db-a0d0-56a285ef92b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mesh.cpp">
@@ -71,6 +77,11 @@
     <ClCompile Include="DefaultTestScene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="GameplayScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Gameplay</Filter>
     <ClCompile Include="SkyboxTestScene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
@@ -121,6 +132,11 @@
     <ClInclude Include="DefaultTestScene.h">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="GameplayScene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Gameplay</Filter>
     <ClInclude Include="SkyboxTestScene.h">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
