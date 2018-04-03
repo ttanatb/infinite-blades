@@ -55,8 +55,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-
-	<ClCompile Include="Mesh.cpp">
+    <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameEntity.cpp">
@@ -95,15 +94,21 @@
     <ClCompile Include="SkyboxTestScene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
-	<ClCompile Include="GameplayScene.cpp">
-	  <Filter>Source Files\Scenes</Filter>
-	</ClCompile>
+    <ClCompile Include="GameplayScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
     <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-	<ClInclude Include="Mesh.h">
+    <ClInclude Include="Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameEntity.h">
@@ -148,10 +153,19 @@
     <ClInclude Include="SkyboxTestScene.h">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
-	<ClInclude Include="GameplayScene.h">
+    <ClInclude Include="GameplayScene.h">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

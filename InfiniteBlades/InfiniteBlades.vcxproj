@@ -98,11 +98,8 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
       <SDLCheck>false</SDLCheck>
     </ClCompile>
     <PostBuildEvent>
-      <Command>mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets
-mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Models
-copy $(ProjectDir)Assets\Models $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Models
-mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Textures
-copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Textures</Command>
+      <Command>
+      </Command>
       <Message>Copying asset files over</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -140,16 +137,14 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets
-mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Models
-copy $(ProjectDir)Assets\Models $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Models
-mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Textures
-copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Textures</Command>
+      <Command>
+      </Command>
       <Message>Copying asset files over</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Collision.cpp" />
     <ClCompile Include="DefaultTestScene.cpp" />
     <ClCompile Include="DXCore.cpp" />
     <ClCompile Include="GameplayScene.cpp" />
@@ -168,6 +163,8 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="Collision.h" />
     <ClInclude Include="DefaultTestScene.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="DXCore.h" />
