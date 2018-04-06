@@ -2,7 +2,7 @@
 #include "DefaultTestScene.h"
 #include "GameplayScene.h"
 #include "SkyboxTestScene.h"
-
+#include "TransperancyTestScene.h"
 
 //**TO CHANGE SCENES: MAKE SURE TO INCLUDE THEM HERE**
 
@@ -61,7 +61,7 @@ int WINAPI WinMain(
 
 	//**TO CHANGE SCENES: MAKE SURE TO CHANGE THE FOLLOWING LINE**
 	//DefaultTestScene dxGame(hInstance);
-	GameplayScene dxGame(hInstance);
+	TransperancyTestScene dxGame(hInstance);
 	//SkyboxTestScene dxGame(hInstance);
 
 	// Result variable for function calls below

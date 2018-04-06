@@ -15,6 +15,7 @@ public:
 	static void ReleaseInstance();
 	void ReleaseAllMaterials();
 	void AddMat(char* name, SimpleVertexShader * vShader, SimplePixelShader* pShader, const wchar_t* fileName);
+	void AddMat(char * name, SimpleVertexShader * vShader, SimplePixelShader * pShader, const wchar_t * fileName, bool transparentBool);
 	void Init(ID3D11Device* device, ID3D11DeviceContext* context);
 	Material* GetMat(char* name);
 };

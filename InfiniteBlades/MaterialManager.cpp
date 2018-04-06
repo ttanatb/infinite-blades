@@ -42,6 +42,12 @@ void MaterialManager::AddMat(char * name, SimpleVertexShader * vShader, SimplePi
 	map.insert(std::pair<char*, Material*>(name, mat));
 }
 
+void MaterialManager::AddMat(char * name, SimpleVertexShader * vShader, SimplePixelShader * pShader, const wchar_t * fileName, bool transparentBool)
+{
+	Material* mat = new Material(vShader, pShader, device, context, fileName, transparentBool);
+	map.insert(std::pair<char*, Material*>(name, mat));
+}
+
 void MaterialManager::Init(ID3D11Device * device, ID3D11DeviceContext * context)
 {
 	this->device = device;
