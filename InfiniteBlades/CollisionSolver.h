@@ -1,7 +1,7 @@
 #pragma once
 #include "Collider.h"
 
-class Collision
+class CollisionSolver
 {
 public:
 	static bool DetectCollision(Collider* collider1, Collider* collider2);

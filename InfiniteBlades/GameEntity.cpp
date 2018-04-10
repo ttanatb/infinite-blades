@@ -10,6 +10,8 @@ void GameEntity::Init()
 	rotation = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	scale = vec3(1.0f, 1.0f, 1.0f);
 
+	coll = Collider();
+
 	XMMATRIX mat = XMMatrixIdentity();
 	XMStoreFloat4x4(&worldMatrix, mat);
 	XMStoreFloat4x4(&parentWorldMatrix, mat);
@@ -26,7 +28,7 @@ GameEntity::~GameEntity()
 {
 }
 
-GameEntity::GameEntity(Mesh * mesh, Material* material, vec3 position, vec3 rotation, vec3 scale)
+GameEntity::GameEntity(Mesh * mesh, Material* material, ColliderType colliderType, vec3 position, vec3 rotation, vec3 scale)
 {
 	Init();
 	meshPtr = mesh;
@@ -34,11 +36,13 @@ GameEntity::GameEntity(Mesh * mesh, Material* material, vec3 position, vec3 rota
 	this->position = position;
 	this->scale = scale;
 
+	coll = Collider(colliderType, this->position, this->scale, false);
+
 	XMVECTOR quaternion = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	XMStoreFloat4(&(this->rotation), quaternion);
 }
 
-GameEntity::GameEntity(Mesh * mesh, Material * material, vec3 position, vec3 rotation, float scale)
+GameEntity::GameEntity(Mesh * mesh, Material * material, ColliderType colliderType, vec3 position, vec3 rotation, float scale)
 {
 	Init();
 
@@ -46,6 +50,8 @@ GameEntity::GameEntity(Mesh * mesh, Material * material, vec3 position, vec3 rot
 	matPtr = material;
 	this->position = position;
 	this->scale = vec3(scale, scale, scale);
+
+	coll = Collider(colliderType, this->position, this->scale, false);
 
 	XMVECTOR quaternion = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	XMStoreFloat4(&(this->rotation), quaternion);
@@ -94,6 +100,11 @@ void GameEntity::SetParent(GameEntity * parent)
 {
 	this->parent = parent;
 	parent->children.push_back(this);
+}
+
+Collider * GameEntity::GetCollider()
+{
+	return &coll;
 }
 
 void GameEntity::TranslateBy(float x, float y, float z)

@@ -144,7 +144,7 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="CollisionSolver.cpp" />
     <ClCompile Include="DefaultTestScene.cpp" />
     <ClCompile Include="DXCore.cpp" />
     <ClCompile Include="GameplayScene.cpp" />
@@ -164,7 +164,7 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collider.h" />
-    <ClInclude Include="Collision.h" />
+    <ClInclude Include="CollisionSolver.h" />
     <ClInclude Include="DefaultTestScene.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="DXCore.h" />
