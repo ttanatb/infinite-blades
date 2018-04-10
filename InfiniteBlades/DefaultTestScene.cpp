@@ -113,19 +113,19 @@ void DefaultTestScene::CreateEntities()
 	camera = new Camera((float)width, (float)height, vec3(0.0f, 0.0f, -5.0f), 0.0f, 0.0f);
 
 	//create entities
-	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("woodplanks"), ColliderType::BOX,
+	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("woodplanks"),
 		vec3(2, 1, 1), vec3(45, 45, 0), 0.69f));
 
-	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("cone"), matMngr->GetMat("concrete"), ColliderType::BOX,
+	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("cone"), matMngr->GetMat("concrete"),
 		vec3(1, -1, 1), vec3(45, 90, 45), 0.9f));
 
-	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("helix"), matMngr->GetMat("soil"), ColliderType::BOX,
+	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("helix"), matMngr->GetMat("soil"),
 		vec3(0, 0, 5), vec3(45, 0, 45), 0.85f));
 
-	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"), ColliderType::BOX,
+	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"),
 		vec3(-1, 1, 0), vec3(45, 45, 90), 0.8f));
 
-	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("soil"), ColliderType::BOX,
+	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("soil"),
 		vec3(1, 1, 1), vec3(45, 0, 45), vec3(0.7f, 0.6f, 0.8f)));
 }
 

@@ -28,7 +28,7 @@ GameEntity::~GameEntity()
 {
 }
 
-GameEntity::GameEntity(Mesh * mesh, Material* material, ColliderType colliderType, vec3 position, vec3 rotation, vec3 scale)
+GameEntity::GameEntity(Mesh * mesh, Material* material, vec3 position, vec3 rotation, vec3 scale)
 {
 	Init();
 	meshPtr = mesh;
@@ -36,7 +36,18 @@ GameEntity::GameEntity(Mesh * mesh, Material* material, ColliderType colliderTyp
 	this->position = position;
 	this->scale = scale;
 
-	coll = Collider(colliderType, this->position, this->scale, false);
+	XMVECTOR quaternion = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
+	XMStoreFloat4(&(this->rotation), quaternion);
+}
+
+GameEntity::GameEntity(Mesh * mesh, Material * material, vec3 position, vec3 rotation, float scale)
+{
+	Init();
+
+	meshPtr = mesh;
+	matPtr = material;
+	this->position = position;
+	this->scale = vec3(scale, scale, scale);
 
 	XMVECTOR quaternion = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	XMStoreFloat4(&(this->rotation), quaternion);
