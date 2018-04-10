@@ -1,6 +1,7 @@
 #pragma once
 #include "InputManager.h"
 #include "GameEntity.h"
+#include "Collider.h"
 class Player : 
 	public GameEntity {
 private:
@@ -26,7 +27,7 @@ private:
 	void UpdateForward(float dt);
 public:
 	Player();
-	Player(Mesh* mesh, Material* mat);
+	Player(Mesh* mesh, Material* mat, ColliderType colliderType);
 	~Player();
 
 	void Update(float dt, float t);

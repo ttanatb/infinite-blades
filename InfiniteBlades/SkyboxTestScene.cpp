@@ -37,7 +37,7 @@ void SkyboxTestScene::Init()
 	//intialize camera
 	camera = new Camera((float)width, (float)height, vec3(0.0f, 0.0f, -5.0f), 0.0f, 0.0f);
 	//intialize sphere
-	sphere = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("concrete"),
+	sphere = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("concrete"), ColliderType::SPHERE,
 		vec3(0, 0, 0), vec3(45, 45, 90), 1.0f);
 	
 	//skybox shaders

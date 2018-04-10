@@ -1,7 +1,7 @@
 #include "Player.h"
 
 using namespace DirectX;
-Player::Player(Mesh * mesh, Material * mat) : GameEntity(mesh, mat, vec3(0,0,6.0f), vec3(0, 0,0), vec3(1.0f, 1.0f, 1.0f))
+Player::Player(Mesh * mesh, Material * mat, ColliderType colliderType) : GameEntity(mesh, mat, colliderType, vec3(0,0,6.0f), vec3(0, 0,0), vec3(1.0f, 1.0f, 1.0f))
 {
 	Init();
 }

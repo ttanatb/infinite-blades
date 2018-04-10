@@ -120,9 +120,9 @@ void GameplayScene::CreateEntities()
 	camera = new Camera((float)width, (float)height, vec3(0.0f, 2.5f, 0.0f), 0.20f, 0.0f);
 
 	for (int i = 0; i < 4; i++) {
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("snow"), matMngr->GetMat("snow"),
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("snow"), matMngr->GetMat("snow"), ColliderType::BOX,
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));  
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"), ColliderType::BOX,
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 	}
 	  
@@ -143,7 +143,7 @@ void GameplayScene::CreateEntities()
 	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("soil"),
 	//	vec3(1, 1, 1), vec3(45, 0, 45), vec3(0.7f, 0.6f, 0.8f)));
 
-	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"));
+	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"), ColliderType::BOX);
 	gameEntities.push_back(player);
 
 	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds", 

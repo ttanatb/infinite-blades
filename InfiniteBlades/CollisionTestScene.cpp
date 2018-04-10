@@ -1,4 +1,4 @@
-#include "DefaultTestScene.h"
+#include "CollisionTestScene.h"
 
 //remove later
 #include <iostream>
@@ -14,7 +14,7 @@ using namespace DirectX;
 //
 // hInstance - the application's OS-level handle (unique ID)
 // --------------------------------------------------------
-DefaultTestScene::DefaultTestScene(HINSTANCE hInstance)
+CollisionTestScene::CollisionTestScene(HINSTANCE hInstance)
 
 //feed the handle, the name, width, and height
 	: DXCore(hInstance, "Infinite Blades", 1280, 720,
@@ -35,7 +35,7 @@ DefaultTestScene::DefaultTestScene(HINSTANCE hInstance)
 //  - Release all DirectX objects created here
 //  - Delete any objects to prevent memory leaks
 // --------------------------------------------------------
-DefaultTestScene::~DefaultTestScene()
+CollisionTestScene::~CollisionTestScene()
 {
 	// Release any (and all!) DirectX objects
 	// we've made in the Game class
@@ -53,18 +53,18 @@ DefaultTestScene::~DefaultTestScene()
 // Called once per program, after DirectX and the window
 // are initialized but before the game loop.
 // --------------------------------------------------------
-void DefaultTestScene::Init()
+void CollisionTestScene::Init()
 {
 	LoadShaderMeshMat();
 	CreateEntities();
 	InitInput();
 
 	directionalLight = { vec4(0.1f, 0.5f, 0.1f, 1.0f),
-						 vec3(1.0f, 1.0f, 0.0f) };
+		vec3(1.0f, 1.0f, 0.0f) };
 	directionalLight2 = { vec4(0.8f, 0.8f, 0.5f, 1.0f),
-						  vec3(0.0f, -1.0f, 1.0f) };
+		vec3(0.0f, -1.0f, 1.0f) };
 	pointLight = { vec4(0.1f, 0.1f, 0.8f, 1.0f),
-					vec3(0.0f, 5.0f, -5.0f) };
+		vec3(0.0f, 5.0f, -5.0f) };
 	ambientLight = vec4(0.1f, 0.1f, 0.1f, 1.0f);
 
 	// Tell the input assembler stage of the pipeline what kind of
@@ -77,7 +77,7 @@ void DefaultTestScene::Init()
 // Loads shaders, loads texture to build materials, and loads meshes
 // then adds them to the respective managers
 // --------------------------------------------------------
-void DefaultTestScene::LoadShaderMeshMat()
+void CollisionTestScene::LoadShaderMeshMat()
 {
 	//shaders
 	shaderMngr = ShaderManager::GetInstancce();
@@ -107,7 +107,7 @@ void DefaultTestScene::LoadShaderMeshMat()
 	meshMngr->AddMesh("cube", "Assets/Models/cube.obj");
 }
 
-void DefaultTestScene::CreateEntities()
+void CollisionTestScene::CreateEntities()
 {
 	//create camera
 	camera = new Camera((float)width, (float)height, vec3(0.0f, 0.0f, -5.0f), 0.0f, 0.0f);
@@ -122,14 +122,14 @@ void DefaultTestScene::CreateEntities()
 	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("helix"), matMngr->GetMat("soil"), ColliderType::BOX,
 		vec3(0, 0, 5), vec3(45, 0, 45), 0.85f));
 
-	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"), ColliderType::BOX,
+	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"), ColliderType::SPHERE,
 		vec3(-1, 1, 0), vec3(45, 45, 90), 0.8f));
 
 	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("soil"), ColliderType::BOX,
 		vec3(1, 1, 1), vec3(45, 0, 45), vec3(0.7f, 0.6f, 0.8f)));
 }
 
-void DefaultTestScene::InitInput()
+void CollisionTestScene::InitInput()
 {
 	inputMngr = InputManager::GetInstance();
 	char* usedChars = "WSAD XT";
@@ -140,7 +140,7 @@ void DefaultTestScene::InitInput()
 // Handle resizing DirectX "stuff" to match the new window size.
 // For instance, updating our projection matrix's aspect ratio.
 // --------------------------------------------------------
-void DefaultTestScene::OnResize()
+void CollisionTestScene::OnResize()
 {
 	// Handle base-level DX resize stuff
 	DXCore::OnResize();
@@ -152,7 +152,7 @@ void DefaultTestScene::OnResize()
 // --------------------------------------------------------
 // Update your game here - user input, move objects, AI, etc.
 // --------------------------------------------------------
-void DefaultTestScene::Update(float deltaTime, float totalTime)
+void CollisionTestScene::Update(float deltaTime, float totalTime)
 {
 	inputMngr->Update();
 
@@ -200,7 +200,7 @@ void DefaultTestScene::Update(float deltaTime, float totalTime)
 // --------------------------------------------------------
 // Clear the screen, redraw everything, present to the user
 // --------------------------------------------------------
-void DefaultTestScene::Draw(float deltaTime, float totalTime)
+void CollisionTestScene::Draw(float deltaTime, float totalTime)
 {
 	// Background color (Cornflower Blue in this case) for clearing
 	const float color[4] = { 0.4f, 0.6f, 0.75f, 0.0f };
@@ -254,7 +254,7 @@ void DefaultTestScene::Draw(float deltaTime, float totalTime)
 // from the OS-level messages anyway, so these helpers have
 // been created to provide basic mouse input if you want it.
 // --------------------------------------------------------
-void DefaultTestScene::OnMouseDown(WPARAM buttonState, int x, int y)
+void CollisionTestScene::OnMouseDown(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
 	//left click
@@ -273,7 +273,7 @@ void DefaultTestScene::OnMouseDown(WPARAM buttonState, int x, int y)
 // --------------------------------------------------------
 // Helper method for mouse release
 // --------------------------------------------------------
-void DefaultTestScene::OnMouseUp(WPARAM buttonState, int x, int y)
+void CollisionTestScene::OnMouseUp(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
 
@@ -287,7 +287,7 @@ void DefaultTestScene::OnMouseUp(WPARAM buttonState, int x, int y)
 // if the mouse is currently over the window, or if we're 
 // currently capturing the mouse.
 // --------------------------------------------------------
-void DefaultTestScene::OnMouseMove(WPARAM buttonState, int x, int y)
+void CollisionTestScene::OnMouseMove(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
 	if (buttonState & 0x0001) {
@@ -305,7 +305,7 @@ void DefaultTestScene::OnMouseMove(WPARAM buttonState, int x, int y)
 // WheelDelta may be positive or negative, depending 
 // on the direction of the scroll
 // --------------------------------------------------------
-void DefaultTestScene::OnMouseWheel(float wheelDelta, int x, int y)
+void CollisionTestScene::OnMouseWheel(float wheelDelta, int x, int y)
 {
 	// Add any custom code here...
 }
