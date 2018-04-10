@@ -93,8 +93,8 @@ void DefaultTestScene::LoadShaderMeshMat()
 	matMngr = MaterialManager::GetInstancce();
 	matMngr->Init(device, context);
 	matMngr->AddMat("concrete", vShader, pShader, L"Assets/Textures/concrete.jpg");
-	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/soil.jpg");
-	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/woodplanks.jpg");
+	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/cloud.png",true);
+	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/fence.png",true);
 
 	//meshes
 	meshMngr = MeshManager::GetInstancce();

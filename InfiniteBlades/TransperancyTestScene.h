@@ -40,6 +40,7 @@ private:
 	void LoadShaderMeshMat();
 	void CreateEntities();
 	void InitInput();
+	void InitTransparentDesc();
 
 	vec4 ambientLight;
 	DirectionalLight directionalLight;
@@ -61,6 +62,10 @@ private:
 
 	// Game entities
 	std::vector<GameEntity*> gameEntities;
+	//blend description 
+	D3D11_BLEND_DESC blendDesc;
+	ID3D11BlendState* blendState;
+
 
 	// Keeps track of the old mouse position.  Useful for 
 	// determining how far the mouse moved in a single frame.

@@ -10,8 +10,7 @@ private:
 	SimplePixelShader* pixelShader;
 	ID3D11ShaderResourceView* srvPtr;
 	ID3D11SamplerState* samplerPtr;
-	D3D11_BLEND_DESC CreateTransparentDesc();
-	ID3D11BlendState* transparentBlendState;
+	bool transparentBool = false;
 public:
 	Material();
 	Material(SimpleVertexShader * vShader,
@@ -26,9 +25,11 @@ public:
 		const wchar_t* fileName, 
 		bool transparentBool);
 	~Material();
-	
+	//sets the vertex/pixel shader, creates texture, and creates sampler desc and state 
+	void InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID3D11Device* device, ID3D11DeviceContext* context, const wchar_t* fileName);
 	SimpleVertexShader* GetVertexShader();
 	SimplePixelShader* GetPixelShader();
+	bool GetTransparentBool();
 	void SetTransparentState(bool transparentBool);
 
 	void SetVertexShader(SimpleVertexShader* newVertexShader);

@@ -43,6 +43,7 @@ TransperancyTestScene::~TransperancyTestScene()
 		delete gameEntities[i];
 	if (camera != nullptr) delete camera;
 	if (skybox != nullptr) delete skybox;
+	if (blendState != nullptr) blendState->Release();
 
 	MaterialManager::ReleaseInstance();
 	MeshManager::ReleaseInstance();
@@ -59,7 +60,7 @@ void TransperancyTestScene::Init()
 	LoadShaderMeshMat();
 	CreateEntities();
 	InitInput();
-
+	InitTransparentDesc();
 
 	directionalLight = { vec4(0.8f, 0.85f, 0.9f, 1.0f),
 		vec3(-0.2f, -1.0f, 0.3f) };
@@ -69,6 +70,26 @@ void TransperancyTestScene::Init()
 	// geometric primitives (points, lines or triangles) we want to draw.  
 	// Essentially: "What kind of shape should the GPU draw with our data?"
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void TransperancyTestScene::InitTransparentDesc()
+{
+	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.IndependentBlendEnable = false;
+	blendDesc.RenderTarget[0].BlendEnable = true;
+	
+	// These control the RGB channels
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	
+	// This is for the alpha channel specifically
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	//create blend states
+	device->CreateBlendState(&blendDesc, &blendState);
 }
 
 // --------------------------------------------------------
@@ -96,7 +117,7 @@ void TransperancyTestScene::LoadShaderMeshMat()
 	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/soil.jpg");
 	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/woodplanks.jpg");
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
-	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg", true);
+	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/fence.png", true);
 	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg");
 
 	//meshes
@@ -228,44 +249,80 @@ void TransperancyTestScene::Draw(float deltaTime, float totalTime)
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
+	context->OMSetBlendState(blendState, 0, 0xFFFFFFFF);
+	//context->OMSetBlendState(NULL, 0, 0xFFFFFFFF);
 
 	//draw all the entities
 	for (size_t i = 0; i < gameEntities.size(); ++i)
 	{
-		//hoist the mesh and mat of the entity
-		Mesh* meshPtr = gameEntities[i]->GetMesh();
-		Material * matPtr = gameEntities[i]->GetMat();
+		if (gameEntities[i]->GetMat()->GetTransparentBool() == false) {
+			//hoist the mesh and mat of the entity
+			Mesh* meshPtr = gameEntities[i]->GetMesh();
+			Material * matPtr = gameEntities[i]->GetMat();
 
-		//early exit
-		if (meshPtr == nullptr || matPtr == nullptr) continue;
+			//early exit
+			if (meshPtr == nullptr || matPtr == nullptr) continue;
 
-		/*This is Per-frame data that we can offset into a renderer class we won't have*/
-		SimplePixelShader* pixelShader = matPtr->GetPixelShader();
-		pixelShader->SetFloat4("ambientColor", ambientLight);
-		pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
-		pixelShader->SetFloat3("cameraPos", camera->GetPos());
+			/*This is Per-frame data that we can offset into a renderer class we won't have*/
+			SimplePixelShader* pixelShader = matPtr->GetPixelShader();
+			pixelShader->SetFloat4("ambientColor", ambientLight);
+			pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
+			pixelShader->SetFloat3("cameraPos", camera->GetPos());
 
-		SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
-		vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
-		vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
+			SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
+			vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
+			vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
 
-		//prepare per-object data
-		matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
+			//prepare per-object data
+			matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
 
-		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
-		context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
-		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
+			ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
+			context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
+			context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+			context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
+		}
 	}
 
 	//render skybox
 	skybox->Render(context, camera, stride, offset);
 
+	//turn on blend state
+	context->OMSetBlendState(blendState, 0, 0xFFFFFFFF);
+
+	//draw all the entities
+	for (size_t i = 0; i < gameEntities.size(); ++i)
+	{
+		if (gameEntities[i]->GetMat()->GetTransparentBool()) {
+			//hoist the mesh and mat of the entity
+			Mesh* meshPtr = gameEntities[i]->GetMesh();
+			Material * matPtr = gameEntities[i]->GetMat();
+
+			//early exit
+			if (meshPtr == nullptr || matPtr == nullptr) continue;
+
+			/*This is Per-frame data that we can offset into a renderer class we won't have*/
+			SimplePixelShader* pixelShader = matPtr->GetPixelShader();
+			pixelShader->SetFloat4("ambientColor", ambientLight);
+			pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
+			pixelShader->SetFloat3("cameraPos", camera->GetPos());
+
+			SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
+			vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
+			vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
+
+			//prepare per-object data
+			matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
+
+			ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
+			context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
+			context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+			context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
+		}
+	}
+
 	// At the end of the frame, reset render states
 	context->RSSetState(0);
 	context->OMSetDepthStencilState(0, 0);
-
-	swapChain->Present(0, 0);
 
 	swapChain->Present(0, 0);
 }
