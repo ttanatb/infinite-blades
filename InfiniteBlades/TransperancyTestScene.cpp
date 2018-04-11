@@ -117,7 +117,7 @@ void TransperancyTestScene::LoadShaderMeshMat()
 	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/soil.jpg");
 	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/woodplanks.jpg");
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
-	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/fence.png", true);
+	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg", true);
 	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg");
 
 	//meshes
@@ -249,10 +249,11 @@ void TransperancyTestScene::Draw(float deltaTime, float totalTime)
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
-	context->OMSetBlendState(blendState, 0, 0xFFFFFFFF);
-	//context->OMSetBlendState(NULL, 0, 0xFFFFFFFF);
 
-	//draw all the entities
+	//turn transparency off
+	context->OMSetBlendState(NULL, 0, 0xFFFFFFFF);
+
+	//draw all the opaque entities
 	for (size_t i = 0; i < gameEntities.size(); ++i)
 	{
 		if (gameEntities[i]->GetMat()->GetTransparentBool() == false) {
@@ -286,10 +287,10 @@ void TransperancyTestScene::Draw(float deltaTime, float totalTime)
 	//render skybox
 	skybox->Render(context, camera, stride, offset);
 
-	//turn on blend state
+	//turn transparency on
 	context->OMSetBlendState(blendState, 0, 0xFFFFFFFF);
 
-	//draw all the entities
+	//draw all transparent entities
 	for (size_t i = 0; i < gameEntities.size(); ++i)
 	{
 		if (gameEntities[i]->GetMat()->GetTransparentBool()) {
@@ -305,6 +306,8 @@ void TransperancyTestScene::Draw(float deltaTime, float totalTime)
 			pixelShader->SetFloat4("ambientColor", ambientLight);
 			pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
 			pixelShader->SetFloat3("cameraPos", camera->GetPos());
+			//set transparency strength
+			pixelShader->SetFloat("transparentStrength", .85f);
 
 			SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
 			vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
