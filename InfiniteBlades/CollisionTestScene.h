@@ -10,6 +10,8 @@
 #include "Lights.h"
 #include "WICTextureLoader.h"
 #include <vector>
+#include "Player.h"
+#include "Skybox.h"
 
 class CollisionTestScene
 	: public DXCore
@@ -52,6 +54,10 @@ private:
 
 	//camera
 	Camera* camera;
+
+	//Player
+	Player* player;
+	Skybox* skybox;
 
 	// Game entities
 	std::vector<GameEntity*> gameEntities;

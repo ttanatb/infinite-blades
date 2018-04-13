@@ -2,6 +2,7 @@
 #include "DefaultTestScene.h"
 #include "GameplayScene.h"
 #include "SkyboxTestScene.h"
+#include "CollisionTestScene.h"
 
 
 //**TO CHANGE SCENES: MAKE SURE TO INCLUDE THEM HERE**
@@ -61,8 +62,9 @@ int WINAPI WinMain(
 
 	//**TO CHANGE SCENES: MAKE SURE TO CHANGE THE FOLLOWING LINE**
 	//DefaultTestScene dxGame(hInstance);
-	GameplayScene dxGame(hInstance);
+	//GameplayScene dxGame(hInstance);
 	//SkyboxTestScene dxGame(hInstance);
+	CollisionTestScene dxGame(hInstance);
 
 	// Result variable for function calls below
 	HRESULT hr = S_OK;

@@ -42,6 +42,7 @@ CollisionTestScene::~CollisionTestScene()
 	for (size_t i = 0; i < gameEntities.size(); ++i)
 		delete gameEntities[i];
 	if (camera != nullptr) delete camera;
+	if (skybox != nullptr) delete skybox;
 
 	MaterialManager::ReleaseInstance();
 	MeshManager::ReleaseInstance();
@@ -59,13 +60,10 @@ void CollisionTestScene::Init()
 	CreateEntities();
 	InitInput();
 
-	directionalLight = { vec4(0.1f, 0.5f, 0.1f, 1.0f),
-		vec3(1.0f, 1.0f, 0.0f) };
-	directionalLight2 = { vec4(0.8f, 0.8f, 0.5f, 1.0f),
-		vec3(0.0f, -1.0f, 1.0f) };
-	pointLight = { vec4(0.1f, 0.1f, 0.8f, 1.0f),
-		vec3(0.0f, 5.0f, -5.0f) };
-	ambientLight = vec4(0.1f, 0.1f, 0.1f, 1.0f);
+
+	directionalLight = { vec4(0.8f, 0.85f, 0.9f, 1.0f),
+		vec3(-0.2f, -1.0f, 0.3f) };
+	ambientLight = vec4(0.1f, 0.1f, 0.2f, 1.0f);
 
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
@@ -84,6 +82,8 @@ void CollisionTestScene::LoadShaderMeshMat()
 	shaderMngr->Init(device, context);
 	shaderMngr->AddVertexShader("vBasic");
 	shaderMngr->AddPixelShader("pBasic");
+	shaderMngr->AddVertexShader("SkyBoxVS");
+	shaderMngr->AddPixelShader("SkyBoxPS");
 
 	//hoisting shaders
 	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasic");
@@ -95,44 +95,62 @@ void CollisionTestScene::LoadShaderMeshMat()
 	matMngr->AddMat("concrete", vShader, pShader, L"Assets/Textures/concrete.jpg");
 	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/soil.jpg");
 	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/woodplanks.jpg");
+	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
+	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg");
+	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg");
 
 	//meshes
 	meshMngr = MeshManager::GetInstancce();
 	meshMngr->Init(device);
-	meshMngr->AddMesh("helix", "Assets/Models/helix.obj");
-	meshMngr->AddMesh("cone", "Assets/Models/cone.obj");
-	meshMngr->AddMesh("cylinder", "Assets/Models/cylinder.obj");
-	meshMngr->AddMesh("sphere", "Assets/Models/sphere.obj");
-	meshMngr->AddMesh("torus", "Assets/Models/torus.obj");
-	meshMngr->AddMesh("cube", "Assets/Models/cube.obj");
+	meshMngr->AddMesh("ship", "Assets/Models/ship.obj");
+	meshMngr->AddMesh("floor", "Assets/Models/floor.obj");
+	meshMngr->AddMesh("snow", "Assets/Models/snowFloor.obj");
+	meshMngr->AddMesh("testFloor", "Assets/Models/testFloor.obj");
 }
 
 void CollisionTestScene::CreateEntities()
 {
 	//create camera
-	camera = new Camera((float)width, (float)height, vec3(0.0f, 0.0f, -5.0f), 0.0f, 0.0f);
+	camera = new Camera((float)width, (float)height, vec3(0.0f, 2.5f, 0.0f), 0.20f, 0.0f);
+
+	for (int i = 0; i < 4; i++) {
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("snow"), matMngr->GetMat("snow"),
+			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"), ColliderType::BOX,
+			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+	}
+
 
 	//create entities
-	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("woodplanks"), ColliderType::BOX,
-		vec3(2, 1, 1), vec3(45, 45, 0), 0.69f));
+	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("woodplanks"),
+	//	vec3(2, 1, 1), vec3(45, 45, 0), 0.69f));
 
-	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("cone"), matMngr->GetMat("concrete"), ColliderType::BOX,
-		vec3(1, -1, 1), vec3(45, 90, 45), 0.9f));
+	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("cone"), matMngr->GetMat("concrete"),
+	//	vec3(1, -1, 1), vec3(45, 90, 45), 0.9f));
 
-	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("helix"), matMngr->GetMat("soil"), ColliderType::BOX,
-		vec3(0, 0, 5), vec3(45, 0, 45), 0.85f));
+	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("helix"), matMngr->GetMat("soil"),
+	//	vec3(0, 0, 5), vec3(45, 0, 45), 0.85f));
 
-	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"), ColliderType::SPHERE,
-		vec3(-1, 1, 0), vec3(45, 45, 90), 0.8f));
+	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"),
+	//	vec3(-1, 1, 0), vec3(45, 45, 90), 0.8f));
 
-	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("soil"), ColliderType::BOX,
-		vec3(1, 1, 1), vec3(45, 0, 45), vec3(0.7f, 0.6f, 0.8f)));
+	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("soil"),
+	//	vec3(1, 1, 1), vec3(45, 0, 45), vec3(0.7f, 0.6f, 0.8f)));
+
+	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"), ColliderType::BOX);
+	gameEntities.push_back(player);
+
+	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds",
+		device,
+		shaderMngr->GetVertexShader("SkyBoxVS"),
+		shaderMngr->GetPixelShader("SkyBoxPS"),
+		meshMngr->GetMesh("cube"));
 }
 
 void CollisionTestScene::InitInput()
 {
 	inputMngr = InputManager::GetInstance();
-	char* usedChars = "WSAD XT";
+	char* usedChars = "AD";
 	inputMngr->AddKeysToPollFor(usedChars, strlen(usedChars));
 }
 
@@ -156,41 +174,34 @@ void CollisionTestScene::Update(float deltaTime, float totalTime)
 {
 	inputMngr->Update();
 
+	/*
 	if (inputMngr->GetKey('A'))
-		camera->MoveAlongRight(-0.01f);
+	camera->MoveAlongRight(-0.01f);
 	if (inputMngr->GetKey('D'))
-		camera->MoveAlongRight(+0.01f);
+	camera->MoveAlongRight(+0.01f);
 
 	if (inputMngr->GetKey('W'))
-		camera->MoveAlongForward(+0.01f);
+	camera->MoveAlongForward(+0.01f);
 	if (inputMngr->GetKey('S'))
-		camera->MoveAlongForward(-0.01f);
+	camera->MoveAlongForward(-0.01f);
 
 	if (inputMngr->GetKey(' '))
-		camera->Move(0, +0.01f, 0);
+	camera->Move(0, +0.01f, 0);
 	if (inputMngr->GetKey('X'))
-		camera->Move(0, -0.01f, 0);
+	camera->Move(0, -0.01f, 0);
+	*/
 	camera->Update();
 
-	for (size_t i = 0; i < gameEntities.size(); ++i) {
+	for (size_t i = 0; i < gameEntities.size() - 1; ++i) {
 		gameEntities[i]->Update();
+		gameEntities[i]->TranslateBy(0.0f, 0.0f, -0.01f);
+
+		if (gameEntities[i]->GetPosition().z < 0.0f) {
+			gameEntities[i]->TranslateBy(0.0f, 0.0f, 120.0f);
+		}
 	}
 
-	if (isMoving) {
-		gameEntities[0]->TranslateBy(sin(totalTime) / 200.0f, 0.0f, 0.0f);
-		gameEntities[0]->RotateOnAxis(vec3(0.0f, 1.0f, 0.0f), deltaTime);
-		gameEntities[0]->ScaleBy(sin(totalTime) / 1000.0f, sin(totalTime) / 1000.0f, sin(totalTime) / 1000.0f);
-		gameEntities[1]->RotateOnAxis(sin(totalTime), 0.0f, cos(totalTime), deltaTime * 2.0f);
-		gameEntities[2]->ScaleBy(sin(totalTime) / 2000.0f, sin(totalTime) / 2000.0f, sin(totalTime) / 2000.0f);
-		gameEntities[2]->RotateOnAxis(sin(totalTime), 0.0f, cos(totalTime), deltaTime * 2.0f);
-		gameEntities[3]->TranslateBy(0.0f, cos(totalTime * 20.0f) / 500.0f, 0.0f);
-		gameEntities[3]->RotateOnAxis(0.0f, 1.0f, 0.0f, deltaTime);
-		gameEntities[4]->RotateOnAxis(vec3(0.0f, 0.0f, 1.0f), deltaTime);
-	}
-
-	if (inputMngr->GetKeyDown('T')) {
-		isMoving = !isMoving;
-	}
+	player->Update(deltaTime, totalTime);
 
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
@@ -209,6 +220,9 @@ void CollisionTestScene::Draw(float deltaTime, float totalTime)
 	context->ClearRenderTargetView(backBufferRTV, color);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+
 	//draw all the entities
 	for (size_t i = 0; i < gameEntities.size(); ++i)
 	{
@@ -223,8 +237,6 @@ void CollisionTestScene::Draw(float deltaTime, float totalTime)
 		SimplePixelShader* pixelShader = matPtr->GetPixelShader();
 		pixelShader->SetFloat4("ambientColor", ambientLight);
 		pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
-		pixelShader->SetData("directionalLight2", &directionalLight2, sizeof(DirectionalLight));
-		pixelShader->SetData("pointLight", &pointLight, sizeof(PointLight));
 		pixelShader->SetFloat3("cameraPos", camera->GetPos());
 
 		SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
@@ -234,14 +246,20 @@ void CollisionTestScene::Draw(float deltaTime, float totalTime)
 		//prepare per-object data
 		matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
 
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
-
 		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
 		context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
 		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
 	}
+
+	//render skybox
+	skybox->Render(context, camera, stride, offset);
+
+	// At the end of the frame, reset render states
+	context->RSSetState(0);
+	context->OMSetDepthStencilState(0, 0);
+
+	swapChain->Present(0, 0);
 
 	swapChain->Present(0, 0);
 }
@@ -290,10 +308,12 @@ void CollisionTestScene::OnMouseUp(WPARAM buttonState, int x, int y)
 void CollisionTestScene::OnMouseMove(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
+
 	if (buttonState & 0x0001) {
 		camera->RotateAroundUp((x - prevMousePos.x) / 1000.0f);
 		camera->RotateAroundRight((y - prevMousePos.y) / 1000.0f);
 	}
+
 
 	// Save the previous mouse position, so we have it for the future
 	prevMousePos.x = x;

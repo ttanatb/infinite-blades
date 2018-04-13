@@ -39,6 +39,11 @@ public:
 	GameEntity(Mesh * mesh, Material* material, ColliderType colliderType,
 		vec3 position = vec3(0, 0, 0),
 		vec3 rotation = vec3(0, 0, 0),
+		vec3 scale = vec3(1, 1, 1));
+
+	GameEntity(Mesh * mesh, Material* material, ColliderType colliderType,
+		vec3 position = vec3(0, 0, 0),
+		vec3 rotation = vec3(0, 0, 0),
 		float scale = 1);
 
 	void Update();
