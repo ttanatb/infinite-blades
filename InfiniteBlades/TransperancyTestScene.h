@@ -62,8 +62,7 @@ private:
 
 	// Game entities
 	std::vector<GameEntity*> gameEntities;
-	//blend description 
-	D3D11_BLEND_DESC blendDesc;
+	//blend state for transparency 
 	ID3D11BlendState* blendState;
 
 

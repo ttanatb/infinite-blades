@@ -74,6 +74,8 @@ void TransperancyTestScene::Init()
 
 void TransperancyTestScene::InitTransparentDesc()
 {
+	//blend description 
+	D3D11_BLEND_DESC blendDesc;
 	blendDesc.AlphaToCoverageEnable = false;
 	blendDesc.IndependentBlendEnable = false;
 	blendDesc.RenderTarget[0].BlendEnable = true;
