@@ -72,7 +72,7 @@ void TransperancyTestScene::Init()
 		vec3(-0.2f, -1.0f, 0.3f) };
 	ambientLight = vec4(0.1f, 0.1f, 0.2f, 1.0f);
 
-	renderMgr->AddDirectionalLight(directionalLight);
+	renderMgr->AddDirectionalLight("directionalLight", directionalLight);
 	renderMgr->AddAmbientLight(ambientLight);
 
 	// Tell the input assembler stage of the pipeline what kind of

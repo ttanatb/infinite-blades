@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <map>
 #include <algorithm>
 #include <math.h>
 #include <string.h>
@@ -21,8 +22,8 @@ private:
 	std::vector<GameEntity*> transparentObjects;
 	//Lights in the scene 
 	vec4 ambientLight;
-	std::vector<DirectionalLight> directionalLightList;
-	std::vector<PointLight> pointLightList;
+	std::map<char*, DirectionalLight> directionaLightMap;
+	std::map<char*, PointLight> pointLightMap;
 	ID3D11Device* device;
 	ID3D11DeviceContext* context;
 	//blend state for transparency
@@ -47,7 +48,7 @@ public:
 	void AddToTransparent(GameEntity* gameEntity);
 	void AddToOpqaue(GameEntity* gameEntity);
 	void AddAmbientLight(vec4 ambientLight);
-	void AddDirectionalLight(DirectionalLight directionalLight);
-	void AddPointLight(PointLight pointLight);
+	void AddDirectionalLight(char* name, DirectionalLight directionalLight);
+	void AddPointLight(char* name, PointLight pointLight);
 };
 

@@ -70,9 +70,12 @@ void ReflectionTestScene::Init()
 
 	directionalLight = { vec4(0.8f, 0.85f, 0.9f, 1.0f),
 		vec3(-0.2f, -1.0f, 0.3f) };
+	directionalLight2 = { vec4(.10f, .10f, .10f, .50f),
+		vec3(0.2f, -10.0f, -0.3f) };
 	ambientLight = vec4(0.1f, 0.1f, 0.2f, 1.0f);
 
-	renderMgr->AddDirectionalLight(directionalLight);
+	renderMgr->AddDirectionalLight("directionalLight", directionalLight);
+	renderMgr->AddDirectionalLight("directionalLight2", directionalLight2);
 	renderMgr->AddAmbientLight(ambientLight);
 
 	// Tell the input assembler stage of the pipeline what kind of
