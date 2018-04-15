@@ -121,7 +121,7 @@ void TransperancyTestScene::LoadShaderMeshMat()
 	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/soil.jpg");
 	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/woodplanks.jpg");
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
-	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg", true, .85f);
+	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg", nullptr, true, .85f);
 	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg");
 
 	//meshes

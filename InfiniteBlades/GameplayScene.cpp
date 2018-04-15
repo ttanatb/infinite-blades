@@ -61,9 +61,13 @@ void GameplayScene::Init()
 	InitInput();
 
 
-	directionalLight = { vec4(0.8f, 0.85f, 0.9f, 1.0f),
-						 vec3(-0.2f, -1.0f, 0.3f) };
-	ambientLight = vec4(0.1f, 0.1f, 0.2f, 1.0f);
+	directionalLight = { vec4(0.1f, 0.5f, 0.1f, 1.0f),
+		vec3(1.0f, 1.0f, 0.0f) };
+	directionalLight2 = { vec4(0.8f, 0.8f, 0.5f, 1.0f),
+		vec3(-1.0f, -2.0f, 0.0f) };
+	pointLight = { vec4(0.2f, 0.2f, 0.2f, 1.0f),
+		vec3(0.0f, 5.0f, 10.0f) };
+	ambientLight = vec4(0.1f, 0.1f, 0.1f, 1.0f);
 
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
@@ -92,26 +96,17 @@ void GameplayScene::LoadShaderMeshMat()
 	//materials
 	matMngr = MaterialManager::GetInstancce();
 	matMngr->Init(device, context);
-	matMngr->AddMat("concrete", vShader, pShader, L"Assets/Textures/concrete.jpg");
-	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/soil.jpg");
-	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/woodplanks.jpg");
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
-	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg");
-	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg");
+	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg"  , L"Assets/Textures/iceNormals.jpg");
+	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg", L"Assets/Textures/snowNormals.jpg");
 
 	//meshes
 	meshMngr = MeshManager::GetInstancce();
 	meshMngr->Init(device); 
-	meshMngr->AddMesh("helix", "Assets/Models/helix.obj");
-	meshMngr->AddMesh("cone", "Assets/Models/cone.obj");
-	meshMngr->AddMesh("cylinder", "Assets/Models/cylinder.obj");
-	meshMngr->AddMesh("sphere", "Assets/Models/sphere.obj");
-	meshMngr->AddMesh("torus", "Assets/Models/torus.obj");
 	meshMngr->AddMesh("cube", "Assets/Models/cube.obj");
 	meshMngr->AddMesh("ship", "Assets/Models/ship.obj");
 	meshMngr->AddMesh("floor", "Assets/Models/floor.obj");
 	meshMngr->AddMesh("snow", "Assets/Models/snowFloor.obj");
-	meshMngr->AddMesh("testFloor", "Assets/Models/testFloor.obj");
 }
 
 void GameplayScene::CreateEntities()
@@ -243,6 +238,8 @@ void GameplayScene::Draw(float deltaTime, float totalTime)
 		SimplePixelShader* pixelShader = matPtr->GetPixelShader();
 		pixelShader->SetFloat4("ambientColor", ambientLight);
 		pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
+		pixelShader->SetData("directionalLight2", &directionalLight2, sizeof(DirectionalLight));
+		pixelShader->SetData("pointLight", &pointLight, sizeof(PointLight));
 		pixelShader->SetFloat3("cameraPos", camera->GetPos());
 
 		SimpleVertexShader* vertexShader = matPtr->GetVertexShader();

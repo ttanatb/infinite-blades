@@ -8,7 +8,7 @@ private:
 	SimpleVertexShader* vertexShader;
 	SimplePixelShader* pixelShader;
 
-	bool transparentBool = false;
+	bool transparentBool;// = false;
 	float transparentStr;
 
 	ID3D11ShaderResourceView* diffuseSRVptr;
@@ -18,30 +18,23 @@ private:
 	ID3D11SamplerState* normalSamplerPtr;
 
 public:
-	Material(SimpleVertexShader * vShader,
-		SimplePixelShader * pShader,
-		ID3D11Device* device,
-		ID3D11DeviceContext* context,
-		const wchar_t* fileName);
-
-	Material(SimpleVertexShader * vShader,
+  	Material(SimpleVertexShader * vShader,
 		SimplePixelShader* pShader,
 		ID3D11Device* device,
 		ID3D11DeviceContext* context,
-    const wchar_t* diffuseFileName,
-		bool transparentBool,
-		float transparentStr);
-
-  	Material(SimpleVertexShader * vShader,
-		  SimplePixelShader* pShader,
-		  ID3D11Device* device,
-		  ID3D11DeviceContext* context,
-      const wchar_t* diffuseFileName,
-		  const wchar_t* normalFileName);
+		const wchar_t* diffuseFileName,
+		const wchar_t* normalFileName = nullptr,
+		bool transparentBool = false,
+		float transparentStr = 0.5f);
 
 	~Material();
 	//sets the vertex/pixel shader, creates texture, and creates sampler desc and state 
-	void InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID3D11Device* device, ID3D11DeviceContext* context, const wchar_t* fileName);
+	void InitMaterial(SimpleVertexShader * vShader, 
+		SimplePixelShader * pShader, 
+		ID3D11Device * device, 
+		ID3D11DeviceContext * context, 
+		const wchar_t * diffuseFileName, 
+		const wchar_t * normalFileName);
 	SimpleVertexShader* GetVertexShader();
 	SimplePixelShader* GetPixelShader();
 	bool GetTransparentBool();
