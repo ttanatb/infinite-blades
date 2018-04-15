@@ -25,22 +25,12 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 		SimplePixelShader* pixelShader = matPtr->GetPixelShader();
 		pixelShader->SetFloat4("ambientColor", ambientLight);
 		//Set Directiona Lights
-		for (int i = 0; i < directionalLightList.size(); i++) {
-			//set directional light name
-			std::string dirLightName = "directionalLight";
-			if (i > 0) {
-				dirLightName = "directionalLight" + std::to_string(i + 1);
-			}
-			//send directional light data 
-			pixelShader->SetData(dirLightName, &directionalLightList[i], sizeof(directionalLightList[i]));
+		for (auto& light : directionaLightMap) {
+			pixelShader->SetData(light.first, &light.second, sizeof(light.second));
 		}
 		//Set Point Lights 
-		for (int i = 0; i < pointLightList.size(); i++) {
-			std::string pointLightName = "pointLight";
-			if (i > 0) {
-				pointLightName = "pointLight" + std::to_string(i + 1);
-			}
-			pixelShader->SetData(pointLightName, &pointLightList[i], sizeof(pointLightList[i]));
+		for (auto& light : pointLightMap) {
+			pixelShader->SetData(light.first, &light.second, sizeof(light.second));
 		}
 		pixelShader->SetFloat3("cameraPos", camera->GetPos());
 		//set transparency strength
@@ -172,14 +162,14 @@ void RenderManager::AddAmbientLight(vec4 ambientLight)
 	this->ambientLight = ambientLight;
 }
 
-void RenderManager::AddDirectionalLight(DirectionalLight directionalLight)
+void RenderManager::AddDirectionalLight(char* name, DirectionalLight directionalLight)
 {
-	directionalLightList.push_back(directionalLight);
+	directionaLightMap.insert(std::pair<char*, DirectionalLight>(name, directionalLight));
 }
 
-void RenderManager::AddPointLight(PointLight pointLight)
+void RenderManager::AddPointLight(char* name, PointLight pointLight)
 {
-	pointLightList.push_back(pointLight);
+	pointLightMap.insert(std::pair<char*, PointLight>(name, pointLight));
 }
 
 
