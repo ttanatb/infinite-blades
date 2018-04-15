@@ -7,7 +7,6 @@ RenderManager::RenderManager()
 {
 	opaqueObjects = std::vector<GameEntity*>();
 	transparentObjects = std::vector<GameEntity*>();
-	std::vector<vec4> ambientLightList = std::vector<vec4>();
 	std::vector<DirectionalLight> directionalLightList = std::vector<DirectionalLight>();
 	std::vector<PointLight> pointLightList = std::vector<PointLight>();
 }
@@ -24,14 +23,24 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 
 		/*This is Per-frame data that we can offset into a renderer class we won't have*/
 		SimplePixelShader* pixelShader = matPtr->GetPixelShader();
-		for (auto& light : ambientLightList) {
-			pixelShader->SetFloat4("ambientColor", light);
+		pixelShader->SetFloat4("ambientColor", ambientLight);
+		//Set Directiona Lights
+		for (int i = 0; i < directionalLightList.size(); i++) {
+			//set directional light name
+			std::string dirLightName = "directionalLight";
+			if (directionalLightList.size() > 1) {
+				std::string dirLightName = "directionalLight" + std::to_string(i);
+			}
+			//send directional light data 
+			pixelShader->SetData(dirLightName, &directionalLightList[i], sizeof(directionalLightList[i]));
 		}
-		for (auto& light : directionalLightList) {
-			pixelShader->SetData("directionalLight", &light, sizeof(light));
-		}
-		for (auto& light : pointLightList) {
-			pixelShader->SetData("pointLight", &light, sizeof(light));
+		//Set Point Lights 
+		for (int i = 0; i < pointLightList.size(); i++) {
+			std::string pointLightName = "pointLight";
+			if (directionalLightList.size() > 1) {
+				std::string dirLightName = "pointLight" + std::to_string(i);
+			}
+			pixelShader->SetData(pointLightName, &pointLightList[i], sizeof(pointLightList[i]));
 		}
 		pixelShader->SetFloat3("cameraPos", camera->GetPos());
 		//set transparency strength
@@ -148,19 +157,19 @@ void RenderManager::Init(ID3D11Device * device, ID3D11DeviceContext * context)
 
 void RenderManager::AddToTransparent(GameEntity* gameEntity)
 {
-	if(gameEntity != NULL)
+	if(gameEntity != nullptr)
 		transparentObjects.push_back(gameEntity);
 }
 
 void RenderManager::AddToOpqaue(GameEntity* gameEntity)
 {
-	if (gameEntity != NULL)
+	if (gameEntity != nullptr)
 		opaqueObjects.push_back(gameEntity);
 }
 
 void RenderManager::AddAmbientLight(vec4 ambientLight)
 {
-	ambientLightList.push_back(ambientLight);
+	this->ambientLight = ambientLight;
 }
 
 void RenderManager::AddDirectionalLight(DirectionalLight directionalLight)

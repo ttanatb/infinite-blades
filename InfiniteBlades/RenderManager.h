@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <math.h>
+#include <string.h>
 #include "GameEntity.h"
 #include "Skybox.h"
 #include "Lights.h"
@@ -19,7 +20,7 @@ private:
 	std::vector<GameEntity*> opaqueObjects;
 	std::vector<GameEntity*> transparentObjects;
 	//Lights in the scene 
-	std::vector<vec4> ambientLightList;
+	vec4 ambientLight;
 	std::vector<DirectionalLight> directionalLightList;
 	std::vector<PointLight> pointLightList;
 	ID3D11Device* device;
@@ -30,7 +31,7 @@ private:
 	Skybox* skybox;
 	//camera
 	Camera* camera;
-	//draws gameenities from a renderlist
+	//draws gameentities from a renderlist
 	void DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT offset, Camera* camera); 
 	void InitBlendState();
 	//helper functions for sorting rendering lists
