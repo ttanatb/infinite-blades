@@ -43,12 +43,12 @@ TransperancyTestScene::~TransperancyTestScene()
 		delete gameEntities[i];
 	if (camera != nullptr) delete camera;
 	if (skybox != nullptr) delete skybox;
-	if (blendState != nullptr) blendState->Release();
 
 	MaterialManager::ReleaseInstance();
 	MeshManager::ReleaseInstance();
 	InputManager::ReleaseInstance();
 	ShaderManager::ReleaseInstance();
+	RenderManager::ReleaseInstance();
 }
 
 // --------------------------------------------------------
@@ -59,12 +59,21 @@ void TransperancyTestScene::Init()
 {
 	LoadShaderMeshMat();
 	CreateEntities();
+	//intialize render manager
+	renderMgr = RenderManager::GetInstance();
+	renderMgr->Init(device, context);
+	renderMgr->InitSkyBox(skybox);
+	renderMgr->InitCamera(camera);
+	AddEntityToRender();
+
 	InitInput();
-	InitTransparentDesc();
 
 	directionalLight = { vec4(0.8f, 0.85f, 0.9f, 1.0f),
 		vec3(-0.2f, -1.0f, 0.3f) };
 	ambientLight = vec4(0.1f, 0.1f, 0.2f, 1.0f);
+
+	renderMgr->AddDirectionalLight(directionalLight);
+	renderMgr->AddAmbientLight(ambientLight);
 
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
@@ -72,26 +81,19 @@ void TransperancyTestScene::Init()
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void TransperancyTestScene::InitTransparentDesc()
+
+void TransperancyTestScene::AddEntityToRender()
 {
-	//blend description 
-	D3D11_BLEND_DESC blendDesc;
-	blendDesc.AlphaToCoverageEnable = false;
-	blendDesc.IndependentBlendEnable = false;
-	blendDesc.RenderTarget[0].BlendEnable = true;
-	
-	// These control the RGB channels
-	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-	
-	// This is for the alpha channel specifically
-	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-	//create blend states
-	device->CreateBlendState(&blendDesc, &blendState);
+	for(int i = 0; i < gameEntities.size(); i++)
+	{
+		if (gameEntities[i]->GetMat()->GetTransparentBool()) {
+			renderMgr->AddToTransparent(gameEntities[i]);
+		}
+		else
+		{
+			renderMgr->AddToOpqaue(gameEntities[i]);
+		}
+	}
 }
 
 // --------------------------------------------------------
@@ -119,7 +121,7 @@ void TransperancyTestScene::LoadShaderMeshMat()
 	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/soil.jpg");
 	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/woodplanks.jpg");
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
-	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg", true);
+	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg", true, .85f);
 	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg");
 
 	//meshes
@@ -249,81 +251,82 @@ void TransperancyTestScene::Draw(float deltaTime, float totalTime)
 	context->ClearRenderTargetView(backBufferRTV, color);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
+	renderMgr->Draw();
+	//UINT stride = sizeof(Vertex);
+	//UINT offset = 0;
 
-	//turn transparency off
-	context->OMSetBlendState(NULL, 0, 0xFFFFFFFF);
+	////turn transparency off
+	//context->OMSetBlendState(NULL, 0, 0xFFFFFFFF);
 
-	//draw all the opaque entities
-	for (size_t i = 0; i < gameEntities.size(); ++i)
-	{
-		if (gameEntities[i]->GetMat()->GetTransparentBool() == false) {
-			//hoist the mesh and mat of the entity
-			Mesh* meshPtr = gameEntities[i]->GetMesh();
-			Material * matPtr = gameEntities[i]->GetMat();
+	////draw all the opaque entities
+	//for (size_t i = 0; i < gameEntities.size(); ++i)
+	//{
+	//	if (gameEntities[i]->GetMat()->GetTransparentBool() == false) {
+	//		//hoist the mesh and mat of the entity
+	//		Mesh* meshPtr = gameEntities[i]->GetMesh();
+	//		Material * matPtr = gameEntities[i]->GetMat();
 
-			//early exit
-			if (meshPtr == nullptr || matPtr == nullptr) continue;
+	//		//early exit
+	//		if (meshPtr == nullptr || matPtr == nullptr) continue;
 
-			/*This is Per-frame data that we can offset into a renderer class we won't have*/
-			SimplePixelShader* pixelShader = matPtr->GetPixelShader();
-			pixelShader->SetFloat4("ambientColor", ambientLight);
-			pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
-			pixelShader->SetFloat3("cameraPos", camera->GetPos());
+	//		/*This is Per-frame data that we can offset into a renderer class we won't have*/
+	//		SimplePixelShader* pixelShader = matPtr->GetPixelShader();
+	//		pixelShader->SetFloat4("ambientColor", ambientLight);
+	//		pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
+	//		pixelShader->SetFloat3("cameraPos", camera->GetPos());
 
-			SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
-			vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
-			vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
+	//		SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
+	//		vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
+	//		vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
 
-			//prepare per-object data
-			matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
+	//		//prepare per-object data
+	//		matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
 
-			ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
-			context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
-			context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-			context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
-		}
-	}
+	//		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
+	//		context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
+	//		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	//		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
+	//	}
+	//}
 
-	//render skybox
-	skybox->Render(context, camera, stride, offset);
+	////render skybox
+	//skybox->Render(context, camera, stride, offset);
 
-	//turn transparency on
-	context->OMSetBlendState(blendState, 0, 0xFFFFFFFF);
+	////turn transparency on
+	//context->OMSetBlendState(blendState, 0, 0xFFFFFFFF);
 
-	//draw all transparent entities
-	for (size_t i = 0; i < gameEntities.size(); ++i)
-	{
-		if (gameEntities[i]->GetMat()->GetTransparentBool()) {
-			//hoist the mesh and mat of the entity
-			Mesh* meshPtr = gameEntities[i]->GetMesh();
-			Material * matPtr = gameEntities[i]->GetMat();
+	////draw all transparent entities
+	//for (size_t i = 0; i < gameEntities.size(); ++i)
+	//{
+	//	if (gameEntities[i]->GetMat()->GetTransparentBool()) {
+	//		//hoist the mesh and mat of the entity
+	//		Mesh* meshPtr = gameEntities[i]->GetMesh();
+	//		Material * matPtr = gameEntities[i]->GetMat();
 
-			//early exit
-			if (meshPtr == nullptr || matPtr == nullptr) continue;
+	//		//early exit
+	//		if (meshPtr == nullptr || matPtr == nullptr) continue;
 
-			/*This is Per-frame data that we can offset into a renderer class we won't have*/
-			SimplePixelShader* pixelShader = matPtr->GetPixelShader();
-			pixelShader->SetFloat4("ambientColor", ambientLight);
-			pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
-			pixelShader->SetFloat3("cameraPos", camera->GetPos());
-			//set transparency strength
-			pixelShader->SetFloat("transparentStrength", .85f);
+	//		/*This is Per-frame data that we can offset into a renderer class we won't have*/
+	//		SimplePixelShader* pixelShader = matPtr->GetPixelShader();
+	//		pixelShader->SetFloat4("ambientColor", ambientLight);
+	//		pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
+	//		pixelShader->SetFloat3("cameraPos", camera->GetPos());
+	//		//set transparency strength
+	//		pixelShader->SetFloat("transparentStrength", .85f);
 
-			SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
-			vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
-			vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
+	//		SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
+	//		vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
+	//		vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
 
-			//prepare per-object data
-			matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
+	//		//prepare per-object data
+	//		matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
 
-			ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
-			context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
-			context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-			context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
-		}
-	}
+	//		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
+	//		context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
+	//		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	//		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
+	//	}
+	//}
 
 	// At the end of the frame, reset render states
 	context->RSSetState(0);

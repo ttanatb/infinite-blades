@@ -42,9 +42,14 @@ void MaterialManager::AddMat(char * name, SimpleVertexShader * vShader, SimplePi
 	map.insert(std::pair<char*, Material*>(name, mat));
 }
 
-void MaterialManager::AddMat(char * name, SimpleVertexShader * vShader, SimplePixelShader * pShader, const wchar_t * fileName, bool transparentBool)
+void MaterialManager::AddMat(char * name, 
+	SimpleVertexShader * vShader, 
+	SimplePixelShader * pShader, 
+	const wchar_t * fileName, 
+	bool transparentBool,
+	float transparentStr)
 {
-	Material* mat = new Material(vShader, pShader, device, context, fileName, transparentBool);
+	Material* mat = new Material(vShader, pShader, device, context, fileName, transparentBool, transparentStr);
 	map.insert(std::pair<char*, Material*>(name, mat));
 }
 

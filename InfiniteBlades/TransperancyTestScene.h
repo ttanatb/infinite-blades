@@ -12,6 +12,7 @@
 #include <vector>
 #include "Player.h"
 #include "Skybox.h"
+#include "RenderManager.h"
 
 class TransperancyTestScene
 	: public DXCore
@@ -40,7 +41,7 @@ private:
 	void LoadShaderMeshMat();
 	void CreateEntities();
 	void InitInput();
-	void InitTransparentDesc();
+	void AddEntityToRender();
 
 	vec4 ambientLight;
 	DirectionalLight directionalLight;
@@ -52,6 +53,7 @@ private:
 	MeshManager* meshMngr;
 	InputManager* inputMngr;
 	ShaderManager* shaderMngr;
+	RenderManager* renderMgr;
 
 	//camera
 	Camera* camera;
@@ -62,8 +64,6 @@ private:
 
 	// Game entities
 	std::vector<GameEntity*> gameEntities;
-	//blend state for transparency 
-	ID3D11BlendState* blendState;
 
 
 	// Keeps track of the old mouse position.  Useful for 

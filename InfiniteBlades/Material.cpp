@@ -6,11 +6,18 @@ Material::Material(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID
 	InitMaterial(vShader, pShader, device, context, fileName);
 }
 
-Material::Material(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID3D11Device* device, ID3D11DeviceContext* context, const wchar_t* fileName, bool transparentBool)
+Material::Material(SimpleVertexShader * vShader, 
+	SimplePixelShader * pShader, 
+	ID3D11Device* device, 
+	ID3D11DeviceContext* context, 
+	const wchar_t* fileName, 
+	bool transparentBool, 
+	float transparentStr)
 {
 
 	InitMaterial(vShader, pShader, device, context, fileName);
 	this->transparentBool = transparentBool;
+	this->transparentStr = transparentStr;
 }
  
 Material::~Material()
@@ -53,6 +60,11 @@ bool Material::GetTransparentBool()
 void Material::SetTransparentState(bool transparentBool)
 {
 	this->transparentBool = transparentBool;
+}
+
+float Material::GetTransparentStr()
+{
+	return transparentStr;
 }
 
 void Material::PrepareMaterial(mat4* worldMat)
