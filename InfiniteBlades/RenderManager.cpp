@@ -28,8 +28,8 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 		for (int i = 0; i < directionalLightList.size(); i++) {
 			//set directional light name
 			std::string dirLightName = "directionalLight";
-			if (directionalLightList.size() > 1) {
-				std::string dirLightName = "directionalLight" + std::to_string(i);
+			if (i > 0) {
+				dirLightName = "directionalLight" + std::to_string(i + 1);
 			}
 			//send directional light data 
 			pixelShader->SetData(dirLightName, &directionalLightList[i], sizeof(directionalLightList[i]));
@@ -37,8 +37,8 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 		//Set Point Lights 
 		for (int i = 0; i < pointLightList.size(); i++) {
 			std::string pointLightName = "pointLight";
-			if (directionalLightList.size() > 1) {
-				std::string dirLightName = "pointLight" + std::to_string(i);
+			if (i > 0) {
+				pointLightName = "pointLight" + std::to_string(i + 1);
 			}
 			pixelShader->SetData(pointLightName, &pointLightList[i], sizeof(pointLightList[i]));
 		}
