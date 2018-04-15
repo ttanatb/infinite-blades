@@ -2,14 +2,12 @@ struct DirectionalLight
 {
 	float4 diffuseColor;
 	float3 direction;
-	//float pad;
 };
 
 struct PointLight
 {
 	float4 diffuseColor;
 	float3 position;
-	//float pad;
 };
 
 cbuffer lightData : register(b0)
@@ -18,6 +16,7 @@ cbuffer lightData : register(b0)
 	DirectionalLight directionalLight;
 	DirectionalLight directionalLight2;
 	PointLight pointLight;
+
 	float3 cameraPos;
 	float transparentStrength;
 };
@@ -75,8 +74,6 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float4 surfaceColor = diffuseTexture.Sample(basicSampler, input.uv);
 	surfaceColor.a = surfaceColor.a * blendStr;
 
-	float dirToPointLight = normalize(pointLight.position - input.worldPos);
-	
 	return surfaceColor * (ambientColor +
 		calcDirLightDiffuse(directionalLight, input.normal) +
 		calcDirLightDiffuse(directionalLight2, input.normal) +

@@ -59,6 +59,12 @@
     <FxCompile Include="vReflection.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="vBasicNormal.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="pBasicNormal.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mesh.cpp">
@@ -116,6 +122,9 @@
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
     <ClCompile Include="ReflectionTestScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalMapTestScene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -181,6 +190,9 @@
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
     <ClInclude Include="ReflectionTestScene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalMapTestScene.h">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>

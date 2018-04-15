@@ -16,9 +16,10 @@ struct PointLight
 struct VertexToPixel
 {
 	float4 position		: SV_POSITION;
-	float3 normal		: NORMAL;
 	float2 uv			: TEXCOORD;
-	float3 worldPos		: WORLD_POS;
+	float3 normal		: NORMAL;
+	float3 tangent		: TANGENT;
+	float3 worldPos		: POSITION;
 };
 
 //buffer for light calculations
@@ -28,12 +29,29 @@ cbuffer lightData : register(b0)
 	DirectionalLight directionalLight;
 	DirectionalLight directionalLight2;
 	PointLight pointLight;
+
 	float3 cameraPos;
 };
 
-//variables
-Texture2D diffuseTexture	: register(t0);
-SamplerState diffuseSampler	: register(s0);
+// Texture-related variables
+Texture2D diffuseTexture : register(t0);
+Texture2D normalTexture : register(t1);
+
+SamplerState diffuseSampler : register(s0);
+SamplerState  normalSampler : register(s1);
+
+//calculates normal based on normal map
+float3 recalculateNormals(float3 normal, float3 tangent, float2 uv) {
+	float3 normalFromMap = normalTexture.Sample(normalSampler, uv).rgb;
+	normalFromMap = normalFromMap * 2 - 1;
+
+	float3 N = normal;
+	float3 T = normalize(tangent - N * dot(tangent, N));
+	float3 B = cross(T, N);
+	float3x3 TBN = float3x3(T, B, N);
+
+	return normalize(mul(normalFromMap, TBN));
+}
 
 //calculates diffuse light on texel from a directional light
 float4 dirLightDiffuse(DirectionalLight dirLight, float3 normal) {
@@ -54,16 +72,20 @@ float4 pointLightSpec(PointLight pointLight, float3 normal, float3 worldPos, flo
 	return (pointLight.diffuseColor * saturate(dot(dirToLight, normal))) + spec.xxxx;
 }
 
-//main
+// Entry point for this pixel shader
 float4 main(VertexToPixel input) : SV_TARGET
 {
 	//normalize normal (after interpolation)
 	input.normal = normalize(input.normal);
+	input.tangent = normalize(input.tangent);
 
-	return diffuseTexture.Sample(diffuseSampler, input.uv) *							  //texture
+	// Adjust the normal from the map and simply use the results
+	input.normal = recalculateNormals(input.normal, input.tangent, input.uv);
+
+
+	return diffuseTexture.Sample(diffuseSampler, input.uv) *						  //texture
 		(ambientColor +																  //ambient color
 		dirLightDiffuse(directionalLight, input.normal) +							  //dir light 1
 		dirLightDiffuse(directionalLight2, input.normal) +							  //dir light 2
 		pointLightSpec(pointLight, input.normal, input.worldPos, cameraPos, 256));	  //point light
 }
-

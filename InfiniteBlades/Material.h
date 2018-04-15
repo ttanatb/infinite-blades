@@ -5,27 +5,40 @@
 
 class Material {
 private:
-	//texture
 	SimpleVertexShader* vertexShader;
 	SimplePixelShader* pixelShader;
-	ID3D11ShaderResourceView* srvPtr;
-	ID3D11SamplerState* samplerPtr;
+
 	bool transparentBool = false;
 	float transparentStr;
+
+	ID3D11ShaderResourceView* diffuseSRVptr;
+	ID3D11SamplerState* diffuseSamplerPtr;
+
+	ID3D11ShaderResourceView* normalSRVptr;
+	ID3D11SamplerState* normalSamplerPtr;
+
 public:
-	Material();
 	Material(SimpleVertexShader * vShader,
 		SimplePixelShader * pShader,
 		ID3D11Device* device,
 		ID3D11DeviceContext* context,
 		const wchar_t* fileName);
+
 	Material(SimpleVertexShader * vShader,
 		SimplePixelShader* pShader,
 		ID3D11Device* device,
 		ID3D11DeviceContext* context,
-		const wchar_t* fileName, 
+    const wchar_t* diffuseFileName,
 		bool transparentBool,
 		float transparentStr);
+
+  	Material(SimpleVertexShader * vShader,
+		  SimplePixelShader* pShader,
+		  ID3D11Device* device,
+		  ID3D11DeviceContext* context,
+      const wchar_t* diffuseFileName,
+		  const wchar_t* normalFileName);
+
 	~Material();
 	//sets the vertex/pixel shader, creates texture, and creates sampler desc and state 
 	void InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID3D11Device* device, ID3D11DeviceContext* context, const wchar_t* fileName);
