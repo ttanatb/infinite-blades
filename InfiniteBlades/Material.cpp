@@ -78,3 +78,15 @@ void Material::PrepareMaterial(mat4* worldMat)
 	pixelShader->CopyAllBufferData();
 	pixelShader->SetShader();
 }
+
+void Material::PrepareMaterialReflection(mat4* worldMat, ID3D11ShaderResourceView* skySRV) {
+	vertexShader->SetMatrix4x4("world", *worldMat);
+	vertexShader->CopyAllBufferData();
+	vertexShader->SetShader();
+
+	pixelShader->SetSamplerState("basicSampler", samplerPtr);
+	pixelShader->SetShaderResourceView("diffuseTexture", srvPtr);
+	pixelShader->SetShaderResourceView("skyTexture", skySRV);
+	pixelShader->CopyAllBufferData();
+	pixelShader->SetShader();
+}

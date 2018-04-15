@@ -30,7 +30,7 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 		for (auto& light : directionalLightList) {
 			pixelShader->SetData("directionalLight", &light, sizeof(light));
 		}
-		for (auto& light : ambientLightList) {
+		for (auto& light : pointLightList) {
 			pixelShader->SetData("pointLight", &light, sizeof(light));
 		}
 		pixelShader->SetFloat3("cameraPos", camera->GetPos());
@@ -41,8 +41,14 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 		vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
 
 		//prepare per-object data
-		matPtr->PrepareMaterial(list[i]->GetWorldMat());
-
+		if (matPtr->GetTransparentBool())
+		{
+			matPtr->PrepareMaterialReflection(list[i]->GetWorldMat(), skybox->GetShaderResourceView());
+		}
+		else
+		{
+			matPtr->PrepareMaterial(list[i]->GetWorldMat());
+		}
 		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
 		context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
 		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);

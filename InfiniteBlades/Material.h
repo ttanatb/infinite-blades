@@ -38,4 +38,5 @@ public:
 	void SetPixelShader(SimplePixelShader* newPixelShader);
 
 	void PrepareMaterial(mat4* worldMat);
+	void PrepareMaterialReflection(mat4* worldMat, ID3D11ShaderResourceView* skySRV);
 };
