@@ -36,6 +36,8 @@ GameEntity::GameEntity(Mesh * mesh, Material* material, vec3 position, vec3 rota
 	this->position = position;
 	this->scale = scale;
 
+	coll = Collider(mesh->GetColliderType(), this->position, this->scale, false);
+
 	XMVECTOR quaternion = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	XMStoreFloat4(&(this->rotation), quaternion);
 }
@@ -48,6 +50,8 @@ GameEntity::GameEntity(Mesh * mesh, Material * material, vec3 position, vec3 rot
 	matPtr = material;
 	this->position = position;
 	this->scale = vec3(scale, scale, scale);
+
+	coll = Collider(mesh->GetColliderType(), this->position, this->scale, false);
 
 	XMVECTOR quaternion = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	XMStoreFloat4(&(this->rotation), quaternion);
@@ -76,7 +80,7 @@ GameEntity::GameEntity(Mesh * mesh, Material* material, ColliderType colliderTyp
 	this->position = position;
 	this->scale = scale;
 
-	coll = Collider(colliderType, this->position, this->scale, false);
+	coll = Collider(colliderType, position, scale, false);
 
 	XMVECTOR quaternion = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	XMStoreFloat4(&(this->rotation), quaternion);
@@ -92,7 +96,7 @@ void GameEntity::Update()
 	}
 
 	mat = XMMatrixMultiply(
-			XMMatrixMultiply((XMMatrixMultiply(XMMatrixScaling(scale.x, scale.y, scale.z),
+		XMMatrixMultiply((XMMatrixMultiply(XMMatrixScaling(scale.x, scale.y, scale.z),
 			XMMatrixRotationQuaternion(quaternion))),
 			XMMatrixTranslation(position.x, position.y, position.z)), mat);
 	XMStoreFloat4x4(&worldMatTransposed, DirectX::XMMatrixTranspose(mat));
@@ -100,16 +104,19 @@ void GameEntity::Update()
 	for (size_t i = 0; i < children.size(); ++i) {
 		XMStoreFloat4x4(&(children[i]->parentWorldMatrix), mat);
 	}
+
+	coll.center = this->position;
+	coll.dimensions = this->scale;
 }
 
 mat4* GameEntity::GetWorldMat() { return &worldMatTransposed; }
 vec3 GameEntity::GetPosition() { return position; }
 vec4 GameEntity::GetRotation() { return rotation; }
 vec3 GameEntity::GetScale() { return scale; }
-vec3 GameEntity::GetRotEuler() 
-{ 
-	
-	return vec3(); 
+vec3 GameEntity::GetRotEuler()
+{
+
+	return vec3();
 }
 
 

@@ -4,14 +4,13 @@
 #include "ShaderManager.h"
 #include "InputManager.h"
 #include "MaterialManager.h"
+#include "CollisionSolver.h"
 #include "MeshManager.h"
 #include "GameEntity.h"
 #include "Camera.h"
 #include "Lights.h"
 #include "WICTextureLoader.h"
 #include <vector>
-#include "Player.h"
-#include "Skybox.h"
 
 class CollisionTestScene
 	: public DXCore
@@ -55,12 +54,11 @@ private:
 	//camera
 	Camera* camera;
 
-	//Player
-	Player* player;
-	Skybox* skybox;
-
 	// Game entities
 	std::vector<GameEntity*> gameEntities;
+
+	GameEntity* sphere1;
+	GameEntity* sphere2;
 
 	// Keeps track of the old mouse position.  Useful for 
 	// determining how far the mouse moved in a single frame.

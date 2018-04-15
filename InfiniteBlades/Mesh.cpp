@@ -2,8 +2,16 @@
 
 Mesh::Mesh(Vertex * vertices, int vertexCount, int * indices, int indexCount, ID3D11Device * device)
 {
+	collType = NONE;
+
 	this->indexCount = indexCount;
 	CreateBuffers(vertices, vertexCount, indices, indexCount, device);
+}
+
+Mesh::Mesh(Vertex * vertices, int vertexCount, int * indices, int indexCount, ID3D11Device * device, ColliderType cType)
+	:Mesh(vertices, vertexCount, indices, indexCount, device)
+{
+	collType = cType;
 }
 
 Mesh::Mesh(char * fileName, ID3D11Device * device)
@@ -176,7 +184,13 @@ Mesh::~Mesh()
 }
 
 ID3D11Buffer * Mesh::GetVertexBuffer() { return vertexBuffer; }
-ID3D11Buffer * Mesh::GetIndexBuffer() {	return indexBuffer; }
+ID3D11Buffer * Mesh::GetIndexBuffer() { return indexBuffer; }
+
+ColliderType Mesh::GetColliderType()
+{
+	return collType;
+}
+
 int Mesh::GetIndexCount() { return indexCount; }
 
 void Mesh::CreateBuffers(Vertex * vertices, int vertexCount, int * indices, int indexCount, ID3D11Device * device)
