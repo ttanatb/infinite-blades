@@ -89,14 +89,14 @@ void NormalMapTestScene::LoadShaderMeshMat()
 	//shaders
 	shaderMngr = ShaderManager::GetInstancce();
 	shaderMngr->Init(device, context);
-	shaderMngr->AddVertexShader("vBasicNormal");
-	shaderMngr->AddPixelShader("pBasicNormal");
+	shaderMngr->AddVertexShader("vBasic");
+	shaderMngr->AddPixelShader("pBasic");
 	shaderMngr->AddVertexShader("SkyBoxVS");
 	shaderMngr->AddPixelShader("SkyBoxPS");
 
 	//hoisting shaders
-	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasicNormal");
-	SimplePixelShader* pShader = shaderMngr->GetPixelShader("pBasicNormal");
+	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasic");
+	SimplePixelShader* pShader = shaderMngr->GetPixelShader("pBasic");
 
 	//materials
 	matMngr = MaterialManager::GetInstancce();
