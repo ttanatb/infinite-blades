@@ -1,15 +1,28 @@
+//stores stuff for directional light
 struct DirectionalLight
 {
 	float4 diffuseColor;
 	float3 direction;
 };
 
+//point light
 struct PointLight
 {
 	float4 diffuseColor;
 	float3 position;
 };
 
+//struct for data  from vertex shader that gets travaled to pixel shader
+struct VertexToPixel
+{
+	float4 position		: SV_POSITION;
+	float2 uv			: TEXCOORD;
+	float3 normal		: NORMAL;
+	float3 tangent		: TANGENT;
+	float3 worldPos		: POSITION;
+};
+
+//buffer for light calculations
 cbuffer lightData : register(b0)
 {
 	float4 ambientColor;
@@ -21,62 +34,65 @@ cbuffer lightData : register(b0)
 	float transparentStrength;
 };
 
-Texture2D diffuseTexture	: register(t0);
-SamplerState basicSampler	: register(s0);
-// Struct representing the data we expect to receive from earlier pipeline stages
-// - Should match the output of our corresponding vertex shader
-// - The name of the struct itself is unimportant
-// - The variable names don't have to match other shaders (just the semantics)
-// - Each variable must have a semantic, which defines its usage
-struct VertexToPixel
-{
-	// Data type
-	//  |
-	//  |   Name          Semantic
-	//  |    |                |
-	//  v    v                v
-	float4 position		: SV_POSITION;
-	float3 normal		: NORMAL;
-	float2 uv			: TEXCOORD;
-	float3 worldPos		: WORLD_POS;
-};
+// Texture-related variables
+Texture2D diffuseTexture : register(t0);
+Texture2D normalTexture : register(t1);
 
-float4 calcDirLightDiffuse(DirectionalLight dirLight, float3 normal) {
+SamplerState diffuseSampler : register(s0);
+SamplerState  normalSampler : register(s1);
+
+
+//calculates normal based on normal map
+float3 recalculateNormals(float3 normal, float3 tangent, float2 uv) {
+	float3 normalFromMap = normalTexture.Sample(normalSampler, uv).rgb;
+	normalFromMap = normalFromMap * 2 - 1;
+
+	float3 N = normal;
+	float3 T = normalize(tangent - N * dot(tangent, N));
+	float3 B = cross(T, N);
+	float3x3 TBN = float3x3(T, B, N);
+
+	return normalize(mul(normalFromMap, TBN));
+}
+
+//calculates diffuse light on texel from a directional light
+float4 dirLightDiffuse(DirectionalLight dirLight, float3 normal) {
 	return dirLight.diffuseColor * saturate(dot(-normalize(dirLight.direction), normal));
 }
 
-float4 calcPointLightDiffuse(PointLight pointLight, float3 normal, float3 worldPos) {
+//calculates diffuse light on texel from a point light
+float4 pointLightDiffuse(PointLight pointLight, float3 normal, float3 worldPos) {
 	return pointLight.diffuseColor *
 		saturate(dot(normalize(pointLight.position - worldPos), normal));
 }
 
-float4 calcPointLightDiffuseSpec(PointLight pointLight, float3 normal, float3 worldPos, float3 camPos, float specExp) {
+//calculates diffuse + spec light on texel from a point light
+float4 pointLightSpec(PointLight pointLight, float3 normal, float3 worldPos, float3 camPos, float specExp) {
 	float3 dirToLight = normalize(pointLight.position - worldPos);
 	float spec = pow(saturate(dot(reflect(-dirToLight, normal), normalize(camPos - worldPos))), specExp);
 
 	return (pointLight.diffuseColor * saturate(dot(dirToLight, normal))) + spec.xxxx;
 }
-// --------------------------------------------------------
-// The entry point (main method) for our pixel shader
-// 
-// - Input is the data coming down the pipeline (defined by the struct)
-// - Output is a single color (float4)
-// - Has a special semantic (SV_TARGET), which means 
-//    "put the output of this into the current render target"
-// - Named "main" because that's the default the shader compiler looks for
-// --------------------------------------------------------
+
 float4 main(VertexToPixel input) : SV_TARGET
 {
+	//normalize normal (after interpolation)
 	input.normal = normalize(input.normal);
+	input.tangent = normalize(input.tangent);
+
 	//alpha value 
 	float blendStr = 1.0f - transparentStrength;
 
-	float4 surfaceColor = diffuseTexture.Sample(basicSampler, input.uv);
+	float4 surfaceColor = diffuseTexture.Sample(diffuseSampler, input.uv);
 	surfaceColor.a = surfaceColor.a * blendStr;
 
-	return surfaceColor * (ambientColor +
-		calcDirLightDiffuse(directionalLight, input.normal) +
-		calcDirLightDiffuse(directionalLight2, input.normal) +
-		calcPointLightDiffuseSpec(pointLight, input.normal, input.worldPos, cameraPos, 256));
+	// Adjust the normal from the map and simply use the results
+	input.normal = recalculateNormals(input.normal, input.tangent, input.uv);
+
+	return diffuseTexture.Sample(diffuseSampler, input.uv) *						  //texture
+		(ambientColor +																  //ambient color
+			dirLightDiffuse(directionalLight, input.normal) +							  //dir light 1
+			dirLightDiffuse(directionalLight2, input.normal) +							  //dir light 2
+			pointLightSpec(pointLight, input.normal, input.worldPos, cameraPos, 256));	  //point light
 }
 
