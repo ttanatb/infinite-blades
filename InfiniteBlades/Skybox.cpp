@@ -90,6 +90,8 @@ void Skybox::Render(ID3D11DeviceContext* context, Camera * camera, UINT& stride,
 	context->RSSetState(GetRastState());
 	context->OMSetDepthStencilState(GetDepthState(), 0);
 	context->DrawIndexed(skyMesh->GetIndexCount(), 0, 0);
+	context->RSSetState(0);
+	context->OMSetDepthStencilState(0, 0);
 }
 
 

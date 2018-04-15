@@ -18,6 +18,7 @@ cbuffer lightData : register(b0)
 	PointLight pointLight;
 
 	float3 cameraPos;
+	float transparentStrength;
 };
 
 Texture2D diffuseTexture	: register(t0);
@@ -67,7 +68,11 @@ float4 calcPointLightDiffuseSpec(PointLight pointLight, float3 normal, float3 wo
 float4 main(VertexToPixel input) : SV_TARGET
 {
 	input.normal = normalize(input.normal);
+	//alpha value 
+	float blendStr = 1.0f - transparentStrength;
+
 	float4 surfaceColor = diffuseTexture.Sample(basicSampler, input.uv);
+	surfaceColor.a = surfaceColor.a * blendStr;
 
 	return surfaceColor * (ambientColor +
 		calcDirLightDiffuse(directionalLight, input.normal) +

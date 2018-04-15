@@ -2,6 +2,8 @@
 #include "DefaultTestScene.h"
 #include "GameplayScene.h"
 #include "SkyboxTestScene.h"
+#include "TransperancyTestScene.h"
+#include "ReflectionTestScene.h"
 #include "NormalMapTestScene.h"
 
 
@@ -62,9 +64,10 @@ int WINAPI WinMain(
 
 	//**TO CHANGE SCENES: MAKE SURE TO CHANGE THE FOLLOWING LINE**
 	//DefaultTestScene dxGame(hInstance);
-	//GameplayScene dxGame(hInstance);
+	//ReflectionTestScene dxGame(hInstance);
+	GameplayScene dxGame(hInstance);
 	//SkyboxTestScene dxGame(hInstance);
-	NormalMapTestScene dxGame(hInstance);
+	//NormalMapTestScene dxGame(hInstance);
 
 	// Result variable for function calls below
 	HRESULT hr = S_OK;

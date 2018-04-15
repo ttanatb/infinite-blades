@@ -1,6 +1,32 @@
 #include "Material.h"
 
+
 Material::Material(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID3D11Device* device, ID3D11DeviceContext* context, const wchar_t* fileName)
+{
+	InitMaterial(vShader, pShader, device, context, fileName);
+}
+
+Material::Material(SimpleVertexShader * vShader, 
+	SimplePixelShader * pShader, 
+	ID3D11Device* device, 
+	ID3D11DeviceContext* context, 
+	const wchar_t* fileName, 
+	bool transparentBool, 
+	float transparentStr)
+{
+
+	InitMaterial(vShader, pShader, device, context, fileName);
+	this->transparentBool = transparentBool;
+	this->transparentStr = transparentStr;
+}
+ 
+Material::~Material()
+{
+	if (srvPtr != nullptr) srvPtr->Release();
+	if (samplerPtr != nullptr) samplerPtr->Release();
+}
+
+void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID3D11Device * device, ID3D11DeviceContext * context, const wchar_t * fileName)
 {
 	vertexShader = vShader;
 	pixelShader = pShader;
@@ -25,6 +51,7 @@ Material::Material(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID
 	normalSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	device->CreateSamplerState(&normalSamplerDesc, &normalSamplerPtr);
 }
+
  
 Material::Material(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID3D11Device * device, ID3D11DeviceContext * context, const wchar_t * diffuseFileName, const wchar_t * normalFileName)
 {
@@ -70,6 +97,21 @@ SimplePixelShader * Material::GetPixelShader()
 	return pixelShader;
 }
 
+bool Material::GetTransparentBool()
+{
+	return transparentBool;
+}
+
+void Material::SetTransparentState(bool transparentBool)
+{
+	this->transparentBool = transparentBool;
+}
+
+float Material::GetTransparentStr()
+{
+	return transparentStr;
+}
+
 void Material::PrepareMaterial(mat4* worldMat)
 {
 	vertexShader->SetMatrix4x4("world", *worldMat);
@@ -80,6 +122,18 @@ void Material::PrepareMaterial(mat4* worldMat)
 	pixelShader->SetSamplerState("normalSampler", normalSamplerPtr);
 	pixelShader->SetShaderResourceView("diffuseTexture", diffuseSRVptr);
 	pixelShader->SetShaderResourceView("normalTexture", normalSRVptr);
+	pixelShader->CopyAllBufferData();
+	pixelShader->SetShader();
+}
+
+void Material::PrepareMaterialReflection(mat4* worldMat, ID3D11ShaderResourceView* skySRV) {
+	vertexShader->SetMatrix4x4("world", *worldMat);
+	vertexShader->CopyAllBufferData();
+	vertexShader->SetShader();
+
+	pixelShader->SetSamplerState("basicSampler", samplerPtr);
+	pixelShader->SetShaderResourceView("diffuseTexture", srvPtr);
+	pixelShader->SetShaderResourceView("skyTexture", skySRV);
 	pixelShader->CopyAllBufferData();
 	pixelShader->SetShader();
 }
