@@ -35,12 +35,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\pUnlit.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\vInstanceUnlit.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\pBasic.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -57,12 +51,6 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="vReflection.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="vBasicNormal.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="pBasicNormal.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
