@@ -139,6 +139,29 @@ Collider * GameEntity::GetCollider()
 	return &coll;
 }
 
+void GameEntity::SetPosition(vec3 newPos)
+{
+	this->position = newPos;
+	Update();
+}
+
+void GameEntity::SetPosition(float x, float y, float z)
+{
+	SetPosition(vec3(x, y, z));
+}
+
+
+void GameEntity::SetRotationQuaternion(vec4 quaternion)
+{
+	this->rotation = quaternion;
+	Update();
+}
+
+void GameEntity::SetRotationQuaterniont(float x, float y, float z, float w)
+{
+	SetRotationQuaternion(vec4(x, y, z, w));
+}
+
 void GameEntity::TranslateBy(float x, float y, float z)
 {
 	TranslateBy(vec3(x, y, z));

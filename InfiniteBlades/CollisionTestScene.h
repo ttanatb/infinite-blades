@@ -34,6 +34,7 @@ public:
 	void OnMouseWheel(float wheelDelta, int x, int y);
 private:
 	bool isMoving = true;
+	bool freelookEnabled;
 
 	// Initialization helper methods - feel free to customize, combine, etc.
 	void LoadShaderMeshMat();
@@ -60,8 +61,10 @@ private:
 	GameEntity* sphere1;
 	GameEntity* sphere2;
 
+	//imgui Variables
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
 	// Keeps track of the old mouse position.  Useful for 
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
 };
-

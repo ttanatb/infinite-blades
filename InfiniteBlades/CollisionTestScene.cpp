@@ -6,6 +6,11 @@
 // For the DirectX Math library
 using namespace DirectX;
 
+#if defined(DEBUG) || defined(_DEBUG)
+//ImGui temp variables
+static float pos[3] = { 0.0f, 0.0f, 0.0f }; // Slider for object positions
+#endif
+
 // --------------------------------------------------------
 // Constructor
 //
@@ -43,9 +48,11 @@ CollisionTestScene::~CollisionTestScene()
 		delete gameEntities[i];
 	if (camera != nullptr) delete camera;
 
+	ImGui_ImplDX11_Shutdown();
+
 	MaterialManager::ReleaseInstance();
 	MeshManager::ReleaseInstance();
-	InputManager::ReleaseInstance();
+	//InputManager::ReleaseInstance();
 	ShaderManager::ReleaseInstance();
 }
 
@@ -55,6 +62,12 @@ CollisionTestScene::~CollisionTestScene()
 // --------------------------------------------------------
 void CollisionTestScene::Init()
 {
+	//Initialize ImGui
+	ImGui_ImplDX11_Init(hWnd, device, context);
+
+	prevMousePos.x = width / 2;
+	prevMousePos.y = height / 2;
+
 	LoadShaderMeshMat();
 	CreateEntities();
 	InitInput();
@@ -114,19 +127,19 @@ void CollisionTestScene::CreateEntities()
 
 	//create entities
 	sphere1 = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"), SPHERE,
-		vec3(-1, 1, 30.0f), vec3(45, 45, 0), 0.69f);
+		vec3(0, 0, 0), vec3(0, 0, 0), 1.0f);
 	gameEntities.push_back(sphere1);
 
-	sphere2 = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"), SPHERE,
-		vec3(-0.5, 1, 30.0f), vec3(45, 45, 0), 0.69f);
+	sphere2 = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("soil"), SPHERE,
+		vec3(0.75, 0, 0), vec3(0, 0, 0), 0.75f);
 	gameEntities.push_back(sphere2);
 }
 
 void CollisionTestScene::InitInput()
 {
-	inputMngr = InputManager::GetInstance();
-	char* usedChars = "WSAD XT";
-	inputMngr->AddKeysToPollFor(usedChars, strlen(usedChars));
+	//inputMngr = InputManager::GetInstance();
+	//char* usedChars = "WSAD XT";
+	//inputMngr->AddKeysToPollFor(usedChars, strlen(usedChars));
 }
 
 // --------------------------------------------------------
@@ -147,35 +160,17 @@ void CollisionTestScene::OnResize()
 // --------------------------------------------------------
 void CollisionTestScene::Update(float deltaTime, float totalTime)
 {
-	inputMngr->Update();
-	CollisionSolver::DetectCollisionSphereBox(sphere1->GetCollider(), sphere2->GetCollider());
+	ImGuiIO& io = ImGui::GetIO();
+	io.DeltaTime = deltaTime;
 
-	if (inputMngr->GetKey('A'))
-		camera->MoveAlongRight(-0.01f);
-	if (inputMngr->GetKey('D'))
-		camera->MoveAlongRight(+0.01f);
+	//All Imgui UI stuff must be done between imgui newFrame() and imgui render()
+	ImGui_ImplDX11_NewFrame();
 
-	if (inputMngr->GetKey('W'))
-		camera->MoveAlongForward(+0.01f);
-	if (inputMngr->GetKey('S'))
-		camera->MoveAlongForward(-0.01f);
-
-	if (inputMngr->GetKey(' '))
-		camera->Move(0, +0.01f, 0);
-	if (inputMngr->GetKey('X'))
-		camera->Move(0, -0.01f, 0);
 	camera->Update();
 
-	for (size_t i = 0; i < gameEntities.size(); ++i) {
-		gameEntities[i]->Update();
-	}
-
-	if (isMoving) {
-		gameEntities[0]->TranslateBy(sin(totalTime) / 200.0f, 0.0f, 0.0f);
-		gameEntities[0]->RotateOnAxis(vec3(0.0f, 1.0f, 0.0f), deltaTime);
-		gameEntities[0]->ScaleBy(sin(totalTime) / 1000.0f, sin(totalTime) / 1000.0f, sin(totalTime) / 1000.0f);
-		gameEntities[1]->RotateOnAxis(sin(totalTime), 0.0f, cos(totalTime), deltaTime * 2.0f);
-	}
+	sphere1->SetRotationQuaterniont(0.0f, 0.0f, 2 * deltaTime, 0.0f);
+	sphere2->SetPosition(pos[0], pos[1], pos[2]);
+	CollisionSolver::DetectCollisionSphereSphere(sphere1->GetCollider(), sphere2->GetCollider());
 
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
@@ -188,7 +183,7 @@ void CollisionTestScene::Update(float deltaTime, float totalTime)
 void CollisionTestScene::Draw(float deltaTime, float totalTime)
 {
 	// Background color (Cornflower Blue in this case) for clearing
-	const float color[4] = { 0.4f, 0.6f, 0.75f, 0.0f };
+	const float color[4] = { clear_color.x, clear_color.y, clear_color.z, clear_color.w };
 
 	// Clear the render target and depth buffer (erases what's on the screen)
 	context->ClearRenderTargetView(backBufferRTV, color);
@@ -227,7 +222,20 @@ void CollisionTestScene::Draw(float deltaTime, float totalTime)
 		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
 	}
-
+	// 1. Show a simple window
+	{
+		static float f = 0.0f;
+		ImGui::Text("Collision Test Debugger");
+		ImGui::SliderFloat("float", &f, 0.0f, 1.0f); // Edit 1 float using a slider from 0 to 1
+		ImGui::SliderFloat3("Sphere2 Pos", pos, -5, 5); // Edit 3 floats using a slider from -5 to 5
+		ImGui::ColorEdit3("clear color", (float*)&clear_color);
+		ImGui::Checkbox("Free Look Enabled", &freelookEnabled);
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	}
+	ImGui::Render();
+	// Present the back buffer to the user
+	//  - Puts the final frame we're drawing into the window so the user can see it
+	//  - Do this exactly ONCE PER FRAME (always at the very end of the frame)
 	swapChain->Present(0, 0);
 }
 
@@ -242,8 +250,7 @@ void CollisionTestScene::Draw(float deltaTime, float totalTime)
 void CollisionTestScene::OnMouseDown(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
-	//left click
-
+	ImGuiIO& io = ImGui::GetIO();
 
 	// Save the previous mouse position, so we have it for the future
 	prevMousePos.x = x;
@@ -261,6 +268,7 @@ void CollisionTestScene::OnMouseDown(WPARAM buttonState, int x, int y)
 void CollisionTestScene::OnMouseUp(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
+	ImGuiIO& io = ImGui::GetIO();
 
 	// We don't care about the tracking the cursor outside
 	// the window anymore (we're not dragging if the mouse is up)
@@ -275,14 +283,18 @@ void CollisionTestScene::OnMouseUp(WPARAM buttonState, int x, int y)
 void CollisionTestScene::OnMouseMove(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
-	if (buttonState & 0x0001) {
+	ImGuiIO& io = ImGui::GetIO();
+	io.MousePos = ImVec2((float)x, (float)y);
+
+	if (buttonState && 0x0001 && freelookEnabled)
+	{
 		camera->RotateAroundUp((x - prevMousePos.x) / 1000.0f);
 		camera->RotateAroundRight((y - prevMousePos.y) / 1000.0f);
-	}
 
-	// Save the previous mouse position, so we have it for the future
-	prevMousePos.x = x;
-	prevMousePos.y = y;
+		// Save the previous mouse position, so we have it for the future
+		prevMousePos.x = x;
+		prevMousePos.y = y;
+	}
 }
 
 // --------------------------------------------------------

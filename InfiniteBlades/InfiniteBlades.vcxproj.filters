@@ -33,6 +33,12 @@
     <Filter Include="Source Files\Managers">
       <UniqueIdentifier>{55ff1803-b508-4c65-8a47-c8baf70191eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External Libraries">
+      <UniqueIdentifier>{50c44579-bb26-4b18-8de6-8e1864e1c802}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External Libraries\Imgui">
+      <UniqueIdentifier>{dfc8d9a4-7b47-4d36-8dc9-2a16fa8520d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\pUnlit.hlsl">
@@ -109,6 +115,18 @@
     <ClCompile Include="CollisionTestScene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="Imgui\imgui.cpp">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgui\imgui_demo.cpp">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgui\imgui_draw.cpp">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgui\imgui_impl_dx11.cpp">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Mesh.h">
@@ -173,6 +191,27 @@
     </ClInclude>
     <ClInclude Include="CollisionTestScene.h">
       <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\imconfig.h">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\imgui.h">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\imgui_impl_dx11.h">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\imgui_internal.h">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\stb_rect_pack.h">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\stb_textedit.h">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\stb_truetype.h">
+      <Filter>External Libraries\Imgui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -98,7 +98,8 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
       <SDLCheck>false</SDLCheck>
     </ClCompile>
     <PostBuildEvent>
-      <Command>mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets</Command>
+      <Command>
+      </Command>
       <Message>Copying asset files over</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -136,7 +137,8 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets</Command>
+      <Command>
+      </Command>
       <Message>Copying asset files over</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -147,6 +149,10 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
     <ClCompile Include="DefaultTestScene.cpp" />
     <ClCompile Include="DXCore.cpp" />
     <ClCompile Include="GameplayScene.cpp" />
+    <ClCompile Include="Imgui\imgui.cpp" />
+    <ClCompile Include="Imgui\imgui_demo.cpp" />
+    <ClCompile Include="Imgui\imgui_draw.cpp" />
+    <ClCompile Include="Imgui\imgui_impl_dx11.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="GameEntity.cpp" />
@@ -169,6 +175,13 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="DXCore.h" />
     <ClInclude Include="GameplayScene.h" />
+    <ClInclude Include="Imgui\imconfig.h" />
+    <ClInclude Include="Imgui\imgui.h" />
+    <ClInclude Include="Imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="Imgui\imgui_internal.h" />
+    <ClInclude Include="Imgui\stb_rect_pack.h" />
+    <ClInclude Include="Imgui\stb_textedit.h" />
+    <ClInclude Include="Imgui\stb_truetype.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="GameEntity.h" />

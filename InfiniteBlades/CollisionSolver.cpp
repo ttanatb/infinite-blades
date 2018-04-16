@@ -3,15 +3,15 @@
 
 bool CollisionSolver::DetectCollision(Collider* collider1, Collider* collider2)
 {
-	if (collider1->collisionType == BOX && collider2->collisionType == BOX)
+	if (collider1->colliderType == BOX && collider2->colliderType == BOX)
 	{
 		return DetectCollisionBoxBox(collider1, collider2);
 	}
-	else if (collider1->collisionType == SPHERE && collider2->collisionType == SPHERE)
+	else if (collider1->colliderType == SPHERE && collider2->colliderType == SPHERE)
 	{
 		return DetectCollisionSphereSphere(collider1, collider2);
 	}
-	else if (collider1->collisionType == SPHERE && collider2->collisionType == BOX)
+	else if (collider1->colliderType == SPHERE && collider2->colliderType == BOX)
 	{
 		return DetectCollisionSphereBox(collider1, collider2);
 	}
