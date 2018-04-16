@@ -11,14 +11,14 @@ using namespace DirectX;
 static float pos[3] = { 0.0f, 0.0f, 0.0f }; // Slider for object positions
 #endif
 
-// --------------------------------------------------------
-// Constructor
-//
-// DXCore (base class) constructor will set up underlying fields.
-// DirectX itself, and our window, are not ready yet!
-//
-// hInstance - the application's OS-level handle (unique ID)
-// --------------------------------------------------------
+											// --------------------------------------------------------
+											// Constructor
+											//
+											// DXCore (base class) constructor will set up underlying fields.
+											// DirectX itself, and our window, are not ready yet!
+											//
+											// hInstance - the application's OS-level handle (unique ID)
+											// --------------------------------------------------------
 CollisionTestScene::CollisionTestScene(HINSTANCE hInstance)
 
 //feed the handle, the name, width, and height
@@ -115,7 +115,7 @@ void CollisionTestScene::LoadShaderMeshMat()
 	meshMngr->AddMesh("helix", "Assets/Models/helix.obj");
 	meshMngr->AddMesh("cone", "Assets/Models/cone.obj");
 	meshMngr->AddMesh("cylinder", "Assets/Models/cylinder.obj");
-	meshMngr->AddMesh("sphere", "Assets/Models/sphere.obj");
+	meshMngr->AddMesh("sphere", "Assets/Models/sphere.obj", SPHERE);
 	meshMngr->AddMesh("torus", "Assets/Models/torus.obj");
 	meshMngr->AddMesh("cube", "Assets/Models/cube.obj");
 }

@@ -22,7 +22,7 @@ MeshManager * MeshManager::GetInstancce()
 
 void MeshManager::ReleaseInstance()
 {
-	if (instance != nullptr) 
+	if (instance != nullptr)
 		delete instance;
 }
 
@@ -36,6 +36,12 @@ void MeshManager::ReleaseAllMeshes()
 void MeshManager::AddMesh(char * name, char * fileName)
 {
 	Mesh* mesh = new Mesh(fileName, device);
+	map.insert(std::pair<char*, Mesh*>(name, mesh));
+}
+
+void MeshManager::AddMesh(char * name, char * fileName, ColliderType cType)
+{
+	Mesh* mesh = new Mesh(fileName, device, cType);
 	map.insert(std::pair<char*, Mesh*>(name, mesh));
 }
 

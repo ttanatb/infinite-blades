@@ -10,7 +10,9 @@ class Mesh
 public:
 	Mesh(Vertex* vertices, int vertexCount, int* indices, int indexCount, ID3D11Device* device); // Without collider
 	Mesh(Vertex* vertices, int vertexCount, int* indices, int indexCount, ID3D11Device* device, ColliderType cType); // With collider
-	Mesh(char* fileName, ID3D11Device * device);
+	Mesh(char* fileName, ID3D11Device * device); // Without collider
+	Mesh(char* fileName, ID3D11Device * device, ColliderType cType); // With collider
+
 	~Mesh();
 
 	ID3D11Buffer* GetVertexBuffer();
