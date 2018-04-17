@@ -15,7 +15,7 @@ struct Particle
 struct ParticleVertex
 {
 	DirectX::XMFLOAT3 Position;
-	DirectX::XMFLOAT4 UV;
-	DirectX::XMFLOAT3 Color;
+	DirectX::XMFLOAT2 UV;
+	DirectX::XMFLOAT4 Color;
 	float Size;
 };

@@ -12,8 +12,8 @@ Emitter::Emitter(ID3D11Device * device, ID3D11DeviceContext* context, Material* 
 	this->active = true;
 	this->maxParticles = 10;
 	this->emissionRate = 10;
-	CreateBuffers(device, context);
 	CreateParticles();
+	CreateBuffers(device, context);
 }
 
 Emitter::Emitter(ID3D11Device * device, ID3D11DeviceContext * context, Material* material, vec4 color, vec3 velocity,
@@ -27,14 +27,15 @@ Emitter::Emitter(ID3D11Device * device, ID3D11DeviceContext * context, Material*
 	this->active = active;
 	this->maxParticles = maxParticles;
 	this->emissionRate = emissionRate;
-	CreateBuffers(device, context);
 	CreateParticles();
+	CreateBuffers(device, context);
 }
 
 Emitter::~Emitter()
 {
 	if (emitterVertBuffer) emitterVertBuffer->Release();
 	delete[] particles;
+	delete[] localParticleVertices;
 }
 
 //Here we will do all emission calculations
@@ -46,6 +47,7 @@ void Emitter::Update()
 void Emitter::CreateParticles()
 {
 	particles = new Particle[maxParticles];
+	localParticleVertices = new ParticleVertex[4];
 	for (size_t i = 0; i < maxParticles; ++i) {
 		particles[i] = {};
 		particles[i].Color = color;
@@ -53,6 +55,29 @@ void Emitter::CreateParticles()
 		particles[i].Age = lifetime;
 		particles[i].StartVelocity = velocity;
 	}
+
+	//Create local vertices to be sent to GPU
+	for (size_t i = 0; i < 4; ++i) {
+		localParticleVertices[i] = {};
+		localParticleVertices[i].Color = color;
+		localParticleVertices[i].Size = scale.x;
+	}
+
+	//top left
+	localParticleVertices[0].Position = vec3(-0.5, 0.5, 0);
+	localParticleVertices[0].UV = vec2(0, 1);
+
+	//top right
+	localParticleVertices[1].Position = vec3(0.5, 0.5, 0);
+	localParticleVertices[1].UV = vec2(1, 1);
+
+	//bottom right
+	localParticleVertices[2].Position = vec3(0.5, -0.5, 0);
+	localParticleVertices[2].UV = vec2(1, 0);
+
+	//bottom left
+	localParticleVertices[3].Position = vec3(-0.5, 0.5, 0);
+	localParticleVertices[3].UV = vec2(0, 1);
 }
 
 ID3D11Buffer * Emitter::getVertexBuffer() { return emitterVertBuffer; }

@@ -1,8 +1,8 @@
 struct ParticleVertex
 {
 	float3 Position;
-	float4 UV;
-	float3 Color;
+	float2 UV;
+	float4 Color;
 	float Size;
 };
 
@@ -38,6 +38,6 @@ float4 main(VertexToPixel input) : SV_TARGET
 {
 	float4 surfaceColor = diffuseTexture.Sample(basicSampler, input.uv);
 	
-	return surfaceColor * pVertex.color;
+	return surfaceColor * pVertex.Color;
 }
 

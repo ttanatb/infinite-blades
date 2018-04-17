@@ -102,13 +102,21 @@ void ParticleTestScene::LoadShaderMeshMat()
 	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/soil.jpg");
 	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/woodplanks.jpg");
 	matMngr->AddMat("particle", vParticleShader, pParticleShader, L"Assets/Textures/pink_circle.png");
+
+	//Load Meshes
+	meshMngr = MeshManager::GetInstancce();
+	meshMngr->Init(device);
+	meshMngr->AddMesh("sphere", "Assets/Models/sphere.obj");
 }
 
 void ParticleTestScene::CreateEntities()
 {
 	//create camera
 	camera = new Camera((float)width, (float)height, vec3(0.0f, 0.0f, -5.0f), 0.0f, 0.0f);
-
+	
+	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"),
+		vec3(0, 0, 0), vec3(0, 0, 0), 0.8f));
+	gameEntities.push_back(new Emitter(device, context, matMngr->GetMat("particle")));
 }
 
 void ParticleTestScene::InitInput()
@@ -156,18 +164,6 @@ void ParticleTestScene::Update(float deltaTime, float totalTime)
 
 	for (size_t i = 0; i < gameEntities.size(); ++i) {
 		gameEntities[i]->Update();
-	}
-
-	if (isMoving) {
-		gameEntities[0]->TranslateBy(sin(totalTime) / 200.0f, 0.0f, 0.0f);
-		gameEntities[0]->RotateOnAxis(vec3(0.0f, 1.0f, 0.0f), deltaTime);
-		gameEntities[0]->ScaleBy(sin(totalTime) / 1000.0f, sin(totalTime) / 1000.0f, sin(totalTime) / 1000.0f);
-		gameEntities[1]->RotateOnAxis(sin(totalTime), 0.0f, cos(totalTime), deltaTime * 2.0f);
-		gameEntities[2]->ScaleBy(sin(totalTime) / 2000.0f, sin(totalTime) / 2000.0f, sin(totalTime) / 2000.0f);
-		gameEntities[2]->RotateOnAxis(sin(totalTime), 0.0f, cos(totalTime), deltaTime * 2.0f);
-		gameEntities[3]->TranslateBy(0.0f, cos(totalTime * 20.0f) / 500.0f, 0.0f);
-		gameEntities[3]->RotateOnAxis(0.0f, 1.0f, 0.0f, deltaTime);
-		gameEntities[4]->RotateOnAxis(vec3(0.0f, 0.0f, 1.0f), deltaTime);
 	}
 
 	if (inputMngr->GetKeyDown('T')) {

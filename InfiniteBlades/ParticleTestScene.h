@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Lights.h"
 #include "Particle.h"
+#include "Emitter.h"
 #include "WICTextureLoader.h"
 #include <vector>
 
