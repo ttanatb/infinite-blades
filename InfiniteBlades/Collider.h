@@ -34,7 +34,10 @@ struct Collider
 	{
 		colliderType = colltype;
 		center = cent;
-		dimensions = XMFLOAT3(dims.x / 2, dims.y / 2, dims.z / 2);
+
+		//Take scale from transform and divide by two for dimensions
+		XMStoreFloat3(&dimensions, XMLoadFloat3(&dims) / 2);
+
 		isTrigger = trigger;
 	}
 };
