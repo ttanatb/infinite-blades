@@ -115,7 +115,7 @@ void CollisionTestScene::LoadShaderMeshMat()
 	meshMngr->AddMesh("helix", "Assets/Models/helix.obj");
 	meshMngr->AddMesh("cone", "Assets/Models/cone.obj");
 	meshMngr->AddMesh("cylinder", "Assets/Models/cylinder.obj");
-	meshMngr->AddMesh("sphere", "Assets/Models/sphere.obj", SPHERE);
+	meshMngr->AddMesh("sphere", "Assets/Models/sphere.obj");
 	meshMngr->AddMesh("torus", "Assets/Models/torus.obj");
 	meshMngr->AddMesh("cube", "Assets/Models/cube.obj");
 }
