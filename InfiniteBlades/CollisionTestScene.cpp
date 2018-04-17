@@ -115,7 +115,7 @@ void CollisionTestScene::LoadShaderMeshMat()
 	meshMngr->AddMesh("helix", "Assets/Models/helix.obj");
 	meshMngr->AddMesh("cone", "Assets/Models/cone.obj");
 	meshMngr->AddMesh("cylinder", "Assets/Models/cylinder.obj");
-	meshMngr->AddMesh("sphere", "Assets/Models/sphere.obj", SPHERE);
+	meshMngr->AddMesh("sphere", "Assets/Models/sphere.obj");
 	meshMngr->AddMesh("torus", "Assets/Models/torus.obj");
 	meshMngr->AddMesh("cube", "Assets/Models/cube.obj");
 }
@@ -129,10 +129,12 @@ void CollisionTestScene::CreateEntities()
 	sphere1 = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"), SPHERE,
 		vec3(0, 0, 0), vec3(0, 0, 0), 1.0f);
 	gameEntities.push_back(sphere1);
+	sphere1->CalculateCollider();
 
-	sphere2 = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("soil"), SPHERE,
+	sphere2 = new GameEntity(meshMngr->GetMesh("cube"), matMngr->GetMat("soil"), BOX,
 		vec3(0.75, 0, 0), vec3(0, 0, 0), 0.75f);
 	gameEntities.push_back(sphere2);
+	sphere2->CalculateCollider();
 }
 
 void CollisionTestScene::InitInput()
@@ -170,7 +172,7 @@ void CollisionTestScene::Update(float deltaTime, float totalTime)
 
 	sphere1->SetRotationQuaterniont(0.0f, 0.0f, 2 * deltaTime, 0.0f);
 	sphere2->SetPosition(pos[0], pos[1], pos[2]);
-	CollisionSolver::DetectCollisionSphereSphere(sphere1->GetCollider(), sphere2->GetCollider());
+	CollisionSolver::DetectCollision(sphere1, sphere2);
 
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))

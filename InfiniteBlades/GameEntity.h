@@ -48,6 +48,8 @@ public:
 
 	void Update();
 
+	XMFLOAT3 GetPositionFloat() const;
+
 	mat4* GetWorldMat();
 	vec3 GetPosition();
 	vec4 GetRotation();
@@ -61,9 +63,11 @@ public:
 	void SetMat(Material * newMat);
 	void SetParent(GameEntity* parent);
 
-	Collider* GetCollider();
-	void SetCollider(DirectX::XMFLOAT3 min, DirectX::XMFLOAT3 max);
+	Collider GetCollider() const;
+	void SetCollider(XMFLOAT3 min, XMFLOAT3 max);
 	void CalculateCollider();
+
+	bool CheckCollision(const GameEntity& other);
 
 	void SetPosition(vec3 newPos);
 	void SetPosition(float x, float y, float z);

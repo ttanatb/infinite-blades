@@ -10,7 +10,7 @@ void GameEntity::Init()
 	rotation = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	scale = vec3(1.0f, 1.0f, 1.0f);
 
-	coll = Collider();
+	coll.colliderType = ColliderType::NONE;
 
 	XMMATRIX mat = XMMatrixIdentity();
 	XMStoreFloat4x4(&worldMatrix, mat);
@@ -18,7 +18,7 @@ void GameEntity::Init()
 	meshPtr = nullptr;
 	matPtr = nullptr;
 
-	CalculateCollider();
+	//CalculateCollider();
 }
 
 GameEntity::GameEntity()
@@ -65,7 +65,6 @@ GameEntity::GameEntity(Mesh * mesh, Material * material, ColliderType colliderTy
 	this->scale = vec3(scale, scale, scale);
 
 	coll.colliderType = colliderType;
-	//coll = Collider(colliderType, this->position, this->scale, false);
 
 	XMVECTOR quaternion = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	XMStoreFloat4(&(this->rotation), quaternion);
@@ -80,8 +79,6 @@ GameEntity::GameEntity(Mesh * mesh, Material* material, ColliderType colliderTyp
 	this->scale = scale;
 
 	coll.colliderType = colliderType;
-
-	//coll = Collider(colliderType, position, scale, false);
 
 	XMVECTOR quaternion = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	XMStoreFloat4(&(this->rotation), quaternion);
@@ -106,8 +103,11 @@ void GameEntity::Update()
 		XMStoreFloat4x4(&(children[i]->parentWorldMatrix), mat);
 	}
 
-	coll.center = this->position;
-	coll.dimensions = this->scale;
+}
+
+XMFLOAT3 GameEntity::GetPositionFloat() const
+{
+	return (XMFLOAT3)position;
 }
 
 mat4* GameEntity::GetWorldMat() { return &worldMatTransposed; }
@@ -119,8 +119,6 @@ vec3 GameEntity::GetRotEuler()
 
 	return vec3();
 }
-
-
 
 
 Mesh * GameEntity::GetMesh() { return meshPtr; }
@@ -135,12 +133,12 @@ void GameEntity::SetParent(GameEntity * parent)
 	parent->children.push_back(this);
 }
 
-Collider * GameEntity::GetCollider()
+Collider GameEntity::GetCollider() const
 {
-	return &coll;
+	return coll;
 }
 
-void GameEntity::SetCollider(DirectX::XMFLOAT3 min, DirectX::XMFLOAT3 max)
+void GameEntity::SetCollider(XMFLOAT3 min, XMFLOAT3 max)
 {
 	XMVECTOR vecToMin = XMVector3Transform(XMLoadFloat3(&min), XMMatrixScaling(this->scale.x, this->scale.y, this->scale.z));
 	XMVECTOR vecToMax = XMVector3Transform(XMLoadFloat3(&max), XMMatrixScaling(this->scale.x, this->scale.y, this->scale.z));
@@ -154,8 +152,8 @@ void GameEntity::CalculateCollider()
 	if (coll.colliderType != ColliderType::NONE)
 	{
 		std::vector<Vertex> vertices = meshPtr->GetVertices();
-		DirectX::XMFLOAT3 min = DirectX::XMFLOAT3(FLT_MAX, FLT_MAX, FLT_MAX);
-		DirectX::XMFLOAT3 max = DirectX::XMFLOAT3(FLT_MIN, FLT_MIN, FLT_MIN);
+		XMFLOAT3 min = XMFLOAT3(FLT_MAX, FLT_MAX, FLT_MAX);
+		XMFLOAT3 max = XMFLOAT3(FLT_MIN, FLT_MIN, FLT_MIN);
 		for (int i = 0; i < meshPtr->GetVertexCount(); i++)
 		{
 			// Find mesh min xyz
@@ -170,6 +168,31 @@ void GameEntity::CalculateCollider()
 		}
 		SetCollider(min, max);
 	}
+}
+
+bool GameEntity::CheckCollision(const GameEntity & other)
+{
+	XMFLOAT3 otherPos = other.GetPositionFloat();
+
+	float resultantX = otherPos.x - this->position.x;
+
+	float aExtentX = coll.max.x;
+	float bExtentX = other.GetCollider().max.x;
+
+	if (fabs(resultantX) <= aExtentX + bExtentX)
+	{
+		float resultantY = otherPos.y - this->position.y;
+
+		float aExtentY = coll.max.y;
+		float bExtentY = other.GetCollider().max.y;
+
+		if (fabs(resultantY) <= aExtentY + bExtentY)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void GameEntity::SetPosition(vec3 newPos)
