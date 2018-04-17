@@ -27,9 +27,9 @@ public:
 	virtual ~GameEntity();
 
 	GameEntity(Mesh * mesh, Material* material,
-		vec3 position = vec3(0,0,0), 
-		vec3 rotation = vec3(0,0,0), 
-		vec3 scale = vec3(1,1,1));
+		vec3 position = vec3(0, 0, 0),
+		vec3 rotation = vec3(0, 0, 0),
+		vec3 scale = vec3(1, 1, 1));
 
 	GameEntity(Mesh * mesh, Material* material,
 		vec3 position = vec3(0, 0, 0),
@@ -62,6 +62,8 @@ public:
 	void SetParent(GameEntity* parent);
 
 	Collider* GetCollider();
+	void SetCollider(DirectX::XMFLOAT3 min, DirectX::XMFLOAT3 max);
+	void CalculateCollider();
 
 	void SetPosition(vec3 newPos);
 	void SetPosition(float x, float y, float z);

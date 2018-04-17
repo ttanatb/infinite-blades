@@ -15,8 +15,7 @@ public:
 	static MeshManager* GetInstancce();
 	static void ReleaseInstance();
 	void ReleaseAllMeshes();
-	void AddMesh(char* name, char* fileName); // Without collider
-	void AddMesh(char* name, char* fileName, ColliderType cType); // With collider
+	void AddMesh(char* name, char* fileName);
 	void Init(ID3D11Device* device);
 	Mesh* GetMesh(char* name);
 };

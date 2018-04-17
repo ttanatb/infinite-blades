@@ -19,6 +19,8 @@ struct Collider
 	XMFLOAT3 dimensions; // Collider dimensions
 	bool isTrigger;
 
+	DirectX::XMFLOAT3 min;
+	DirectX::XMFLOAT3 max;
 
 	// Default constructor
 	Collider()
