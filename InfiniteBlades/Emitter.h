@@ -19,6 +19,11 @@ private:
 
 	//Graphics fields
 	ID3D11Buffer* emitterVertBuffer;
+	ID3D11Buffer* emitterIndexBuffer;
+
+	void CreateParticles();
+	void EmitParticles(float deltaTime);
+	void CreateBuffers(ID3D11Device * device, ID3D11DeviceContext* context);
 public:
 	Emitter(ID3D11Device * device, ID3D11DeviceContext* context, Material* material);
 	Emitter(ID3D11Device * device, ID3D11DeviceContext* context, Material* material, 
@@ -26,9 +31,10 @@ public:
 		bool loopable, bool active, int maxParticles, int emissionRate);
 	~Emitter();
 
-	void Update();
-	void CreateParticles();
+	void Update(ID3D11DeviceContext* context, float deltaTime);
+	void RenderParticles(ID3D11DeviceContext* context);
 	ID3D11Buffer* getVertexBuffer();
-	void CreateBuffers(ID3D11Device * device, ID3D11DeviceContext* context);
+	ID3D11Buffer* getIndexBuffer();
+	void UpdateBuffers(ID3D11DeviceContext* context);
 };
 

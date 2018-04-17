@@ -43,6 +43,9 @@ ParticleTestScene::~ParticleTestScene()
 		delete gameEntities[i];
 	if (camera != nullptr) delete camera;
 
+	//delete emitter
+	if (testEmitter) delete testEmitter;
+
 	MaterialManager::ReleaseInstance();
 	MeshManager::ReleaseInstance();
 	InputManager::ReleaseInstance();
@@ -116,7 +119,7 @@ void ParticleTestScene::CreateEntities()
 	
 	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"),
 		vec3(0, 0, 0), vec3(0, 0, 0), 0.8f));
-	gameEntities.push_back(new Emitter(device, context, matMngr->GetMat("particle")));
+	testEmitter = new Emitter(device, context, matMngr->GetMat("particle"));
 }
 
 void ParticleTestScene::InitInput()
@@ -165,6 +168,7 @@ void ParticleTestScene::Update(float deltaTime, float totalTime)
 	for (size_t i = 0; i < gameEntities.size(); ++i) {
 		gameEntities[i]->Update();
 	}
+	testEmitter->Update(context, deltaTime);
 
 	if (inputMngr->GetKeyDown('T')) {
 		isMoving = !isMoving;
@@ -220,6 +224,11 @@ void ParticleTestScene::Draw(float deltaTime, float totalTime)
 		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
 	}
+	//draw emitter
+	testEmitter->GetMat()->GetVertexShader()->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
+	testEmitter->GetMat()->GetVertexShader()->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
+	testEmitter->GetMat()->PrepareMaterial(testEmitter->GetWorldMat());
+	testEmitter->RenderParticles(context);
 
 	swapChain->Present(0, 0);
 }

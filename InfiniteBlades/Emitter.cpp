@@ -1,8 +1,7 @@
 #include "Emitter.h"
 
 
-
-Emitter::Emitter(ID3D11Device * device, ID3D11DeviceContext* context, Material* material) 
+Emitter::Emitter(ID3D11Device * device, ID3D11DeviceContext* context, Material* material)
 	: GameEntity(nullptr, material, vec3(0, 0, 6.0f), vec3(0, 0, 0), vec3(1.0f, 1.0f, 1.0f))
 {
 	this->color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -34,14 +33,18 @@ Emitter::Emitter(ID3D11Device * device, ID3D11DeviceContext * context, Material*
 Emitter::~Emitter()
 {
 	if (emitterVertBuffer) emitterVertBuffer->Release();
+	if (emitterIndexBuffer) emitterIndexBuffer->Release();
 	delete[] particles;
 	delete[] localParticleVertices;
 }
 
 //Here we will do all emission calculations
-void Emitter::Update()
+void Emitter::Update(ID3D11DeviceContext* context, float deltaTime)
 {
-
+	/*for (int i = 0; i < maxParticles; ++i) {
+		particles[i].Position.y += velocity.y * deltaTime;
+	}*/
+	UpdateBuffers(context);
 }
 
 void Emitter::CreateParticles()
@@ -80,21 +83,77 @@ void Emitter::CreateParticles()
 	localParticleVertices[3].UV = vec2(0, 1);
 }
 
+void Emitter::EmitParticles(float deltaTime)
+{
+	return;
+}
+
+void Emitter::RenderParticles(ID3D11DeviceContext * context)
+{
+	UINT stride;
+	UINT offset;
+
+	stride = sizeof(ParticleVertex);
+	offset = 0;
+
+	//set vertex buffer to active
+	context->IASetVertexBuffers(0, 1, &emitterVertBuffer, &stride, &offset);
+
+	//set index buffer to active
+	context->IASetIndexBuffer(emitterIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	//draw indexed
+	context->DrawIndexed(4, 0, 0);
+}
+
 ID3D11Buffer * Emitter::getVertexBuffer() { return emitterVertBuffer; }
+
+ID3D11Buffer * Emitter::getIndexBuffer() { return emitterIndexBuffer; }
 
 void Emitter::CreateBuffers(ID3D11Device * device, ID3D11DeviceContext* context)
 {
-	//Set up buffer description
+	//Set up vertex buffer description
 	D3D11_BUFFER_DESC vbDesc = {};
 	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	vbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	vbDesc.MiscFlags = 0;
+	vbDesc.StructureByteStride = 0;
 
 	//Enough room so we can potentially store all particles
 	vbDesc.ByteWidth = sizeof(ParticleVertex) * 4 * maxParticles;
 
 	device->CreateBuffer(&vbDesc, 0, &emitterVertBuffer);
 
+	//initialize indices
+	int* indices;
+	indices = new int[4];
+	for (int i = 0; i < 4; i++) {
+		indices[i] = i;
+	}
+
+	D3D11_BUFFER_DESC ibd;
+	ibd.Usage = D3D11_USAGE_IMMUTABLE;
+	ibd.ByteWidth = sizeof(int) * 4;         // 4 = number of indices in the buffer
+	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER; // Tells DirectX this is an index buffer
+	ibd.CPUAccessFlags = 0;
+	ibd.MiscFlags = 0;
+	ibd.StructureByteStride = 0;
+
+	// Create the proper struct to hold the initial index data
+	// - This is how we put the initial data into the buffer
+	D3D11_SUBRESOURCE_DATA initialIndexData;
+	initialIndexData.pSysMem = indices;
+
+	// Actually create the buffer with the initial data
+	// - Once we do this, we'll NEVER CHANGE THE BUFFER AGAIN
+	device->CreateBuffer(&ibd, &initialIndexData, &emitterIndexBuffer);
+	delete[] indices;
+}
+
+//Rebuild entire dynamic vertex buffer each frame
+void Emitter::UpdateBuffers(ID3D11DeviceContext * context)
+{
 	//Copy to a DYNAMIC buffer
 	//we need a local copy of all particle verts
 	D3D11_MAPPED_SUBRESOURCE mapped = {};
@@ -114,6 +173,6 @@ void Emitter::CreateBuffers(ID3D11Device * device, ID3D11DeviceContext* context)
 		sizeof(ParticleVertex) * 4 * maxParticles
 	);
 
-	//Unmap
+	//Unmap (unlock)
 	context->Unmap(emitterVertBuffer, 0);
 }
