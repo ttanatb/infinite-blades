@@ -64,8 +64,8 @@ int WINAPI WinMain(
 
 	//**TO CHANGE SCENES: MAKE SURE TO CHANGE THE FOLLOWING LINE**
 	//DefaultTestScene dxGame(hInstance);
-	ReflectionTestScene dxGame(hInstance);
-	//GameplayScene dxGame(hInstance);
+	//ReflectionTestScene dxGame(hInstance);
+	GameplayScene dxGame(hInstance);
 	//SkyboxTestScene dxGame(hInstance);
 	//NormalMapTestScene dxGame(hInstance);
 
