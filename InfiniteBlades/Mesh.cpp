@@ -8,7 +8,7 @@ Mesh::Mesh(Vertex * vertices, int vertexCount, int * indices, int indexCount, ID
 	}
 
 	this->indexCount = indexCount;
-	//this->vertexCount = vertexCount;
+	this->vertexCount = vertexCount;
 	CreateBuffers(vertices, vertexCount, indices, indexCount, device);
 }
 
@@ -172,7 +172,6 @@ Mesh::Mesh(char * fileName, ID3D11Device * device)
 
 	// Close the file and create the actual buffers
 	obj.close();
-	vertices = verts;
 	indexCount = vertCounter;
 	CreateBuffers(&verts[0], vertCounter, &indices[0], vertCounter, device);
 }
@@ -229,9 +228,6 @@ void Mesh::CreateBuffers(Vertex * vertices, int vertexCount, int * indices, int 
 	ibd.CPUAccessFlags = 0;
 	ibd.MiscFlags = 0;
 	ibd.StructureByteStride = 0;
-
-	this->indexCount = indexCount;
-	this->vertexCount = vertexCount;
 
 	// Create the proper struct to hold the initial index data
 	// - This is how we put the initial data into the buffer
