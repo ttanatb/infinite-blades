@@ -2,7 +2,7 @@
 #include "InputManager.h"
 #include "GameEntity.h"
 #include "Collider.h"
-class Player : 
+class Player :
 	public GameEntity {
 private:
 	const int LANE_COUNT = 3;

@@ -11,14 +11,14 @@ using namespace DirectX;
 static float pos[3] = { 0.0f, 0.0f, 0.0f }; // Slider for object positions
 #endif
 
-											// --------------------------------------------------------
-											// Constructor
-											//
-											// DXCore (base class) constructor will set up underlying fields.
-											// DirectX itself, and our window, are not ready yet!
-											//
-											// hInstance - the application's OS-level handle (unique ID)
-											// --------------------------------------------------------
+// --------------------------------------------------------
+// Constructor
+//
+// DXCore (base class) constructor will set up underlying fields.
+// DirectX itself, and our window, are not ready yet!
+//
+// hInstance - the application's OS-level handle (unique ID)
+// --------------------------------------------------------
 CollisionTestScene::CollisionTestScene(HINSTANCE hInstance)
 
 //feed the handle, the name, width, and height
@@ -26,7 +26,7 @@ CollisionTestScene::CollisionTestScene(HINSTANCE hInstance)
 
 		//show debug states only in debug mode
 #if defined(DEBUG) || defined(_DEBUG)
-		true)
+		true) 
 #else
 	false)
 #endif
@@ -64,7 +64,7 @@ void CollisionTestScene::Init()
 {
 	//Initialize ImGui
 	ImGui_ImplDX11_Init(hWnd, device, context);
-
+	
 	prevMousePos.x = width / 2;
 	prevMousePos.y = height / 2;
 
@@ -169,7 +169,7 @@ void CollisionTestScene::Update(float deltaTime, float totalTime)
 	ImGui_ImplDX11_NewFrame();
 
 	camera->Update();
-
+	
 	sphere1->SetRotationQuaterniont(0.0f, 0.0f, 2 * deltaTime, 0.0f);
 	sphere2->SetPosition(pos[0], pos[1], pos[2]);
 	CollisionSolver::DetectCollision(sphere1, sphere2);
@@ -185,12 +185,12 @@ void CollisionTestScene::Update(float deltaTime, float totalTime)
 void CollisionTestScene::Draw(float deltaTime, float totalTime)
 {
 	// Background color (Cornflower Blue in this case) for clearing
-	const float color[4] = { clear_color.x, clear_color.y, clear_color.z, clear_color.w };
+	const float color[4] = {clear_color.x, clear_color.y, clear_color.z, clear_color.w};
 
 	// Clear the render target and depth buffer (erases what's on the screen)
 	context->ClearRenderTargetView(backBufferRTV, color);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
+	
 	//draw all the entities
 	for (size_t i = 0; i < gameEntities.size(); ++i)
 	{

@@ -125,7 +125,6 @@ void GameplayScene::CreateEntities()
 		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 	}
-	  
 
 	//create entities
 	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("woodplanks"),
@@ -143,7 +142,7 @@ void GameplayScene::CreateEntities()
 	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("soil"),
 	//	vec3(1, 1, 1), vec3(45, 0, 45), vec3(0.7f, 0.6f, 0.8f)));
 
-	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"), ColliderType::BOX);
+	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"), BOX);
 	gameEntities.push_back(player);
 
 	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds", 

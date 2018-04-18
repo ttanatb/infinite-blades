@@ -22,7 +22,7 @@ MeshManager * MeshManager::GetInstancce()
 
 void MeshManager::ReleaseInstance()
 {
-	if (instance != nullptr)
+	if (instance != nullptr) 
 		delete instance;
 }
 

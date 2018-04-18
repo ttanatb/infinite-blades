@@ -18,4 +18,5 @@ struct Collider
 
 	XMFLOAT3 min;
 	XMFLOAT3 max;
+
 };

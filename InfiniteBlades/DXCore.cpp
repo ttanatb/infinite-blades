@@ -50,7 +50,7 @@ DXCore::DXCore(
 	// Initialize fields
 	fpsFrameCount = 0;
 	fpsTimeElapsed = 0.0f;
-
+	
 	device = 0;
 	context = 0;
 	swapChain = 0;
@@ -70,11 +70,11 @@ DXCore::~DXCore()
 {
 	// Release all DirectX resources
 	if (depthStencilView) { depthStencilView->Release(); }
-	if (backBufferRTV) { backBufferRTV->Release(); }
+	if (backBufferRTV) { backBufferRTV->Release();}
 
-	if (swapChain) { swapChain->Release(); }
-	if (context) { context->Release(); }
-	if (device) { device->Release(); }
+	if (swapChain) { swapChain->Release();}
+	if (context) { context->Release();}
+	if (device) { device->Release();}
 }
 
 // --------------------------------------------------------
@@ -84,17 +84,17 @@ HRESULT DXCore::InitWindow()
 {
 	// Start window creation by filling out the
 	// appropriate window class struct
-	WNDCLASS wndClass = {}; // Zero out the memory
-	wndClass.style = CS_HREDRAW | CS_VREDRAW;	// Redraw on horizontal or vertical movement/adjustment
-	wndClass.lpfnWndProc = DXCore::WindowProc;
-	wndClass.cbClsExtra = 0;
-	wndClass.cbWndExtra = 0;
-	wndClass.hInstance = hInstance;						// Our app's handle
-	wndClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);	// Default icon
-	wndClass.hCursor = LoadCursor(NULL, IDC_ARROW);		// Default arrow cursor
-	wndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-	wndClass.lpszMenuName = NULL;
-	wndClass.lpszClassName = "Direct3DWindowClass";
+	WNDCLASS wndClass		= {}; // Zero out the memory
+	wndClass.style			= CS_HREDRAW | CS_VREDRAW;	// Redraw on horizontal or vertical movement/adjustment
+	wndClass.lpfnWndProc	= DXCore::WindowProc;
+	wndClass.cbClsExtra		= 0;
+	wndClass.cbWndExtra		= 0;
+	wndClass.hInstance		= hInstance;						// Our app's handle
+	wndClass.hIcon			= LoadIcon(NULL, IDI_APPLICATION);	// Default icon
+	wndClass.hCursor		= LoadCursor(NULL, IDC_ARROW);		// Default arrow cursor
+	wndClass.hbrBackground	= (HBRUSH)GetStockObject(BLACK_BRUSH);
+	wndClass.lpszMenuName	= NULL;
+	wndClass.lpszClassName	= "Direct3DWindowClass";
 
 	// Attempt to register the window class we've defined
 	if (!RegisterClass(&wndClass))
@@ -117,7 +117,7 @@ HRESULT DXCore::InitWindow()
 		WS_OVERLAPPEDWINDOW,	// Has a title bar, border, min and max buttons, etc.
 		false);					// No menu bar
 
-								// Center the window to the screen
+	// Center the window to the screen
 	RECT desktopRect;
 	GetClientRect(GetDesktopWindow(), &desktopRect);
 	int centeredX = (desktopRect.right / 2) - (clientRect.right / 2);
@@ -139,7 +139,7 @@ HRESULT DXCore::InitWindow()
 		hInstance,	// The app's handle
 		0);			// No other windows in our application
 
-					// Ensure the window was created properly
+	// Ensure the window was created properly
 	if (hWnd == NULL)
 	{
 		DWORD error = GetLastError();
@@ -230,16 +230,16 @@ HRESULT DXCore::InitDirectX()
 
 	// Set up the description of the texture to use for the depth buffer
 	D3D11_TEXTURE2D_DESC depthStencilDesc = {};
-	depthStencilDesc.Width = width;
-	depthStencilDesc.Height = height;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.CPUAccessFlags = 0;
-	depthStencilDesc.MiscFlags = 0;
-	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.Width				= width;
+	depthStencilDesc.Height				= height;
+	depthStencilDesc.MipLevels			= 1;
+	depthStencilDesc.ArraySize			= 1;
+	depthStencilDesc.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.Usage				= D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags			= D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags		= 0;
+	depthStencilDesc.MiscFlags			= 0;
+	depthStencilDesc.SampleDesc.Count	= 1;
 	depthStencilDesc.SampleDesc.Quality = 0;
 
 	// Create the depth buffer and its view, then 
@@ -256,12 +256,12 @@ HRESULT DXCore::InitDirectX()
 	// Lastly, set up a viewport so we render into
 	// to correct portion of the window
 	D3D11_VIEWPORT viewport = {};
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.Width = (float)width;
-	viewport.Height = (float)height;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
+	viewport.TopLeftX	= 0;
+	viewport.TopLeftY	= 0;
+	viewport.Width		= (float)width;
+	viewport.Height		= (float)height;
+	viewport.MinDepth	= 0.0f;
+	viewport.MaxDepth	= 1.0f;
 	context->RSSetViewports(1, &viewport);
 
 	// Return the "everything is ok" HRESULT value
@@ -299,16 +299,16 @@ void DXCore::OnResize()
 
 	// Set up the description of the texture to use for the depth buffer
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
-	depthStencilDesc.Width = width;
-	depthStencilDesc.Height = height;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.CPUAccessFlags = 0;
-	depthStencilDesc.MiscFlags = 0;
-	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.Width				= width;
+	depthStencilDesc.Height				= height;
+	depthStencilDesc.MipLevels			= 1;
+	depthStencilDesc.ArraySize			= 1;
+	depthStencilDesc.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.Usage				= D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags			= D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags		= 0;
+	depthStencilDesc.MiscFlags			= 0;
+	depthStencilDesc.SampleDesc.Count	= 1;
 	depthStencilDesc.SampleDesc.Quality = 0;
 
 	// Create the depth buffer and its view, then 
@@ -369,7 +369,7 @@ HRESULT DXCore::Run()
 		{
 			// Update timer and title bar (if necessary)
 			UpdateTimer();
-			if (titleBarStats)
+			if(titleBarStats)
 				UpdateTitleBarStats();
 
 			// The game loop
@@ -441,10 +441,10 @@ void DXCore::UpdateTitleBarStats()
 	std::ostringstream output;
 	output.precision(6);
 	output << titleBarText <<
-		"    Width: " << width <<
-		"    Height: " << height <<
-		"    FPS: " << fpsFrameCount <<
-		"    Frame Time: " << mspf << "ms";
+		"    Width: "		<< width <<
+		"    Height: "		<< height <<
+		"    FPS: "			<< fpsFrameCount <<
+		"    Frame Time: "	<< mspf << "ms";
 
 	// Append the version of DirectX the app is using
 	switch (dxFeatureLevel)
@@ -520,22 +520,22 @@ LRESULT DXCore::ProcessMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	// Check the incoming message and handle any we care about
 	switch (uMsg)
 	{
-		// This is the message that signifies the window closing
+	// This is the message that signifies the window closing
 	case WM_DESTROY:
 		PostQuitMessage(0); // Send a quit message to our own program
 		return 0;
 
-		// Prevent beeping when we "alt-enter" into fullscreen
-	case WM_MENUCHAR:
+	// Prevent beeping when we "alt-enter" into fullscreen
+	case WM_MENUCHAR: 
 		return MAKELRESULT(0, MNC_CLOSE);
 
-		// Prevent the overall window from becoming too small
+	// Prevent the overall window from becoming too small
 	case WM_GETMINMAXINFO:
 		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
 		((MINMAXINFO*)lParam)->ptMinTrackSize.y = 200;
 		return 0;
 
-		// Sent when the window size changes
+	// Sent when the window size changes
 	case WM_SIZE:
 		// Don't adjust anything when minimizing,
 		// since we end up with a width/height of zero
@@ -549,12 +549,12 @@ LRESULT DXCore::ProcessMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 		// If DX is initialized, resize 
 		// our required buffers
-		if (device)
+		if (device) 
 			OnResize();
 
 		return 0;
 
-		// Mouse button being pressed (while the cursor is currently over our window)
+	// Mouse button being pressed (while the cursor is currently over our window)
 	case WM_LBUTTONDOWN:
 		io.MouseDown[0] = true;
 		OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
@@ -585,12 +585,12 @@ LRESULT DXCore::ProcessMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 		OnMouseUp(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		return 0;
 
-		// Cursor moves over the window (or outside, while we're currently capturing it)
+	// Cursor moves over the window (or outside, while we're currently capturing it)
 	case WM_MOUSEMOVE:
 		OnMouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		return 0;
 
-		// Mouse wheel is scrolled
+	// Mouse wheel is scrolled
 	case WM_MOUSEWHEEL:
 		OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		return 0;

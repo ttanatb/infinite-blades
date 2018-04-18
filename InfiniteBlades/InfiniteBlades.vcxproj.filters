@@ -34,10 +34,10 @@
       <UniqueIdentifier>{55ff1803-b508-4c65-8a47-c8baf70191eb}</UniqueIdentifier>
     </Filter>
     <Filter Include="External Libraries">
-      <UniqueIdentifier>{50c44579-bb26-4b18-8de6-8e1864e1c802}</UniqueIdentifier>
+      <UniqueIdentifier>{d7e3a53a-5018-4672-b02d-6b4400aa2d97}</UniqueIdentifier>
     </Filter>
     <Filter Include="External Libraries\Imgui">
-      <UniqueIdentifier>{dfc8d9a4-7b47-4d36-8dc9-2a16fa8520d8}</UniqueIdentifier>
+      <UniqueIdentifier>{413c0d2a-671e-41de-a1de-dee0fb0b4296}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -186,11 +186,11 @@
     <ClInclude Include="Collider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionSolver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CollisionTestScene.h">
       <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionSolver.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Imgui\imconfig.h">
       <Filter>External Libraries\Imgui</Filter>
