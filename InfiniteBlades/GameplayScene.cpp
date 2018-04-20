@@ -69,11 +69,11 @@ void GameplayScene::Init()
 	InitInput();
 
 
-	directionalLight = { vec4(0.1f, 0.5f, 0.1f, 1.0f),
+	directionalLight = { vec4(0.2f, 0.3f, 0.2f, 1.0f),
 		vec3(1.0f, 1.0f, 0.0f) };
-	directionalLight2 = { vec4(0.8f, 0.8f, 0.5f, 1.0f),
+	directionalLight2 = { vec4(0.2f, 0.2f, 0.3f, 1.0f),
 		vec3(-1.0f, -2.0f, 0.0f) };
-	pointLight = { vec4(0.2f, 0.2f, 0.2f, 1.0f),
+	pointLight = { vec4(0.2f, 0.2f, 0.05f, 1.0f),
 		vec3(0.0f, 5.0f, 10.0f) };
 	ambientLight = vec4(0.1f, 0.1f, 0.1f, 1.0f);
 
@@ -124,7 +124,7 @@ void GameplayScene::LoadShaderMeshMat()
 	matMngr = MaterialManager::GetInstancce();
 	matMngr->Init(device, context);
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
-	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg"  , L"Assets/Textures/iceNormals.jpg", true, 0.90f, L"Assets/Textures/SunnyCubeMap.dds");
+	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg"  , L"Assets/Textures/iceNormals.jpg", true, 0.650f, L"Assets/Textures/SunnyCubeMap.dds");
 	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg", L"Assets/Textures/snowNormals.jpg");
 
 	//meshes
@@ -146,6 +146,8 @@ void GameplayScene::CreateEntities()
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));  
 		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("cube"), matMngr->GetMat("ship"),
+			vec3(0, -5, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 	}
 	  
 
