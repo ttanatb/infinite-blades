@@ -19,7 +19,7 @@ struct VertexToPixel
 	float2 uv			: TEXCOORD;
 	float3 normal		: NORMAL;
 	float3 tangent		: TANGENT;
-	float3 worldPos		: POSITION;
+	float3 worldPos		: WORLD_POS;
 };
 
 //buffer for light calculations
