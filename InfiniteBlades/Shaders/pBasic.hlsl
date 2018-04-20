@@ -19,7 +19,7 @@ struct VertexToPixel
 	float2 uv			: TEXCOORD;
 	float3 normal		: NORMAL;
 	float3 tangent		: TANGENT;
-	float3 worldPos		: POSITION;
+	float3 worldPos		: WORLD_POS;
 };
 
 //buffer for light calculations
@@ -39,7 +39,8 @@ Texture2D diffuseTexture : register(t0);
 Texture2D normalTexture : register(t1);
 
 SamplerState diffuseSampler : register(s0);
-SamplerState  normalSampler : register(s1);
+SamplerState normalSampler	: register(s1);
+TextureCube  skyTexture		: register(t2);
 
 
 //calculates normal based on normal map
@@ -74,6 +75,7 @@ float4 pointLightSpec(PointLight pointLight, float3 normal, float3 worldPos, flo
 	return (pointLight.diffuseColor * saturate(dot(dirToLight, normal))) + spec.xxxx;
 }
 
+
 float4 main(VertexToPixel input) : SV_TARGET
 {
 	//normalize normal (after interpolation)
@@ -88,11 +90,20 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 	// Adjust the normal from the map and simply use the results
 	input.normal = recalculateNormals(input.normal, input.tangent, input.uv);
+	// Direction to the camera from the current pixel
+	float3 dirToCamera = normalize(cameraPos - input.worldPos);
 
-	return diffuseTexture.Sample(diffuseSampler, input.uv) *						  //texture
-		(ambientColor +																  //ambient color
-			dirLightDiffuse(directionalLight, input.normal) +							  //dir light 1
-			dirLightDiffuse(directionalLight2, input.normal) +							  //dir light 2
-			pointLightSpec(pointLight, input.normal, input.worldPos, cameraPos, 256));	  //point light
+	//reflections 
+	float4 reflection = skyTexture.Sample(
+		normalSampler,
+		reflect(-dirToCamera, input.normal));
+
+	//lights in the scene 
+	float4 lights = (ambientColor +													  //ambient color
+		dirLightDiffuse(directionalLight, input.normal) +							  //dir light 1
+		dirLightDiffuse(directionalLight2, input.normal) +							  //dir light 2
+		pointLightSpec(pointLight, input.normal, input.worldPos, cameraPos, 256));    //point light
+	
+	return reflection * surfaceColor * lights;
 }
 

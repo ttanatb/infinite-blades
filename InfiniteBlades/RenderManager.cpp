@@ -38,17 +38,10 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 		SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
 		vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
 		vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
-
-		//prepare per-object data
-		if (matPtr->GetTransparentBool())
-		{
-			matPtr->PrepareMaterialReflection(list[i]->GetWorldMat(), skybox->GetShaderResourceView());
-		}
-		else
-		{
-			matPtr->PrepareMaterial(list[i]->GetWorldMat());
-		}
+		matPtr->PrepareMaterial(list[i]->GetWorldMat());
+		//get vertex buffer
 		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
+		//set index buffer
 		context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
 		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);

@@ -36,9 +36,9 @@ void MaterialManager::ReleaseAllMaterials()
 	}
 }
 
-void MaterialManager::AddMat(char * name, SimpleVertexShader * vShader, SimplePixelShader * pShader, const wchar_t * diffuseFileName, const wchar_t * normalFileName, bool transparentBool, float transparentStr)
+void MaterialManager::AddMat(char * name, SimpleVertexShader * vShader, SimplePixelShader * pShader, const wchar_t * diffuseFileName, const wchar_t * normalFileName, bool transparentBool, float transparentStr, const wchar_t * reflectionFileName)
 {
-	Material* mat = new Material(vShader, pShader, device, context, diffuseFileName, normalFileName, transparentBool, transparentStr);
+	Material* mat = new Material(vShader, pShader, device, context, diffuseFileName, normalFileName, transparentBool, transparentStr, reflectionFileName);
 	map.insert(std::pair<char*, Material*>(name, mat));
 }
 

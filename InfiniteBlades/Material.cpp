@@ -2,9 +2,9 @@
 
 
 
-Material::Material(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID3D11Device * device, ID3D11DeviceContext * context, const wchar_t * diffuseFileName, const wchar_t * normalFileName, bool transparentBool, float transparentStr)
+Material::Material(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID3D11Device * device, ID3D11DeviceContext * context, const wchar_t * diffuseFileName, const wchar_t * normalFileName, bool transparentBool, float transparentStr, const wchar_t* reflectionFileName)
 {
-	InitMaterial(vShader, pShader, device, context, diffuseFileName, normalFileName);
+	InitMaterial(vShader, pShader, device, context, diffuseFileName, normalFileName, reflectionFileName);
 	this->transparentBool = transparentBool;
 	this->transparentStr = transparentStr;
 }
@@ -18,9 +18,10 @@ Material::~Material()
 
 	if (normalSRVptr != nullptr) normalSRVptr->Release();
 	if (normalSamplerPtr != nullptr) normalSamplerPtr->Release();
+	if (reflectionSRVptr != nullptr) reflectionSRVptr->Release();
 }
 
-void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID3D11Device * device, ID3D11DeviceContext * context, const wchar_t * diffuseFileName, const wchar_t * normalFileName)
+void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID3D11Device * device, ID3D11DeviceContext * context, const wchar_t * diffuseFileName, const wchar_t * normalFileName, const wchar_t* reflectionFileName)
 {
 	vertexShader = vShader;
 	pixelShader = pShader;
@@ -30,6 +31,11 @@ void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pS
 		DirectX::CreateWICTextureFromFile(device, context, normalFileName, 0, &normalSRVptr);
 	else 
 		DirectX::CreateWICTextureFromFile(device, context, L"Assets/Textures/defaultNormal.png", 0, &normalSRVptr);
+
+	if(reflectionFileName != nullptr)
+		DirectX::CreateDDSTextureFromFile(device, context, reflectionFileName, 0, &reflectionSRVptr);
+	else
+		DirectX::CreateDDSTextureFromFile(device, L"Assets/Textures/defaultReflection.dds", 0, &reflectionSRVptr);
 
 	D3D11_SAMPLER_DESC diffuseSamplerDesc = D3D11_SAMPLER_DESC();
 	diffuseSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -86,18 +92,8 @@ void Material::PrepareMaterial(mat4* worldMat)
 	pixelShader->SetSamplerState("normalSampler", normalSamplerPtr);
 	pixelShader->SetShaderResourceView("diffuseTexture", diffuseSRVptr);
 	pixelShader->SetShaderResourceView("normalTexture", normalSRVptr);
+	pixelShader->SetShaderResourceView("skyTexture", reflectionSRVptr);
 	pixelShader->CopyAllBufferData();
 	pixelShader->SetShader();
 }
 
-void Material::PrepareMaterialReflection(mat4* worldMat, ID3D11ShaderResourceView* skySRV) {
-	vertexShader->SetMatrix4x4("world", *worldMat);
-	vertexShader->CopyAllBufferData();
-	vertexShader->SetShader();
-
-	pixelShader->SetSamplerState("basicSampler", diffuseSamplerPtr);
-	pixelShader->SetShaderResourceView("diffuseTexture", diffuseSRVptr);
-	pixelShader->SetShaderResourceView("skyTexture", skySRV);
-	pixelShader->CopyAllBufferData();
-	pixelShader->SetShader();
-}
