@@ -43,3 +43,15 @@ void Material::PrepareMaterial(mat4* worldMat)
 	pixelShader->CopyAllBufferData();
 	pixelShader->SetShader();
 }
+
+
+void Material::PrepareMaterial()
+{
+	vertexShader->CopyAllBufferData();
+	vertexShader->SetShader();
+
+	pixelShader->SetSamplerState("basicSampler", samplerPtr);
+	pixelShader->SetShaderResourceView("diffuseTexture", srvPtr);
+	pixelShader->CopyAllBufferData();
+	pixelShader->SetShader();
+}

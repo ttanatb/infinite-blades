@@ -11,10 +11,6 @@ cbuffer perFrameData : register(b0)
 	matrix projection;
 };
 
-cbuffer perObjData : register(b1)
-{
-	matrix world;
-};
 // Struct representing a single vertex worth of data
 // - This should match the vertex definition in our C++ code
 // - By "match", I mean the size, order and number of members
@@ -28,8 +24,9 @@ struct VertexShaderInput
 	//  |    |                |
 	//  v    v                v
 	float3 position		: POSITION;     // XYZ position
-	float3 normal		: NORMAL;
-	float2 uv			: TEXCOORD;
+	float2 uv			: TEXCOORD0;
+	float4 color		: TEXCOORD1;
+	float size			: SIZE;
 };
 
 // Struct representing the data we're sending down the pipeline
@@ -45,8 +42,8 @@ struct VertexToPixel
 	//  |    |                |
 	//  v    v                v
 	float4 position		: SV_POSITION;	// XYZW position (System Value Position)
-	float2 uv			: TEXCOORD;
-	float3 worldPos		: WORLD_POS;
+	float2 uv			: TEXCOORD0;
+	float4 color		: TEXCOORD1;
 };
 
 // --------------------------------------------------------
@@ -61,27 +58,21 @@ VertexToPixel main(VertexShaderInput input)
 	// Set up output struct
 	VertexToPixel output;
 
-	// The vertex's position (input.position) must be converted to world space,
-	// then camera space (relative to our 3D camera), then to proper homogenous 
-	// screen-space coordinates.  This is taken care of by our world, view and
-	// projection matrices.  
-	//
-	// First we multiply them together to get a single matrix which represents
-	// all of those transformations (world to view to projection space)
-	matrix worldViewProj = mul(mul(world, view), projection);
+	//Since we use billboarding, everything wants to be in 2D space, so we don't need world position
+	matrix viewProj = mul(view, projection);
 
-	// Then we convert our 3-component position vector to a 4-component vector
-	// and multiply it by our final 4x4 matrix.
-	//
-	// The result is essentially the position (XY) of the vertex on our 2D 
-	// screen and the distance (Z) from the camera (the "depth" of the pixel)
-	output.position = mul(float4(input.position, 1.0f), worldViewProj);
-	output.worldPos = mul(float4(input.position, 1.0f), world).xyz;
+	output.position = mul(float4(input.position, 1.0f), viewProj);
+
+	//Billboarding calculations
+	//Use the UV to offset the position
+	float2 offset = input.uv * 2 - 1;
+	offset *= input.size;
+	offset.y *= -1;
+	output.position.xy += offset;
+
+
 	output.uv = input.uv;
-	// Pass the color through 
-	// - The values will be interpolated per-pixel by the rasterizer
-	// - We don't need to alter it here, but we do need to send it to the pixel shader
-	//output.color = input.color;
+	output.color = input.color;
 
 	// Whatever we return will make its way through the pipeline to the
 	// next programmable stage we're using (the pixel shader for now)

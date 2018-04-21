@@ -1,14 +1,3 @@
-struct ParticleVertex
-{
-	float3 Position;
-	float2 UV;
-	float4 Color;
-	float Size;
-};
-
-ParticleVertex pVertex : register(b0);
-Texture2D diffuseTexture	: register(t0);
-SamplerState basicSampler	: register(s0);
 // Struct representing the data we expect to receive from earlier pipeline stages
 // - Should match the output of our corresponding vertex shader
 // - The name of the struct itself is unimportant
@@ -21,10 +10,13 @@ struct VertexToPixel
 	//  |   Name          Semantic
 	//  |    |                |
 	//  v    v                v
-	float4 position		: SV_POSITION;
-	float2 uv			: TEXCOORD;
-	float3 worldPos		: WORLD_POS;
+	float4 position		: SV_POSITION;	// XYZW position (System Value Position)
+	float2 uv			: TEXCOORD0;
+	float4 color		: TEXCOORD1;
 };
+
+Texture2D diffuseTexture	: register(t0);
+SamplerState basicSampler	: register(s0);
 // --------------------------------------------------------
 // The entry point (main method) for our pixel shader
 // 
@@ -38,6 +30,6 @@ float4 main(VertexToPixel input) : SV_TARGET
 {
 	float4 surfaceColor = diffuseTexture.Sample(basicSampler, input.uv);
 	
-	return surfaceColor * pVertex.Color;
+	return surfaceColor * input.color;
 }
 
