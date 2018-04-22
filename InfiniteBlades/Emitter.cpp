@@ -97,9 +97,9 @@ void Emitter::UpdateParticle(int index, float deltaTime)
 	//TODO: update color and size (if change over time)
 
 	//Update position based on velocity (basic)
-	particles[index].Position.x += velocity.x;
-	particles[index].Position.y += velocity.y;
-	particles[index].Position.z += velocity.z;
+	particles[index].Position.x += particles[index].StartVelocity.x * deltaTime;
+	particles[index].Position.y += particles[index].StartVelocity.y * deltaTime;
+	particles[index].Position.z += particles[index].StartVelocity.z * deltaTime;
 }
 
 void Emitter::SpawnParticle()
@@ -132,8 +132,8 @@ void Emitter::CreateParticles()
 	for (size_t i = 0; i < 4 * maxParticles; i+=4) {
 		localParticleVertices[i].UV = vec2(0, 0);
 		localParticleVertices[i + 1].UV = vec2(1, 0);
-		localParticleVertices[i + 2].UV = vec2(0, 1);
-		localParticleVertices[i + 3].UV = vec2(1, 1);
+		localParticleVertices[i + 2].UV = vec2(1, 1);
+		localParticleVertices[i + 3].UV = vec2(0, 1);
 	}
 }
 

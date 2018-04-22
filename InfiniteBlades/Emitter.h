@@ -3,6 +3,7 @@
 #include "Particle.h"
 #include "Camera.h"
 
+using namespace DirectX;
 class Emitter
 	: public GameEntity {
 private:

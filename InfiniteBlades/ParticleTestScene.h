@@ -59,6 +59,10 @@ private:
 	std::vector<GameEntity*> gameEntities;
 	Emitter* testEmitter;
 
+	//render states
+	ID3D11DepthStencilState* particleDepthState;
+	ID3D11BlendState* particleBlendState;
+
 	// Keeps track of the old mouse position.  Useful for 
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;

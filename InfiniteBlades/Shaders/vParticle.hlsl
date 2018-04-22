@@ -24,8 +24,8 @@ struct VertexShaderInput
 	//  |    |                |
 	//  v    v                v
 	float3 position		: POSITION;     // XYZ position
-	float2 uv			: TEXCOORD0;
-	float4 color		: TEXCOORD1;
+	float2 uv			: TEXCOORD;
+	float4 color		: COLOR;
 	float size			: SIZE;
 };
 
