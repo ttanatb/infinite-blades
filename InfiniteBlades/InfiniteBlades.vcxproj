@@ -154,9 +154,11 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
     <ClCompile Include="DefaultTestScene.cpp" />
     <ClCompile Include="DXCore.cpp" />
     <ClCompile Include="GameplayScene.cpp" />
+    <ClCompile Include="LiveReflectionTestScene.cpp" />
     <ClCompile Include="NormalMapTestScene.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ReflectionTestScene.cpp" />
+    <ClCompile Include="ReflectionCubeMap.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="GameEntity.cpp" />
@@ -177,9 +179,11 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="DXCore.h" />
     <ClInclude Include="GameplayScene.h" />
+    <ClInclude Include="LiveReflectionTestScene.h" />
     <ClInclude Include="NormalMapTestScene.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ReflectionTestScene.h" />
+    <ClInclude Include="ReflectionCubeMap.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="GameEntity.h" />

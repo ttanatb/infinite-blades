@@ -5,7 +5,7 @@
 #include "TransperancyTestScene.h"
 #include "ReflectionTestScene.h"
 #include "NormalMapTestScene.h"
-
+#include "LiveReflectionTestScene.h"
 
 //**TO CHANGE SCENES: MAKE SURE TO INCLUDE THEM HERE**
 
@@ -65,7 +65,7 @@ int WINAPI WinMain(
 	//**TO CHANGE SCENES: MAKE SURE TO CHANGE THE FOLLOWING LINE**
 	//DefaultTestScene dxGame(hInstance);
 	//ReflectionTestScene dxGame(hInstance);
-	GameplayScene dxGame(hInstance);
+	LiveReflectionTestScene dxGame(hInstance);
 	//SkyboxTestScene dxGame(hInstance);
 	//NormalMapTestScene dxGame(hInstance);
 

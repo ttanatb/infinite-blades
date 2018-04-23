@@ -136,6 +136,10 @@ void RenderManager::Init(ID3D11Device * device, ID3D11DeviceContext * context)
 	this->device = device;
 	this->context = context;
 	InitBlendState();
+	reflectionCubeMap = new ReflectionCubeMap(device, context, (float)1000.0f, (float)1000.0f);
+	reflectionCubeMap->BuildDynamicCubeMapView();
+	reflectionCubeMap->BuildCubeFaceCamera(camera->GetPos().x, camera->GetPos().y, camera->GetPos().z);
+	reflectionCubeMap->RenderCubeMap();
 }
 
 void RenderManager::AddToTransparent(GameEntity* gameEntity)

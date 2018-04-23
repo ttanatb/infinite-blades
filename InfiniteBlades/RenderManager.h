@@ -8,6 +8,8 @@
 #include "Skybox.h"
 #include "Lights.h"
 #include "Camera.h"
+#include "ReflectionCubeMap.h"
+#include "DXCore.h"
 
 class RenderManager
 {
@@ -37,6 +39,8 @@ private:
 	void InitBlendState();
 	//helper functions for sorting rendering lists
 	void SortOpqaue(std::vector<GameEntity*> list, Camera* camera);
+	//reflections
+	ReflectionCubeMap* reflectionCubeMap;
 public:
 	static RenderManager* GetInstance();
 	static void ReleaseInstance();
