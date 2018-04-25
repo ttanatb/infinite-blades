@@ -45,7 +45,8 @@ public:
 	bool GetTransparentBool();
 	void SetTransparentState(bool transparentBool);
 	float GetTransparentStr();
-	void SetReflection(const wchar_t * reflectionFileName);
+	void SetReflectionFile(const wchar_t * reflectionFileName);
+	void SetReflectionSRV(ID3D11ShaderResourceView* srv);
 	void SetVertexShader(SimpleVertexShader* newVertexShader);
 	void SetPixelShader(SimplePixelShader* newPixelShader);
 

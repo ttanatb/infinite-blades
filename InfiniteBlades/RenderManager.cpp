@@ -25,11 +25,13 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 		SimplePixelShader* pixelShader = matPtr->GetPixelShader();
 		pixelShader->SetFloat4("ambientColor", ambientLight);
 		//Set Directiona Lights
-		for (auto& light : directionaLightMap) {
+		for (auto& light : directionaLightMap) 
+		{
 			pixelShader->SetData(light.first, &light.second, sizeof(light.second));
 		}
 		//Set Point Lights 
-		for (auto& light : pointLightMap) {
+		for (auto& light : pointLightMap) 
+		{
 			pixelShader->SetData(light.first, &light.second, sizeof(light.second));
 		}
 		pixelShader->SetFloat3("cameraPos", camera->GetPos());
@@ -38,6 +40,10 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 		SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
 		vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
 		vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
+		if(matPtr->GetTransparentBool())
+		{
+			//matPtr->SetReflectionSRV(reflectionCubeMap->GetShaderResourceView());
+		}
 		matPtr->PrepareMaterial(list[i]->GetWorldMat());
 		//get vertex buffer
 		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
@@ -109,6 +115,8 @@ void RenderManager::Draw()
 {
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
+	reflectionCubeMap->UpdateCubeFaceCamera(camera->GetPos().x, camera->GetPos().y, camera->GetPos().z);
+	reflectionCubeMap->RenderCubeMap();
 	//turn transparency off
 	context->OMSetBlendState(NULL, 0, 0xFFFFFFFF);
 	//draw opaque object
@@ -119,16 +127,22 @@ void RenderManager::Draw()
 	context->OMSetBlendState(blendState, 0, 0xFFFFFFFF);
 	SortOpqaue(transparentObjects, camera);
 	DrawObjects(transparentObjects, stride, offset, camera);
+	//// At the end of the frame, reset render states
+	context->RSSetState(0);
+	context->OMSetDepthStencilState(0, 0);
 }
 
 void RenderManager::InitSkyBox(Skybox * skybox)
 {
 	this->skybox = skybox;
+	reflectionCubeMap = new ReflectionCubeMap(device, context, (float)1000.0f, (float)1000.0f, skybox);
+	reflectionCubeMap->BuildDynamicCubeMapView();
 }
 
 void RenderManager::InitCamera(Camera * camera)
 {
 	this->camera = camera;
+	reflectionCubeMap->BuildCubeFaceCamera(camera->GetPos().x, camera->GetPos().y, camera->GetPos().z);
 }
 
 void RenderManager::Init(ID3D11Device * device, ID3D11DeviceContext * context)
@@ -136,10 +150,7 @@ void RenderManager::Init(ID3D11Device * device, ID3D11DeviceContext * context)
 	this->device = device;
 	this->context = context;
 	InitBlendState();
-	reflectionCubeMap = new ReflectionCubeMap(device, context, (float)1000.0f, (float)1000.0f);
-	reflectionCubeMap->BuildDynamicCubeMapView();
-	reflectionCubeMap->BuildCubeFaceCamera(camera->GetPos().x, camera->GetPos().y, camera->GetPos().z);
-	reflectionCubeMap->RenderCubeMap();
+
 }
 
 void RenderManager::AddToTransparent(GameEntity* gameEntity)
@@ -172,5 +183,6 @@ void RenderManager::AddPointLight(char* name, PointLight pointLight)
 
 RenderManager::~RenderManager()
 {
+	delete reflectionCubeMap;
 	ReleaseBlendState();
 }

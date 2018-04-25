@@ -287,10 +287,6 @@ void LiveReflectionTestScene::Draw(float deltaTime, float totalTime)
 	////render skybox
 	//skybox->Render(context, camera, stride, offset);
 
-	//// At the end of the frame, reset render states
-	context->RSSetState(0);
-	context->OMSetDepthStencilState(0, 0);
-
 	swapChain->Present(0, 0);
 }
 

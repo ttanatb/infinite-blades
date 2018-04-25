@@ -8,15 +8,21 @@
 class ReflectionCubeMap
 {
 public:
-	ReflectionCubeMap(ID3D11Device* device, ID3D11DeviceContext* context, float width, float height);
+	ReflectionCubeMap(ID3D11Device* device, ID3D11DeviceContext* context, float width, float height, Skybox* skybox);
 	void BuildDynamicCubeMapView();
 	void BuildCubeFaceCamera(float x, float y, float z);
+	void UpdateCubeFaceCamera(float x, float y, float z);
+	void CalcCameras(float x, float y, float z);
 	void RenderCubeMap();
+	ID3D11ShaderResourceView* GetShaderResourceView();
 	~ReflectionCubeMap();
 private:
 	const int cubeMapSize = 256;
 	float width;
 	float height;
+	std::vector<vec3> targets;
+	std::vector<vec3> ups;
+	Skybox* skybox;
 	ID3D11Device* device;
 	ID3D11DeviceContext* context;
 	D3D11_TEXTURE2D_DESC texDesc;
@@ -31,5 +37,9 @@ private:
 	ID3D11ShaderResourceView* dynamicCubeMapSRV;
 	D3D11_VIEWPORT cubeMapViewPort;
 	std::vector<Camera*> cubeMapCamera;
+	UINT numOfPreviousPorts = 1;
+	D3D11_VIEWPORT previousViewport;
+	ID3D11RenderTargetView* previousRenderTarget;
+	ID3D11DepthStencilView* previousDSV;
 };
 

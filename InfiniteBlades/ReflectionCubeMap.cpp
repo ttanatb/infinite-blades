@@ -2,17 +2,27 @@
 
 
 
-ReflectionCubeMap::ReflectionCubeMap(ID3D11Device* device, ID3D11DeviceContext* context, float width, float height)
+ReflectionCubeMap::ReflectionCubeMap(ID3D11Device* device, ID3D11DeviceContext* context, float width, float height, Skybox* skybox)
 {
 	this->device = device;
 	this->context = context;
 	this->width = width;
 	this->height = height;
+	this->skybox = skybox;
 }
 
 
 ReflectionCubeMap::~ReflectionCubeMap()
 {
+	//release, now that it is it saved to the views 
+	texture->Release();
+	depthTex->Release();
+	dynamicCubeMapSRV->Release();
+	dynamicCubeDSV->Release();
+	for (int i = 0; i < 6; i++) {
+		dynamicCubeRTV[i]->Release();
+		delete cubeMapCamera[i];
+	}
 }
 
 void ReflectionCubeMap::BuildDynamicCubeMapView()
@@ -34,7 +44,7 @@ void ReflectionCubeMap::BuildDynamicCubeMapView()
 	//create the render target view array
 	rtvDesc.Format = texDesc.Format;
 	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
-	rtvDesc.Texture2DArray.ArraySize = 0;
+	rtvDesc.Texture2DArray.ArraySize = 1;
 	rtvDesc.Texture2DArray.MipSlice = 0;
 	for (int i = 0; i < 6; i++) {
 		rtvDesc.Texture2DArray.FirstArraySlice = i;
@@ -46,8 +56,6 @@ void ReflectionCubeMap::BuildDynamicCubeMapView()
 	srvDesc.TextureCube.MipLevels = -1;
 	srvDesc.TextureCube.MostDetailedMip = 0;
 	device->CreateShaderResourceView(texture, &srvDesc, &dynamicCubeMapSRV);
-	//release, now that it is it saved to the views 
-	texture->Release();
 	//create depth/stencil state
 	depthTexDesc = {
 		(UINT)cubeMapSize,
@@ -69,7 +77,7 @@ void ReflectionCubeMap::BuildDynamicCubeMapView()
 	};
 	dsvDesc.Texture2D.MipSlice = 0;
 	device->CreateDepthStencilView(depthTex, &dsvDesc, &dynamicCubeDSV);
-	depthTex->Release();
+
 	//create the view port for rendering the cubemap faces
 	cubeMapViewPort = {
 		0.0f,
@@ -83,7 +91,23 @@ void ReflectionCubeMap::BuildDynamicCubeMapView()
 
 void ReflectionCubeMap::BuildCubeFaceCamera(float x, float y, float z)
 {
-	std::vector<vec3> targets;
+	CalcCameras(x, y, z);
+	for (int i = 0; i < 6; i++) {
+		cubeMapCamera.push_back(new Camera(width, height, targets[i], ups[i].y, ups[i].z));
+		cubeMapCamera[i]->Update();
+	}
+}
+
+void ReflectionCubeMap::UpdateCubeFaceCamera(float x, float y, float z)
+{
+	CalcCameras(x, y, z);
+	for (int i = 0; i < 6; i++) {
+		cubeMapCamera[i]->Update();
+	}
+}
+
+void ReflectionCubeMap::CalcCameras(float x, float y, float z)
+{
 	targets = {
 		vec3(x + 1, y, z),
 		vec3(x - 1, y, z),
@@ -93,7 +117,6 @@ void ReflectionCubeMap::BuildCubeFaceCamera(float x, float y, float z)
 		vec3(x, y, z - 1),
 	};
 
-	std::vector<vec3> ups;
 	ups = {
 		vec3(0, 1, 0),
 		vec3(0, 1, 0),
@@ -102,14 +125,17 @@ void ReflectionCubeMap::BuildCubeFaceCamera(float x, float y, float z)
 		vec3(0, 1, 0),
 		vec3(0, 1, 0),
 	};
-	for (int i = 0; i < 6; i++) {
-		cubeMapCamera[i] = new Camera(width, height, targets[i], ups[i].y, ups[i].z);
-		cubeMapCamera[i]->Update();
-	}
 }
 
 void ReflectionCubeMap::RenderCubeMap()
 {
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	//save the old viewport 
+	context->RSGetViewports(&numOfPreviousPorts, &previousViewport);
+	//get old render target 
+	context->OMGetRenderTargets(1, &previousRenderTarget, &previousDSV);
+	//set new view port
 	context->RSSetViewports(1, &cubeMapViewPort);
 	const float color[4] = { 0.4f, 0.6f, 0.75f, 0.0f };
 	for (int i = 0; i < 6; i++) {
@@ -120,7 +146,21 @@ void ReflectionCubeMap::RenderCubeMap()
 			1.0f,
 			0
 		);
-		cubeMapCamera[i]->Update();
+		context->OMSetRenderTargets(1, &dynamicCubeRTV[i], dynamicCubeDSV);
+		skybox->Render(context, cubeMapCamera[i], stride, offset);
 	}
+	//restore old view ports
+	context->RSSetViewports(numOfPreviousPorts, &previousViewport);
+	context->OMSetRenderTargets(1, &previousRenderTarget, previousDSV);
+	//generate mip chain for cube map
 	context->GenerateMips(dynamicCubeMapSRV);
+	context->ClearRenderTargetView(previousRenderTarget, color);
+	context->ClearDepthStencilView(previousDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	previousRenderTarget->Release();
+	previousDSV->Release();
+}
+
+ID3D11ShaderResourceView* ReflectionCubeMap::GetShaderResourceView()
+{
+	return dynamicCubeMapSRV;
 }

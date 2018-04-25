@@ -82,6 +82,11 @@ float Material::GetTransparentStr()
 	return transparentStr;
 }
 
+void Material::SetReflectionSRV(ID3D11ShaderResourceView * srv)
+{
+	this->reflectionSRVptr = srv;
+}
+
 void Material::PrepareMaterial(mat4* worldMat)
 {
 	vertexShader->SetMatrix4x4("world", *worldMat);
