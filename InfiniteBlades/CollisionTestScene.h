@@ -34,7 +34,7 @@ public:
 	void OnMouseWheel(float wheelDelta, int x, int y);
 private:
 	bool isMoving = true;
-	bool freelookEnabled;
+	bool freelookEnabled = false;
 
 	// Initialization helper methods - feel free to customize, combine, etc.
 	void LoadShaderMeshMat();
