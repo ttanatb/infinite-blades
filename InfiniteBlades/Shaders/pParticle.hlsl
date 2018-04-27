@@ -28,8 +28,10 @@ SamplerState basicSampler	: register(s0);
 // --------------------------------------------------------
 float4 main(VertexToPixel input) : SV_TARGET
 {
+	//if (input.color.a < 0.1f) discard;
+	
 	float4 surfaceColor = diffuseTexture.Sample(basicSampler, input.uv);
 	
-	return surfaceColor * input.color;
+	return surfaceColor * input.color * input.color.a;
 }
 

@@ -126,7 +126,7 @@ void ParticleTestScene::LoadShaderMeshMat()
 	matMngr->AddMat("concrete", vShader, pShader, L"Assets/Textures/concrete.jpg");
 	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/soil.jpg");
 	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/woodplanks.jpg");
-	matMngr->AddMat("particle", vParticleShader, pParticleShader, L"Assets/Textures/pink_circle.png");
+	matMngr->AddMat("particle", vParticleShader, pParticleShader, L"Assets/Textures/white_circle.png");
 
 	//Load Meshes
 	meshMngr = MeshManager::GetInstancce();
@@ -140,7 +140,7 @@ void ParticleTestScene::CreateEntities()
 	camera = new Camera((float)width, (float)height, vec3(0.0f, 0.0f, -5.0f), 0.0f, 0.0f);
 	
 	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"),
-		vec3(0, 0, 0), vec3(0, 0, 0), 0.8f));
+		vec3(0, 0, 0), vec3(0, 0, 0), 0.1f));
 	testEmitter = new Emitter(device, matMngr->GetMat("particle"));
 }
 
@@ -185,12 +185,14 @@ void ParticleTestScene::Update(float deltaTime, float totalTime)
 		camera->Move(0, +0.01f, 0);
 	if (inputMngr->GetKey('X'))
 		camera->Move(0, -0.01f, 0);
+
+	testEmitter->Update(deltaTime);
+
 	camera->Update();
 
 	for (size_t i = 0; i < gameEntities.size(); ++i) {
 		gameEntities[i]->Update();
 	}
-	testEmitter->Update(context, deltaTime);
 
 	if (inputMngr->GetKeyDown('T')) {
 		isMoving = !isMoving;
@@ -258,6 +260,8 @@ void ParticleTestScene::Draw(float deltaTime, float totalTime)
 	//reset render states back to default
 	context->OMSetBlendState(0, blend, 0xffffffff);
 	context->OMSetDepthStencilState(0, 0);
+
+	//Present the back buffer
 	swapChain->Present(0, 0);
 }
 

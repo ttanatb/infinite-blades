@@ -12,10 +12,12 @@ private:
 	float emissionRate;	//Emissions per second
 	bool loopable = true;
 	bool active = true;
-	vec4 color;
+	vec4 startColor;
+	vec4 endColor;
 	vec3 velocity;
 	float lifetime;
-	float size;
+	float startSize;
+	float endSize;
 
 	float timeSinceLastEmit;
 
@@ -38,11 +40,14 @@ public:
 
 	//Complete Constructor
 	Emitter(
-		ID3D11Device * device, 
-		Material* material, 
-		vec4 color, 
-		vec3 velocity, 
-		float lifetime, 
+		ID3D11Device * device,
+		Material* material,
+		vec4 startColor,
+		vec4 endColor,
+		vec3 velocity,
+		float startSize,
+		float endSize,
+		float lifetime,
 		bool loopable, 
 		bool active, 
 		int maxParticles, 
@@ -51,7 +56,7 @@ public:
 	);
 	~Emitter();
 
-	void Update(ID3D11DeviceContext* context, float deltaTime);
+	void Update(float deltaTime);
 	void UpdateParticle(int index, float deltaTime);
 	void SpawnParticle();
 	void RenderParticles(ID3D11DeviceContext* context, Camera* camera);

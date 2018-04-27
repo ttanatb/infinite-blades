@@ -2,16 +2,18 @@
 
 
 Emitter::Emitter(ID3D11Device * device, Material* material)
-	: GameEntity(nullptr, material, vec3(0, 0, 0.0f), vec3(0, 0, 0), vec3(1.0f, 1.0f, 0.0f))
+	: GameEntity(nullptr, material, vec3(0, 0, 0.0f), vec3(0, 0, 0), vec3(1.0f, 1.0f, 1.0f))
 {
-	this->color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	this->startColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	this->endColor = vec4(1.0f, 1.0f, 1.0f, 0.0f);
 	this->velocity = vec3(0.0f, 3.0f, 0.0f);
-	this->lifetime = 10;
+	this->lifetime = 1;
 	this->loopable = true;
 	this->active = true;
 	this->maxParticles = 10;
 	this->emissionRate = 0.1f;
-	this->size = 1;
+	this->startSize = 0.2f;
+	this->endSize = 0.4f;
 	this->timeSinceLastEmit = 0;
 	this->livingParticleCount = 0;
 	this->firstAliveIndex = 0;
@@ -20,18 +22,31 @@ Emitter::Emitter(ID3D11Device * device, Material* material)
 	CreateBuffers(device);
 }
 
-Emitter::Emitter(ID3D11Device * device, Material* material, vec4 color, vec3 velocity,
-	float lifetime, bool loopable, bool active, int maxParticles, float emissionRate, vec3 position)
+Emitter::Emitter(ID3D11Device * device, 
+	Material* material, 
+	vec4 startColor, 
+	vec4 endColor, 
+	vec3 velocity, 
+	float startSize,
+	float endSize,
+	float lifetime, 
+	bool loopable, 
+	bool active, 
+	int maxParticles, 
+	float emissionRate, 
+	vec3 position)
 	: GameEntity(nullptr, material, position, vec3(0, 0, 0), vec3(1.0f, 1.0f, 1.0f))
 {
-	this->color = color;
+	this->startColor = startColor;
+	this->endColor = endColor;
 	this->velocity = velocity;
 	this->lifetime = lifetime;
 	this->loopable = loopable;
 	this->active = active;
 	this->maxParticles = maxParticles;
 	this->emissionRate = 1.0f / emissionRate;
-	this->size = 1;
+	this->startSize = startSize;
+	this->endSize = endSize;
 	this->timeSinceLastEmit = 0;
 	this->livingParticleCount = 0;
 	this->firstAliveIndex = 0;
@@ -49,7 +64,7 @@ Emitter::~Emitter()
 }
 
 //Here we will do all emission calculations
-void Emitter::Update(ID3D11DeviceContext* context, float deltaTime)
+void Emitter::Update(float deltaTime)
 {
 	timeSinceLastEmit += deltaTime;
 
@@ -62,18 +77,18 @@ void Emitter::Update(ID3D11DeviceContext* context, float deltaTime)
 	//if first alive is before first dead
 	if (firstAliveIndex < firstDeadIndex) {
 		for (int i = firstAliveIndex; i < firstDeadIndex; ++i) {
-			UpdateParticle(deltaTime, i);
+			UpdateParticle(i, deltaTime);
 		}
 	}
 	//if first alive is after first dead
 	else {
 		//update first alive - max
 		for (int i = firstAliveIndex; i < maxParticles; i++) {
-			UpdateParticle(deltaTime, i);
+			UpdateParticle(i, deltaTime);
 		}
 		//update 0 - first dead
 		for (int i = 0; i < firstDeadIndex; i++) {
-			UpdateParticle(deltaTime, i);
+			UpdateParticle(i, deltaTime);
 		}
 	}
 }
@@ -94,12 +109,22 @@ void Emitter::UpdateParticle(int index, float deltaTime)
 		return;
 	}
 
-	//TODO: update color and size (if change over time)
-
 	//Update position based on velocity (basic)
 	particles[index].Position.x += particles[index].StartVelocity.x * deltaTime;
 	particles[index].Position.y += particles[index].StartVelocity.y * deltaTime;
 	particles[index].Position.z += particles[index].StartVelocity.z * deltaTime;
+
+	//LERP color and size based on age
+	float agePercentage = particles[index].Age / lifetime;
+
+	//simple single float lerp for size
+	particles[index].Size = startSize + agePercentage * (endSize - startSize);
+
+	//Use XMVectorLerp for a vec4
+	//We need to use XMVECTOR because Lerp is only available on this type
+	//So we will convert to XMVECTOR, then convert back to XMFLOAT4
+	XMVECTOR lerp = XMVectorLerp(XMLoadFloat4(&startColor), XMLoadFloat4(&endColor), agePercentage);
+	XMStoreFloat4(&particles[index].Color, lerp);
 }
 
 void Emitter::SpawnParticle()
@@ -109,13 +134,13 @@ void Emitter::SpawnParticle()
 
 	//create new particle
 	particles[firstDeadIndex].Age = 0;
-	particles[firstDeadIndex].Size = size;
-	particles[firstDeadIndex].Color = color;
+	particles[firstDeadIndex].Size = startSize;
+	particles[firstDeadIndex].Color = startColor;
 	particles[firstDeadIndex].Position = position;
 	particles[firstDeadIndex].StartVelocity = velocity;
-	particles[firstDeadIndex].StartVelocity.x += ((float)rand() / RAND_MAX) * 0.4f - 0.2f;
-	particles[firstDeadIndex].StartVelocity.y += ((float)rand() / RAND_MAX) * 0.4f - 0.2f;
-	particles[firstDeadIndex].StartVelocity.z += ((float)rand() / RAND_MAX) * 0.4f - 0.2f;
+	particles[firstDeadIndex].StartVelocity.x += ((float)rand() / RAND_MAX) * 0.6f - 0.2f;
+	particles[firstDeadIndex].StartVelocity.y += ((float)rand() / RAND_MAX) * 0.6f - 0.2f;
+	particles[firstDeadIndex].StartVelocity.z += ((float)rand() / RAND_MAX) * 0.6f - 0.2f;
 
 	//Increment
 	firstDeadIndex++;
@@ -271,17 +296,17 @@ void Emitter::CopyLocalParticle(int index)
 {
 	int i = index * 4;
 
-	localParticleVertices[i + 0].Position = particles[index].Position;
+	localParticleVertices[i].Position = particles[index].Position;
 	localParticleVertices[i + 1].Position = particles[index].Position;
 	localParticleVertices[i + 2].Position = particles[index].Position;
 	localParticleVertices[i + 3].Position = particles[index].Position;
 
-	localParticleVertices[i + 0].Size = particles[index].Size;
+	localParticleVertices[i].Size = particles[index].Size;
 	localParticleVertices[i + 1].Size = particles[index].Size;
 	localParticleVertices[i + 2].Size = particles[index].Size;
 	localParticleVertices[i + 3].Size = particles[index].Size;
 
-	localParticleVertices[i + 0].Color = particles[index].Color;
+	localParticleVertices[i].Color = particles[index].Color;
 	localParticleVertices[i + 1].Color = particles[index].Color;
 	localParticleVertices[i + 2].Color = particles[index].Color;
 	localParticleVertices[i + 3].Color = particles[index].Color;
