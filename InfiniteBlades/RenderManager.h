@@ -8,8 +8,8 @@
 #include "Skybox.h"
 #include "Lights.h"
 #include "Camera.h"
-#include "ReflectionCubeMap.h"
 #include "DXCore.h"
+#include "Reflection.h"
 
 class RenderManager
 {
@@ -19,6 +19,20 @@ private:
 	static RenderManager* instance;
 	typedef GameEntity* pEntity; //game entity pointer 
 	unsigned int totalCount = 0; //number of objects in both list
+	Skybox* skybox;
+	Reflection* reflectionTex;
+	Camera* camera;
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	ID3D11Device* device;
+	ID3D11DeviceContext* context;
+	//store previous render target and DSV
+	UINT numOfPreviousPorts = 1;
+	D3D11_VIEWPORT previousViewport;
+	ID3D11RenderTargetView* previousRenderTarget;
+	ID3D11DepthStencilView* previousDSV;
+	//blend state for transparency
+	ID3D11BlendState* blendState;
 	//Game Objects in the scene 
 	std::vector<GameEntity*> opaqueObjects;
 	std::vector<GameEntity*> transparentObjects;
@@ -26,21 +40,16 @@ private:
 	vec4 ambientLight;
 	std::map<char*, DirectionalLight> directionaLightMap;
 	std::map<char*, PointLight> pointLightMap;
-	ID3D11Device* device;
-	ID3D11DeviceContext* context;
-	//blend state for transparency
-	ID3D11BlendState* blendState;
-	//skybox
-	Skybox* skybox;
-	//camera
-	Camera* camera;
 	//draws gameentities from a renderlist
-	void DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT offset, Camera* camera); 
+	void DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT offset, Camera* camera, mat4 ViewMatrix); 
+	void DrawAllOpaque(Camera* cameraTarget, mat4 viewMatrix);
 	void InitBlendState();
 	//helper functions for sorting rendering lists
 	void SortOpqaue(std::vector<GameEntity*> list, Camera* camera);
 	//reflections
-	ReflectionCubeMap* reflectionCubeMap;
+	void RenderReflectionTexture();
+	void ReleaseReflectionTexture();
+
 public:
 	static RenderManager* GetInstance();
 	static void ReleaseInstance();

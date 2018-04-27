@@ -47,6 +47,12 @@
     <FxCompile Include="SkyboxVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="pReflection.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="vReflection.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mesh.cpp">
@@ -112,7 +118,7 @@
     <ClCompile Include="LiveReflectionTestScene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="ReflectionCubeMap.cpp">
+    <ClCompile Include="Reflection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -186,7 +192,7 @@
     <ClInclude Include="LiveReflectionTestScene.h">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="ReflectionCubeMap.h">
+    <ClInclude Include="Reflection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

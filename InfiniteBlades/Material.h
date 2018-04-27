@@ -13,6 +13,8 @@ private:
 	float transparentStr;
 
 	ID3D11ShaderResourceView* reflectionSRVptr;
+	ID3D11ShaderResourceView* reflectionPlanarSRVptr;
+	ID3D11SamplerState* reflectionSamplerPtr;
 
 	ID3D11ShaderResourceView* diffuseSRVptr;
 	ID3D11SamplerState* diffuseSamplerPtr;
@@ -51,5 +53,6 @@ public:
 	void SetPixelShader(SimplePixelShader* newPixelShader);
 
 	void PrepareMaterial(mat4* worldMat);
+	void PreparePlanarReflectionMaterial(mat4* worldMat, mat4* viewMat);
 	
 };

@@ -14,6 +14,7 @@ private:
 
 	mat4 viewMatTransposed;
 	mat4 projMatTransposed;
+	mat4 reflectionMatTranposed;
 
 	void CalcDirection();
 	void CalcViewMatTransposed();
@@ -28,14 +29,17 @@ public:
 
 	mat4* GetViewMatTransposed();
 	mat4* GetProjMatTransposed();
+	mat4* GetReflectionMat();
+	void CalcReflectionMat(float height);
 	vec3 GetPos();
+	int GetHeight();
+	int GetWidth();
 
 	void Move(float x, float y, float z);
 	void MoveAlongForward(float amt);
 	void MoveAlongRight(float amt);
 	void RotateAroundUp(float rotationAmt);
 	void RotateAroundRight(float rotationAmt);
-	
 
 	void SetWidthHeight(float width, float height);
 };

@@ -37,10 +37,11 @@ cbuffer lightData : register(b0)
 // Texture-related variables
 Texture2D diffuseTexture : register(t0);
 Texture2D normalTexture : register(t1);
+TextureCube  skyTexture		: register(t2);
 
 SamplerState diffuseSampler : register(s0);
 SamplerState normalSampler	: register(s1);
-TextureCube  skyTexture		: register(t2);
+
 
 
 //calculates normal based on normal map
@@ -93,7 +94,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 	// Direction to the camera from the current pixel
 	float3 dirToCamera = normalize(cameraPos - input.worldPos);
 
-	//reflections 
+	//static reflections 
 	float4 reflection = skyTexture.Sample(
 		normalSampler,
 		reflect(-dirToCamera, input.normal));

@@ -11,7 +11,7 @@ RenderManager::RenderManager()
 	std::vector<PointLight> pointLightList = std::vector<PointLight>();
 }
 
-void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT offset, Camera* camera)
+void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT offset, Camera* camera, mat4 ViewMatrix)
 {
 	for(size_t i = 0; i < list.size(); i++)
 	{
@@ -20,8 +20,6 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 
 		//early exit
 		if (meshPtr == nullptr || matPtr == nullptr) continue;
-
-		/*This is Per-frame data that we can offset into a renderer class we won't have*/
 		SimplePixelShader* pixelShader = matPtr->GetPixelShader();
 		pixelShader->SetFloat4("ambientColor", ambientLight);
 		//Set Directiona Lights
@@ -38,13 +36,17 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 		//set transparency strength
 		pixelShader->SetFloat("transparentStrength", matPtr->GetTransparentStr());
 		SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
-		vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
+		vertexShader->SetMatrix4x4("view", ViewMatrix);
 		vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
 		if(matPtr->GetTransparentBool())
 		{
-			//matPtr->SetReflectionSRV(reflectionCubeMap->GetShaderResourceView());
+			matPtr->SetReflectionSRV(reflectionTex->GetShaderResourceView());
+			matPtr->PreparePlanarReflectionMaterial(list[i]->GetWorldMat(), camera->GetReflectionMat());
 		}
-		matPtr->PrepareMaterial(list[i]->GetWorldMat());
+		else
+		{
+			matPtr->PrepareMaterial(list[i]->GetWorldMat());
+		}
 		//get vertex buffer
 		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
 		//set index buffer
@@ -52,6 +54,19 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
 	}
+}
+
+void RenderManager::DrawAllOpaque(Camera * camera, mat4 viewMatrix)
+{
+	//turn transparency off
+	context->OMSetBlendState(NULL, 0, 0xFFFFFFFF);
+	//draw opaque object
+	DrawObjects(opaqueObjects, stride, offset, camera, viewMatrix);
+	//draw skybox
+	skybox->Render(context, camera, stride, offset);
+	//// At the end of the frame, reset render states
+	context->RSSetState(0);
+	context->OMSetDepthStencilState(0, 0);
 }
 
 void RenderManager::InitBlendState()
@@ -92,6 +107,32 @@ void RenderManager::SortOpqaue(std::vector<GameEntity*> list, Camera* camera)
 	);
 }
 
+void RenderManager::RenderReflectionTexture()
+{
+	mat4 reflectionMat;
+	float color[4] = { 0.4f, 0.6f, 0.75f, 0.0f };
+	//get old render target 
+	context->OMGetRenderTargets(1, &previousRenderTarget, &previousDSV);
+	//set to reflection render target 
+	reflectionTex->SetRenderTarget();
+	//clear current reflection render target
+	reflectionTex->ClearRenderTarget(color);
+	//calc reflection matrix
+	camera->CalcReflectionMat(-5.50f);
+	//draw opaque objects upside down 
+	DrawAllOpaque(camera, *(camera->GetReflectionMat()));
+	//reset render target 
+	context->OMSetRenderTargets(1, &previousRenderTarget, previousDSV);
+	previousRenderTarget->Release();
+	previousDSV->Release();
+}
+
+void RenderManager::ReleaseReflectionTexture()
+{
+	reflectionTex->Release();
+	delete reflectionTex;
+}
+
 RenderManager * RenderManager::GetInstance()
 {
 	if (instance == nullptr)
@@ -113,20 +154,17 @@ void RenderManager::ReleaseBlendState()
 
 void RenderManager::Draw()
 {
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	reflectionCubeMap->UpdateCubeFaceCamera(camera->GetPos().x, camera->GetPos().y, camera->GetPos().z);
-	reflectionCubeMap->RenderCubeMap();
+	RenderReflectionTexture();
 	//turn transparency off
 	context->OMSetBlendState(NULL, 0, 0xFFFFFFFF);
 	//draw opaque object
-	DrawObjects(opaqueObjects, stride, offset, camera);
+	DrawObjects(opaqueObjects, stride, offset, camera, *(camera->GetViewMatTransposed()));
 	//draw skybox
 	skybox->Render(context, camera, stride, offset);
 	//turn transparency on
 	context->OMSetBlendState(blendState, 0, 0xFFFFFFFF);
 	SortOpqaue(transparentObjects, camera);
-	DrawObjects(transparentObjects, stride, offset, camera);
+	DrawObjects(transparentObjects, stride, offset, camera, *(camera->GetViewMatTransposed()));
 	//// At the end of the frame, reset render states
 	context->RSSetState(0);
 	context->OMSetDepthStencilState(0, 0);
@@ -135,14 +173,13 @@ void RenderManager::Draw()
 void RenderManager::InitSkyBox(Skybox * skybox)
 {
 	this->skybox = skybox;
-	reflectionCubeMap = new ReflectionCubeMap(device, context, (float)1000.0f, (float)1000.0f, skybox);
-	reflectionCubeMap->BuildDynamicCubeMapView();
 }
 
 void RenderManager::InitCamera(Camera * camera)
 {
 	this->camera = camera;
-	reflectionCubeMap->BuildCubeFaceCamera(camera->GetPos().x, camera->GetPos().y, camera->GetPos().z);
+	reflectionTex = new Reflection(device, context, camera->GetHeight(), camera->GetWidth());
+	reflectionTex->Init();
 }
 
 void RenderManager::Init(ID3D11Device * device, ID3D11DeviceContext * context)
@@ -150,7 +187,6 @@ void RenderManager::Init(ID3D11Device * device, ID3D11DeviceContext * context)
 	this->device = device;
 	this->context = context;
 	InitBlendState();
-
 }
 
 void RenderManager::AddToTransparent(GameEntity* gameEntity)
@@ -183,6 +219,6 @@ void RenderManager::AddPointLight(char* name, PointLight pointLight)
 
 RenderManager::~RenderManager()
 {
-	delete reflectionCubeMap;
+	ReleaseReflectionTexture();
 	ReleaseBlendState();
 }

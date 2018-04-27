@@ -15,7 +15,7 @@ Material::~Material()
 {
 	if (diffuseSRVptr != nullptr) diffuseSRVptr->Release();
 	if (diffuseSamplerPtr != nullptr) diffuseSamplerPtr->Release();
-
+	if (reflectionSamplerPtr != nullptr) reflectionSamplerPtr->Release();
 	if (normalSRVptr != nullptr) normalSRVptr->Release();
 	if (normalSamplerPtr != nullptr) normalSamplerPtr->Release();
 	if (reflectionSRVptr != nullptr) reflectionSRVptr->Release();
@@ -53,6 +53,22 @@ void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pS
 	normalSamplerDesc.MaxAnisotropy = 16;
 	normalSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	device->CreateSamplerState(&normalSamplerDesc, &normalSamplerPtr);
+
+	D3D11_SAMPLER_DESC reflectionSamplerDesc = D3D11_SAMPLER_DESC();
+	reflectionSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	reflectionSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	reflectionSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	reflectionSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	reflectionSamplerDesc.MipLODBias = 0.0f;
+	reflectionSamplerDesc.MaxAnisotropy = 1;
+	reflectionSamplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	reflectionSamplerDesc.BorderColor[0] = 0;
+	reflectionSamplerDesc.BorderColor[1] = 0;
+	reflectionSamplerDesc.BorderColor[2] = 0;
+	reflectionSamplerDesc.BorderColor[3] = 0;
+	reflectionSamplerDesc.MinLOD = 0;
+	reflectionSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	device->CreateSamplerState(&reflectionSamplerDesc, &reflectionSamplerPtr);
 }
 
  
@@ -84,7 +100,7 @@ float Material::GetTransparentStr()
 
 void Material::SetReflectionSRV(ID3D11ShaderResourceView * srv)
 {
-	this->reflectionSRVptr = srv;
+	this->reflectionPlanarSRVptr = srv;
 }
 
 void Material::PrepareMaterial(mat4* worldMat)
@@ -98,6 +114,23 @@ void Material::PrepareMaterial(mat4* worldMat)
 	pixelShader->SetShaderResourceView("diffuseTexture", diffuseSRVptr);
 	pixelShader->SetShaderResourceView("normalTexture", normalSRVptr);
 	pixelShader->SetShaderResourceView("skyTexture", reflectionSRVptr);
+	pixelShader->CopyAllBufferData();
+	pixelShader->SetShader();
+}
+
+void Material::PreparePlanarReflectionMaterial(mat4 * worldMat, mat4 * viewMat)
+{
+	vertexShader->SetMatrix4x4("world", *worldMat);
+	vertexShader->SetMatrix4x4("reflectionMatrix", *viewMat);
+	vertexShader->CopyAllBufferData();
+	vertexShader->SetShader();
+
+	pixelShader->SetSamplerState("diffuseSampler", diffuseSamplerPtr);
+	pixelShader->SetSamplerState("normalSampler", normalSamplerPtr);
+	pixelShader->SetSamplerState("reflectionSampler", reflectionSamplerPtr);
+	pixelShader->SetShaderResourceView("diffuseTexture", diffuseSRVptr);
+	pixelShader->SetShaderResourceView("normalTexture", normalSRVptr);
+	pixelShader->SetShaderResourceView("reflectionTexture", reflectionPlanarSRVptr);
 	pixelShader->CopyAllBufferData();
 	pixelShader->SetShader();
 }

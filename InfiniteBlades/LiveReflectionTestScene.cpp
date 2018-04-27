@@ -115,16 +115,20 @@ void LiveReflectionTestScene::LoadShaderMeshMat()
 	shaderMngr->AddPixelShader("pBasic");
 	shaderMngr->AddVertexShader("SkyBoxVS");
 	shaderMngr->AddPixelShader("SkyBoxPS");
+	shaderMngr->AddVertexShader("vReflection");
+	shaderMngr->AddPixelShader("pReflection");
 
 	//hoisting shaders
 	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasic");
 	SimplePixelShader* pShader = shaderMngr->GetPixelShader("pBasic");
+	SimpleVertexShader* vReflectShader = shaderMngr->GetVertexShader("vReflection");
+	SimplePixelShader* pReflectShader = shaderMngr->GetPixelShader("pReflection");
 
 	//materials
 	matMngr = MaterialManager::GetInstancce();
 	matMngr->Init(device, context);
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
-	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg", L"Assets/Textures/iceNormals.jpg", true, 0.650f, L"Assets/Textures/SunnyCubeMap.dds");
+	matMngr->AddMat("ice", vReflectShader, pReflectShader, L"Assets/Textures/ice.jpg", L"Assets/Textures/iceNormals.jpg", true, 0.650f, L"Assets/Textures/SunnyCubeMap.dds");
 	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg", L"Assets/Textures/snowNormals.jpg");
 
 	//meshes
