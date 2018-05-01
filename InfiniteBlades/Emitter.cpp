@@ -296,18 +296,9 @@ void Emitter::CopyLocalParticle(int index)
 {
 	int i = index * 4;
 
-	localParticleVertices[i].Position = particles[index].Position;
-	localParticleVertices[i + 1].Position = particles[index].Position;
-	localParticleVertices[i + 2].Position = particles[index].Position;
-	localParticleVertices[i + 3].Position = particles[index].Position;
-
-	localParticleVertices[i].Size = particles[index].Size;
-	localParticleVertices[i + 1].Size = particles[index].Size;
-	localParticleVertices[i + 2].Size = particles[index].Size;
-	localParticleVertices[i + 3].Size = particles[index].Size;
-
-	localParticleVertices[i].Color = particles[index].Color;
-	localParticleVertices[i + 1].Color = particles[index].Color;
-	localParticleVertices[i + 2].Color = particles[index].Color;
-	localParticleVertices[i + 3].Color = particles[index].Color;
+	for (size_t j = 0; j < 4; j++) {
+		localParticleVertices[i + j].Position = particles[index].Position;
+		localParticleVertices[i + j].Size = particles[index].Size;
+		localParticleVertices[i + j].Color = particles[index].Color;
+	}
 }

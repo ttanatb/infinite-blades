@@ -46,6 +46,10 @@ ParticleTestScene::~ParticleTestScene()
 	//delete emitter
 	if (testEmitter) delete testEmitter;
 
+	//Release render states
+	particleDepthState->Release();
+	particleBlendState->Release();
+
 	MaterialManager::ReleaseInstance();
 	MeshManager::ReleaseInstance();
 	InputManager::ReleaseInstance();
