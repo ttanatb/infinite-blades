@@ -36,6 +36,7 @@ private:
 	//Game Objects in the scene 
 	std::vector<GameEntity*> opaqueObjects;
 	std::vector<GameEntity*> transparentObjects;
+	std::vector<GameEntity*> aboveGroundObjects;
 	//Lights in the scene 
 	vec4 ambientLight;
 	std::map<char*, DirectionalLight> directionaLightMap;

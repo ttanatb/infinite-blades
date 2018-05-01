@@ -56,9 +56,9 @@ void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pS
 
 	D3D11_SAMPLER_DESC reflectionSamplerDesc = D3D11_SAMPLER_DESC();
 	reflectionSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	reflectionSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	reflectionSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	reflectionSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	reflectionSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	reflectionSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	reflectionSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	reflectionSamplerDesc.MipLODBias = 0.0f;
 	reflectionSamplerDesc.MaxAnisotropy = 1;
 	reflectionSamplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
@@ -131,6 +131,7 @@ void Material::PreparePlanarReflectionMaterial(mat4 * worldMat, mat4 * viewMat)
 	pixelShader->SetShaderResourceView("diffuseTexture", diffuseSRVptr);
 	pixelShader->SetShaderResourceView("normalTexture", normalSRVptr);
 	pixelShader->SetShaderResourceView("reflectionTexture", reflectionPlanarSRVptr);
+	pixelShader->SetShaderResourceView("skyTexture", reflectionSRVptr);
 	pixelShader->CopyAllBufferData();
 	pixelShader->SetShader();
 }

@@ -90,7 +90,7 @@ void LiveReflectionTestScene::Init()
 
 void LiveReflectionTestScene::AddEntityToRender()
 {
-	for (int i = 0; i < gameEntities.size(); i++)
+	for (int i = 0; i < gameEntities.size(); ++i)
 	{
 		if (gameEntities[i]->GetMat()->GetTransparentBool()) {
 			renderMngr->AddToTransparent(gameEntities[i]);
@@ -145,7 +145,7 @@ void LiveReflectionTestScene::CreateEntities()
 	//create camera
 	camera = new Camera((float)width, (float)height, vec3(0.0f, 2.5f, 0.0f), 0.20f, 0.0f);
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; ++i) {
 		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("snow"), matMngr->GetMat("snow"),
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),

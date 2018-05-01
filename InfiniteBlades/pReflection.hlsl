@@ -40,10 +40,11 @@ cbuffer lightData : register(b0)
 Texture2D diffuseTexture		: register(t0);
 Texture2D normalTexture			: register(t1);
 Texture2D  reflectionTexture	: register(t2);
+TextureCube  skyTexture			: register(t3);
 
 SamplerState diffuseSampler		: register(s0);
 SamplerState normalSampler		: register(s1);
-SamplerState reflectionSampler		: register(s3);
+SamplerState reflectionSampler	: register(s3);
 
 
 
@@ -108,12 +109,18 @@ float4 main(VertexToPixel input) : SV_TARGET
 	reflectionColor = reflectionTexture.Sample(reflectionSampler, reflectTexCoord);
 	color = lerp(surfaceColor, reflectionColor, 0.25f);
 
+	//static reflections 
+	float4 staticReflection = skyTexture.Sample(
+		normalSampler,
+		reflect(-dirToCamera, input.normal));
+
 	//lights in the scene 
 	float4 lights = (ambientColor +													  //ambient color
 		dirLightDiffuse(directionalLight, input.normal) +							  //dir light 1
 		dirLightDiffuse(directionalLight2, input.normal) +							  //dir light 2
 		pointLightSpec(pointLight, input.normal, input.worldPos, cameraPos, 256));    //point light
 
-	return color * lights;
+	//return reflectionColor;
+	return staticReflection * color * lights;
 }
 

@@ -40,7 +40,8 @@ void Camera::CalcReflectionMat(float height)
 	up = vec3(0.0f, 1.0f, 0.0f);
 	pos = vec3(position.x, -position.y + (height * 2.0f), position.z);
 	//cakc the rotation in radians
-	radians = rotY * 0.0174532925f;
+	//radians = rotY * 0.0174532925f;
+	radians = rotY * (XM_PI / 180.0f);
 	// Setup where the camera is looking.
 	lookAt.x = sinf(radians) + position.x;
 	lookAt.y = position.y;

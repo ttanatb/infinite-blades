@@ -13,7 +13,7 @@ RenderManager::RenderManager()
 
 void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT offset, Camera* camera, mat4 ViewMatrix)
 {
-	for(size_t i = 0; i < list.size(); i++)
+	for(size_t i = 0; i < list.size(); ++i)
 	{
 		Mesh* meshPtr = list[i]->GetMesh();
 		Material * matPtr = list[i]->GetMat();
@@ -61,7 +61,7 @@ void RenderManager::DrawAllOpaque(Camera * camera, mat4 viewMatrix)
 	//turn transparency off
 	context->OMSetBlendState(NULL, 0, 0xFFFFFFFF);
 	//draw opaque object
-	DrawObjects(opaqueObjects, stride, offset, camera, viewMatrix);
+	DrawObjects(aboveGroundObjects, stride, offset, camera, viewMatrix);
 	//draw skybox
 	skybox->Render(context, camera, stride, offset);
 	//// At the end of the frame, reset render states
@@ -109,7 +109,7 @@ void RenderManager::SortOpqaue(std::vector<GameEntity*> list, Camera* camera)
 
 void RenderManager::RenderReflectionTexture()
 {
-	mat4 reflectionMat;
+	//mat4 reflectionMat;
 	float color[4] = { 0.4f, 0.6f, 0.75f, 0.0f };
 	//get old render target 
 	context->OMGetRenderTargets(1, &previousRenderTarget, &previousDSV);
@@ -118,7 +118,7 @@ void RenderManager::RenderReflectionTexture()
 	//clear current reflection render target
 	reflectionTex->ClearRenderTarget(color);
 	//calc reflection matrix
-	camera->CalcReflectionMat(-5.50f);
+	camera->CalcReflectionMat(-10.0f);
 	//draw opaque objects upside down 
 	DrawAllOpaque(camera, *(camera->GetReflectionMat()));
 	//reset render target 
@@ -197,8 +197,15 @@ void RenderManager::AddToTransparent(GameEntity* gameEntity)
 
 void RenderManager::AddToOpqaue(GameEntity* gameEntity)
 {
-	if (gameEntity != nullptr)
+	if (gameEntity != nullptr) 
+	{
 		opaqueObjects.push_back(gameEntity);
+		if (gameEntity->GetPosition().y >= 0) 
+		{
+			aboveGroundObjects.push_back(gameEntity);
+		}
+	}
+
 }
 
 void RenderManager::AddAmbientLight(vec4 ambientLight)
