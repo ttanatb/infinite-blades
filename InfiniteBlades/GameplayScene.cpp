@@ -43,6 +43,7 @@ GameplayScene::~GameplayScene()
 		delete gameEntities[i];
 	if (camera != nullptr) delete camera;
 	if (skybox != nullptr) delete skybox;
+	if (snowEmitter != nullptr) delete snowEmitter;
 
 	MaterialManager::ReleaseInstance();
 	MeshManager::ReleaseInstance();
@@ -115,7 +116,9 @@ void GameplayScene::LoadShaderMeshMat()
 	shaderMngr->AddPixelShader("pBasic");
 	shaderMngr->AddVertexShader("SkyBoxVS");
 	shaderMngr->AddPixelShader("SkyBoxPS");
-	
+	shaderMngr->AddVertexShader("vParticle");
+	shaderMngr->AddPixelShader("pParticle");
+
 	//hoisting shaders
 	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasic");
 	SimplePixelShader* pShader = shaderMngr->GetPixelShader("pBasic");
@@ -124,8 +127,15 @@ void GameplayScene::LoadShaderMeshMat()
 	matMngr = MaterialManager::GetInstancce();
 	matMngr->Init(device, context);
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
+	matMngr->AddMat("goldfish", vShader, pShader, L"Assets/Textures/goldfish_albedo.jpg");
+	matMngr->AddMat("shark", vShader, pShader, L"Assets/Textures/shark_albedo.png");
 	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg"  , L"Assets/Textures/iceNormals.jpg", true, 0.650f, L"Assets/Textures/SunnyCubeMap.dds");
 	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg", L"Assets/Textures/snowNormals.jpg");
+
+	matMngr->AddMat("particle", 
+		shaderMngr->GetVertexShader("vParticle"),
+		shaderMngr->GetPixelShader("pParticle"),
+		L"Assets/Textures/white_circle.png");
 
 	//meshes
 	meshMngr = MeshManager::GetInstancce();
@@ -134,6 +144,8 @@ void GameplayScene::LoadShaderMeshMat()
 	meshMngr->AddMesh("ship", "Assets/Models/ship.obj");
 	meshMngr->AddMesh("floor", "Assets/Models/floor.obj");
 	meshMngr->AddMesh("snow", "Assets/Models/snowFloor.obj");
+	meshMngr->AddMesh("goldfish", "Assets/Models/goldfish.obj");
+	meshMngr->AddMesh("shark", "Assets/Models/shark.obj"); 
 }
 
 void GameplayScene::CreateEntities()
@@ -146,29 +158,31 @@ void GameplayScene::CreateEntities()
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));  
 		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("cube"), matMngr->GetMat("ship"),
-			vec3(0, -5, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("goldfish"), matMngr->GetMat("goldfish"),
+			vec3(1, -1, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("shark"), matMngr->GetMat("shark"),
+			vec3(-1, -1, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 	}
-	  
-
-	//create entities
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("woodplanks"),
-	//	vec3(2, 1, 1), vec3(45, 45, 0), 0.69f));
-
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("cone"), matMngr->GetMat("concrete"),
-	//	vec3(1, -1, 1), vec3(45, 90, 45), 0.9f));
-
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("helix"), matMngr->GetMat("soil"),
-	//	vec3(0, 0, 5), vec3(45, 0, 45), 0.85f));
-
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"),
-	//	vec3(-1, 1, 0), vec3(45, 45, 90), 0.8f));
-
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("soil"),
-	//	vec3(1, 1, 1), vec3(45, 0, 45), vec3(0.7f, 0.6f, 0.8f)));
 
 	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"));
 	gameEntities.push_back(player);
+
+	snowEmitter = new Emitter(
+		device,								//device
+		matMngr->GetMat("particle"),		//material
+		vec4(0.85f, 0.95f, 1.00f, 1.0f),	//start color
+		vec4(0.85f, 0.95f, 1.00f, 0.5f),	//end color
+		vec3(0.f, -3.f, -2.f),				//velocity
+		0.05f,								//start size
+		0.05f,								//end size
+		4,									//lifetime (in seconds)
+		true,								//is loopable
+		true,								//is active
+		400,								//max amount of particles
+		100,								//emissions per second (for smooth emission, use maxParticles/lifetime)
+		vec3(0, 5, 0)						//position
+	);
+	snowEmitter->SetAsPlane(10, 20);		//Sets as a (horizontal) plane (width, depth), will emit as point otherwise
 
 	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds", 
 		device, 
@@ -232,6 +246,7 @@ void GameplayScene::Update(float deltaTime, float totalTime)
 	}
 
 	player->Update(deltaTime, totalTime);
+	snowEmitter->Update(deltaTime);
 
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
@@ -250,6 +265,7 @@ void GameplayScene::Draw(float deltaTime, float totalTime)
 	context->ClearRenderTargetView(backBufferRTV, color);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	renderMngr->Draw();
+	snowEmitter->RenderParticles(context, camera);
 	//UINT stride = sizeof(Vertex);
 	//UINT offset = 0;
 

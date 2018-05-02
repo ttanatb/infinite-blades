@@ -49,7 +49,5 @@ public:
 	void SetVertexShader(SimpleVertexShader* newVertexShader);
 	void SetPixelShader(SimplePixelShader* newPixelShader);
 
-	void PrepareMaterial(mat4* worldMat);
-	void PrepareMaterial();
-
+	void PrepareMaterial(mat4* worldMat = nullptr);
 };

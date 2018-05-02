@@ -217,7 +217,7 @@ void Emitter::RenderParticles(ID3D11DeviceContext * context, Camera* camera)
 	matPtr->GetVertexShader()->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
 
 	//Use non-world PrepareMaterial because our shader doesn't use world space
-	matPtr->PrepareMaterial();
+	matPtr->PrepareMaterial(); 
 
 	//draw the parts of the dynamic buffer we need
 	if (firstAliveIndex < firstDeadIndex) {
@@ -315,8 +315,8 @@ void Emitter::CreateRenderStates(ID3D11Device * device)
 	blend.IndependentBlendEnable = false;
 	blend.RenderTarget[0].BlendEnable = true;
 	blend.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blend.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-	blend.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	blend.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blend.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	blend.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blend.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 	blend.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;

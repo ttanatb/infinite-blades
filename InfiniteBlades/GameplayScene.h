@@ -10,6 +10,7 @@
 #include "Lights.h"
 #include "WICTextureLoader.h"
 #include <vector>
+#include "Emitter.h"
 #include "Player.h"
 #include "Skybox.h"
 #include "RenderManager.h"
@@ -64,6 +65,7 @@ private:
 
 	// Game entities
 	std::vector<GameEntity*> gameEntities;
+	Emitter* snowEmitter;
 
 	// Keeps track of the old mouse position.  Useful for 
 	// determining how far the mouse moved in a single frame.
