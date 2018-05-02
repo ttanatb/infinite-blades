@@ -35,12 +35,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\pUnlit.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\vInstanceUnlit.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\pBasic.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -114,6 +108,17 @@
     </ClCompile>
     <ClCompile Include="Emitter.cpp">
       <Filter>Source Files</Filter>
+    <ClCompile Include="TransperancyTestScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="ReflectionTestScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalMapTestScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +184,17 @@
     </ClInclude>
     <ClInclude Include="Particle.h">
       <Filter>Header Files\Definitions</Filter>
+    <ClInclude Include="TransperancyTestScene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="ReflectionTestScene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalMapTestScene.h">
+      <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

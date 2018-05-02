@@ -12,6 +12,7 @@
 #include <vector>
 #include "Player.h"
 #include "Skybox.h"
+#include "RenderManager.h"
 
 class GameplayScene 
 	: public DXCore
@@ -40,6 +41,7 @@ private:
 	void LoadShaderMeshMat();
 	void CreateEntities();
 	void InitInput();
+	void AddEntityToRender();
 
 	vec4 ambientLight;
 	DirectionalLight directionalLight;
@@ -51,6 +53,7 @@ private:
 	MeshManager* meshMngr;
 	InputManager* inputMngr;
 	ShaderManager* shaderMngr;
+	RenderManager* renderMngr;
 
 	//camera
 	Camera* camera;
