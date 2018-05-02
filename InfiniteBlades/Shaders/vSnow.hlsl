@@ -27,9 +27,8 @@ struct VertexToPixel
 	float4 position		: SV_POSITION;
 	float3 normal		: NORMAL;
 	float2 uv			: TEXCOORD;
-	float3 tangent		: TANGENT;
 	float3 worldPos		: WORLD_POS;
-	//float3 color		: COLOR;
+	float3 tangent		: TANGENT;
 };
 
 // --------------------------------------------------------
@@ -53,6 +52,5 @@ VertexToPixel main(VertexShaderInput input)
 
 	//uv goes through
 	output.uv = input.uv;
-
 	return output;
 }

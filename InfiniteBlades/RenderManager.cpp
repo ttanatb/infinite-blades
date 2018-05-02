@@ -49,21 +49,27 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 	}
 }
 
+float randomFloat(float min, float max) {
+	return min + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (max - min)));
+}
+
+
 void RenderManager::DrawInstanced(GameEntity * entityToInstance, Camera * camera)
 {
-	float scale = 1.0f;
-	float totalTime = 0.0f;
-	float x = 1.0f;
-	float y = 1.0f;
-	float z = 1.0f;
-	XMMATRIX worldMat = XMMatrixScaling(scale, scale, scale) *
-		XMMatrixRotationZ(totalTime * 0.5f) *
-		XMMatrixTranslation(
-			x * 3.0f + sin(totalTime + z),
-			y * 3.0f + sin(totalTime + x),
-			z * 3.0f + sin(totalTime + y));
-	for (unsigned int i = 0; i < instanceCount; ++i)
+	static float z = 30.0f;
+	z -= 0.001f;
+	float scale = randomFloat(0.9f, 1.1f); //randomize this from 0.9 - 1.1
+	float rotation = 0.0f; // 0 - 2* 3.14159
+	for (unsigned int i = 0; i < instanceCount; ++i) {
+		float a = randomFloat(10.0f, 20.0f);
+		if (rand() % 2 == 1) a = -a;
+		XMMATRIX worldMat = XMMatrixScaling(scale, scale, scale) *
+			XMMatrixTranslation(
+				a,
+				randomFloat(0.0f, 1.0f),
+				z);
 		XMStoreFloat4x4(&instanceWorldMatrices[i], XMMatrixTranspose(worldMat));
+	}
 
 	D3D11_MAPPED_SUBRESOURCE mapped = {};
 	context->Map(instanceWorldMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
@@ -192,12 +198,10 @@ void RenderManager::Draw()
 	//turn transparency off
 	context->OMSetBlendState(NULL, 0, 0xFFFFFFFF);
 	//draw opaque object
-	//DrawObjects(opaqueObjects, stride, offset, camera);
+	DrawObjects(opaqueObjects, stride, offset, camera);
+
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
-
 	DrawInstanced(gameEntityToInstance, camera);
-	//DrawObjects(instancedSnowyStuff, stride, offset, camera);
-
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->DSSetShader(nullptr, 0, 0);
 	context->HSSetShader(nullptr, 0, 0);
@@ -205,8 +209,8 @@ void RenderManager::Draw()
 	skybox->Render(context, camera, stride, offset);
 	//turn transparency on
 	context->OMSetBlendState(blendState, 0, 0xFFFFFFFF);
-	//SortObjects(transparentObjects, camera);
-	//DrawObjects(transparentObjects, stride, offset, camera);
+	SortObjects(transparentObjects, camera);
+	DrawObjects(transparentObjects, stride, offset, camera);
 }
 
 void RenderManager::InitSkyBox(Skybox * skybox)

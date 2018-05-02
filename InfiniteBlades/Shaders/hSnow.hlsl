@@ -4,8 +4,8 @@ struct VS_CONTROL_POINT_OUTPUT
 	float4 position		: SV_POSITION;	// XYZW position (System Value Position)
 	float3 normal		: NORMAL;
 	float2 uv			: TEXCOORD;
-	float3 tangent		: TANGENT;
 	float3 worldPos		: WORLD_POS;
+	float3 tangent		: TANGENT;
 };
 
 // Output control point
