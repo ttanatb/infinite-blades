@@ -11,6 +11,11 @@ cbuffer perFrameData : register(b0)
 	matrix projection;
 };
 
+/*cbuffer perObjData : register(b1)
+{
+	matrix world;
+};*/
+
 // Struct representing a single vertex worth of data
 // - This should match the vertex definition in our C++ code
 // - By "match", I mean the size, order and number of members
@@ -58,16 +63,20 @@ VertexToPixel main(VertexShaderInput input)
 	// Set up output struct
 	VertexToPixel output;
 
-	//Since we use billboarding, everything wants to be in 2D space, so we don't need world position
+	//We still need world position, otherwise it will be screen-space based
+	//matrix worldview = mul(world, view);
 	matrix viewProj = mul(view, projection);
+	//matrix worldViewProj = mul(mul(world, view), projection);
 
 	output.position = mul(float4(input.position, 1.0f), viewProj);
+	//output.position = mul(float4(mul(input.position, (float3x3)view), 0), worldViewProj);
 
 	//Billboarding calculations
 	//Use the UV to offset the position
 	float2 offset = input.uv * 2 - 1;
 	offset *= input.size;
 	offset.y *= -1;
+	offset.x /= 1.50;
 	output.position.xy += offset;
 
 

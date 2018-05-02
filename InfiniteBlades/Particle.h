@@ -19,3 +19,8 @@ struct ParticleVertex
 	DirectX::XMFLOAT4 Color;
 	float Size;
 };
+
+enum EmitterType {
+	Point,
+	Plane
+};

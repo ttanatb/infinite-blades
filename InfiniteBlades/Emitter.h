@@ -18,8 +18,12 @@ private:
 	float lifetime;
 	float startSize;
 	float endSize;
-
 	float timeSinceLastEmit;
+
+	//Type-Specific Properties
+	EmitterType type;
+	float width;
+	float depth;
 
 	//Particle Array
 	Particle* particles;
@@ -34,6 +38,10 @@ private:
 
 	void CreateParticles();
 	void CreateBuffers(ID3D11Device * device);
+	void CopyLocalParticle(int index);
+	void UpdateParticle(int index, float deltaTime);
+	void SpawnParticle();
+	void UpdateBuffers(ID3D11DeviceContext* context);
 public:
 	//Default Constructor
 	Emitter(ID3D11Device * device, Material* material);
@@ -57,12 +65,10 @@ public:
 	~Emitter();
 
 	void Update(float deltaTime);
-	void UpdateParticle(int index, float deltaTime);
-	void SpawnParticle();
 	void RenderParticles(ID3D11DeviceContext* context, Camera* camera);
 	ID3D11Buffer* getVertexBuffer();
 	ID3D11Buffer* getIndexBuffer();
-	void UpdateBuffers(ID3D11DeviceContext* context);
-	void CopyLocalParticle(int index);
+	void setVelocity(vec3 v);
+	void SetAsPlane(float w, float d);
 };
 

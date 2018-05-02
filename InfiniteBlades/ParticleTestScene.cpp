@@ -145,7 +145,22 @@ void ParticleTestScene::CreateEntities()
 	
 	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"),
 		vec3(0, 0, 0), vec3(0, 0, 0), 0.1f));
-	testEmitter = new Emitter(device, matMngr->GetMat("particle"));
+	testEmitter = new Emitter(
+		device,
+		matMngr->GetMat("particle"),
+		vec4(1.f, 1.f, 1.f, 1.f),
+		vec4(1.f, 1.f, 1.f, 1.f),
+		vec3(0.f, -3.f, -1.f),
+		0.05f,
+		0.05f,
+		4,
+		true,
+		true,
+		200,
+		50,
+		vec3(0, 5, 0)
+	);
+	testEmitter->SetAsPlane(15, 15);
 }
 
 void ParticleTestScene::InitInput()

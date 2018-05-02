@@ -2,7 +2,7 @@
 
 
 Emitter::Emitter(ID3D11Device * device, Material* material)
-	: GameEntity(nullptr, material, vec3(0, 0, 0.0f), vec3(0, 0, 0), vec3(1.0f, 1.0f, 1.0f))
+	: GameEntity(nullptr, material, vec3(0.f, 0.f, 0.f), vec3(0, 0, 0), vec3(1.0f, 1.0f, 1.0f))
 {
 	this->startColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	this->endColor = vec4(1.0f, 1.0f, 1.0f, 0.0f);
@@ -18,6 +18,9 @@ Emitter::Emitter(ID3D11Device * device, Material* material)
 	this->livingParticleCount = 0;
 	this->firstAliveIndex = 0;
 	this->firstDeadIndex = 0;
+	this->type = Point;
+	this->width = 0;
+	this->depth = 0;
 	CreateParticles();
 	CreateBuffers(device);
 }
@@ -51,6 +54,9 @@ Emitter::Emitter(ID3D11Device * device,
 	this->livingParticleCount = 0;
 	this->firstAliveIndex = 0;
 	this->firstDeadIndex = 0;
+	this->type = Point;
+	this->width = 0;
+	this->depth = 0;
 	CreateParticles();
 	CreateBuffers(device);
 }
@@ -136,11 +142,27 @@ void Emitter::SpawnParticle()
 	particles[firstDeadIndex].Age = 0;
 	particles[firstDeadIndex].Size = startSize;
 	particles[firstDeadIndex].Color = startColor;
-	particles[firstDeadIndex].Position = position;
 	particles[firstDeadIndex].StartVelocity = velocity;
+
+	//Set velocities in random direction
 	particles[firstDeadIndex].StartVelocity.x += ((float)rand() / RAND_MAX) * 0.6f - 0.2f;
 	particles[firstDeadIndex].StartVelocity.y += ((float)rand() / RAND_MAX) * 0.6f - 0.2f;
 	particles[firstDeadIndex].StartVelocity.z += ((float)rand() / RAND_MAX) * 0.6f - 0.2f;
+
+	switch (type) {
+	case Point:
+		particles[firstDeadIndex].Position = position;
+		break;
+	case Plane:
+		//Set a random position between the bounds of the **HORIZONTAL** plane
+		vec3 newPos;
+		newPos.x = position.x + ((float)rand() / RAND_MAX) * ((position.x + (width / 2.0f)) - (position.x - (width / 2.0f))) + (position.x - (width / 2.0f));
+		float temp = (position.x + (width / 2.0f));
+		newPos.y = position.y;
+		newPos.z = position.z + ((float)rand() / RAND_MAX) * ((position.z + (depth / 2.0f)) - (position.z - (depth / 2.0f))) + (position.z - (depth / 2.0f));
+		particles[firstDeadIndex].Position = newPos;
+		break;
+	}
 
 	//Increment
 	firstDeadIndex++;
@@ -201,6 +223,15 @@ void Emitter::RenderParticles(ID3D11DeviceContext * context, Camera* camera)
 ID3D11Buffer * Emitter::getVertexBuffer() { return emitterVertBuffer; }
 
 ID3D11Buffer * Emitter::getIndexBuffer() { return emitterIndexBuffer; }
+
+void Emitter::setVelocity(vec3 v) { velocity = v; }
+
+void Emitter::SetAsPlane(float w, float d)
+{
+	type = Plane;
+	width = w;
+	depth = d;
+}
 
 void Emitter::CreateBuffers(ID3D11Device * device)
 {
