@@ -65,7 +65,6 @@ HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
 [patchconstantfunc("CalcHSPatchConstants")]
 [outputcontrolpoints(3)]
 [maxtessfactor(7.0)]
-
 HS_CONTROL_POINT_OUTPUT main(
 	InputPatch<VS_CONTROL_POINT_OUTPUT, NUM_CONTROL_POINTS> ip,
 	uint i : SV_OutputControlPointID,

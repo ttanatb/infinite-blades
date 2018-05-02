@@ -102,8 +102,8 @@ float4 reflection = skyTexture.Sample(
 //lights in the scene 
 float4 lights = (ambientColor +													  //ambient color
 	dirLightDiffuse(directionalLight, input.normal) +							  //dir light 1
-	dirLightDiffuse(directionalLight2, input.normal) +							  //dir light 2
-	pointLightSpec(pointLight, input.normal, input.worldPos, cameraPos, 256));    //point light
+	dirLightDiffuse(directionalLight2, input.normal));							  //dir light 2
+	//pointLightSpec(pointLight, input.normal, input.worldPos, cameraPos, 256));    //point light
 
 return reflection * surfaceColor * lights + float4(input.color, 0.f);
 }

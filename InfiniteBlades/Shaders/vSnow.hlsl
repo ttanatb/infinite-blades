@@ -18,6 +18,7 @@ struct VertexShaderInput
 	float3 normal		: NORMAL;
 	float2 uv			: TEXCOORD;
 	float3 tangent		: TANGENT;
+	matrix instanceWorld	: WORLD_PER_INSTANCE;
 };
 
 // Out of the vertex shader (and eventually input to the PS)
@@ -40,15 +41,15 @@ VertexToPixel main(VertexShaderInput input)
 	VertexToPixel output;
 
 	// Calculate position
-	matrix worldViewProj = mul(mul(world, view), projection);
+	matrix worldViewProj = mul(mul(input.instanceWorld, view), projection); // New world matrix!
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
-	output.worldPos = mul(float4(input.position, 1.0f), world).xyz;
 
-	//transfer normal to world space and normalize it
-	output.normal = normalize(mul(input.normal, (float3x3)world));
+	// Get the normal to the pixel shader (New world matrix)
+	output.normal = mul(input.normal, (float3x3)input.instanceWorld); // ASSUMING UNIFORM SCALE HERE!!!  If not, use inverse transpose of world matrix
+	output.tangent = mul(input.tangent, (float3x3)input.instanceWorld); // Needed for normal mapping
 
-	// Make sure the tangent is also in WORLD space
-	output.tangent = normalize(mul(input.tangent, (float3x3)world));
+																		// Get world position of vertex
+	output.worldPos = mul(float4(input.position, 1.0f), input.instanceWorld).xyz;  // New world matrix!
 
 	//uv goes through
 	output.uv = input.uv;

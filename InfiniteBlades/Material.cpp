@@ -104,13 +104,10 @@ float Material::GetTransparentStr()
 
 void Material::PrepareMaterial(mat4* worldMat, ID3D11DeviceContext* context)
 {
-	//if (domainShader == nullptr)
-	//	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//else {
-	//	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
-	//	domainShader->SetShader();
-	//	hullShader->SetShader();
-	//}
+	if (domainShader != nullptr) {		
+		domainShader->SetShader();
+		hullShader->SetShader();
+	}
 
 	vertexShader->SetMatrix4x4("world", *worldMat);
 	vertexShader->CopyAllBufferData();

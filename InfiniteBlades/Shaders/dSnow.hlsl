@@ -59,7 +59,7 @@ DS_OUTPUT main(
 	float3 snowAngle = float3(0, 1.0f, 0);
 	float snowAmount = 1 - 0.7f;
 	float snowRiseAmount = 0.5f;
-	float3 snowColor = float3(.5f, .5f, .6f);
+	float3 snowColor = float3(.05f, .05f, .1f);
 	float snowColorAmp = 10.f;
 
 	float dotProduct = dot(Output.normal, snowAngle);

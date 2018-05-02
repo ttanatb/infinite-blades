@@ -85,15 +85,19 @@ void SnowShaderTestScene::Init()
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
 	// Essentially: "What kind of shape should the GPU draw with our data?"
-	//context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 }
 
 void SnowShaderTestScene::AddEntityToRender()
 {
+	renderMngr->InitInstancedRendering(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+		vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 1)), 100);
+
 	for (int i = 0; i < gameEntities.size(); i++)
 	{
-		if (gameEntities[i]->GetMat()->GetTransparentBool()) {
+		Material* mat = gameEntities[i]->GetMat();
+		if (mat->GetTransparentBool()) {
 			renderMngr->AddToTransparent(gameEntities[i]);
 		}
 		else {
@@ -124,27 +128,22 @@ void SnowShaderTestScene::LoadShaderMeshMat()
 	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasic");
 	SimplePixelShader* pShader = shaderMngr->GetPixelShader("pBasic");
 
-	hullShader = shaderMngr->GetHullShader("hSnow");
-	domainShader = shaderMngr->GetDomainShader("dSnow");
-
 	//materials
 	matMngr = MaterialManager::GetInstancce();
 	matMngr->Init(device, context);
-	matMngr->AddMat("snowPile1", shaderMngr->GetVertexShader("vSnow"), shaderMngr->GetHullShader("hSnow"), shaderMngr->GetDomainShader("dSnow"), shaderMngr->GetPixelShader("pSnow"), L"Assets/Textures/stone1Diffuse.jpg", L"Assets/Textures/stone1Normals.jpg");
-	matMngr->AddMat("snowPile2", shaderMngr->GetVertexShader("vSnow"), shaderMngr->GetHullShader("hSnow"), shaderMngr->GetDomainShader("dSnow"), shaderMngr->GetPixelShader("pSnow"), L"Assets/Textures/stone2Diffuse.jpg", L"Assets/Textures/stone2Normals.jpg");
-	matMngr->AddMat("snowPile3", shaderMngr->GetVertexShader("vSnow"), shaderMngr->GetHullShader("hSnow"), shaderMngr->GetDomainShader("dSnow"), shaderMngr->GetPixelShader("pSnow"), L"Assets/Textures/stone3Diffuse.jpg", L"Assets/Textures/stone3Normals.jpg");
-	matMngr->AddMat("snowPile4", shaderMngr->GetVertexShader("vSnow"), shaderMngr->GetHullShader("hSnow"), shaderMngr->GetDomainShader("dSnow"), shaderMngr->GetPixelShader("pSnow"), L"Assets/Textures/stone4Diffuse.jpg", L"Assets/Textures/stone4Normals.jpg");
-	matMngr->AddMat("snowPile5", shaderMngr->GetVertexShader("vSnow"), shaderMngr->GetHullShader("hSnow"), shaderMngr->GetDomainShader("dSnow"), shaderMngr->GetPixelShader("pSnow"), L"Assets/Textures/stone5Diffuse.jpg", L"Assets/Textures/stone5Normals.jpg");
+	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
+	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg", L"Assets/Textures/iceNormals.jpg", true, 0.650f, L"Assets/Textures/SunnyCubeMap.dds");
+	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg", L"Assets/Textures/snowNormals.jpg");
+	matMngr->AddMat("snowPile", shaderMngr->GetVertexShader("vSnow"), shaderMngr->GetHullShader("hSnow"), shaderMngr->GetDomainShader("dSnow"), shaderMngr->GetPixelShader("pSnow"), L"Assets/Textures/stoneDiffuse.jpg", L"Assets/Textures/stoneNormals.jpg");
 
 	//meshes
 	meshMngr = MeshManager::GetInstancce();
 	meshMngr->Init(device);
 	meshMngr->AddMesh("cube", "Assets/Models/cube.obj");
-	meshMngr->AddMesh("stone1", "Assets/Models/stone1.obj");
-	meshMngr->AddMesh("stone2", "Assets/Models/stone2.obj");
-	meshMngr->AddMesh("stone3", "Assets/Models/stone3.obj");
-	meshMngr->AddMesh("stone4", "Assets/Models/stone4.obj");
-	meshMngr->AddMesh("stone5", "Assets/Models/stone5.obj");
+	meshMngr->AddMesh("ship", "Assets/Models/ship.obj");
+	meshMngr->AddMesh("floor", "Assets/Models/floor.obj");
+	meshMngr->AddMesh("snow", "Assets/Models/snowFloor.obj");
+	meshMngr->AddMesh("stone", "Assets/Models/stone.obj");
 }
 
 void SnowShaderTestScene::CreateEntities()
@@ -153,20 +152,30 @@ void SnowShaderTestScene::CreateEntities()
 	camera = new Camera((float)width, (float)height, vec3(0.0f, 2.5f, 0.0f), 0.20f, 0.0f);
 
 	for (int i = 0; i < 5; i++) {
-		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("snow"), matMngr->GetMat("snow"),
-		//	vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
-		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),
-		//	vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone1"), matMngr->GetMat("snowPile1"),
-			vec3(0, 1, 10.0f * static_cast<float>(i) + 1.f), vec3(0, 0, 0), vec3(1, 1, 1)));
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone2"), matMngr->GetMat("snowPile2"),
-			vec3(0, 1, 10.0f * static_cast<float>(i) + 3.f), vec3(0, 0, 0), vec3(1, 1, 1)));
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone3"), matMngr->GetMat("snowPile3"),
-			vec3(0, 1, 10.0f * static_cast<float>(i) + 5.f), vec3(0, 0, 0), vec3(1, 1, 1)));
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone4"), matMngr->GetMat("snowPile4"),
-			vec3(0, 1, 10.0f * static_cast<float>(i) + 7.f), vec3(0, 0, 0), vec3(1, 1, 1)));
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone5"), matMngr->GetMat("snowPile5"),
-			vec3(0, 1, 10.0f * static_cast<float>(i) + 9.f), vec3(0, 0, 0), vec3(1, 1, 1)));
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("snow"), matMngr->GetMat("snow"),
+			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),
+			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+		//	vec3(20, 0, 30.0f * static_cast<float>(i) + 5.f), vec3(0, 1, 0), vec3(1, 1, 1)));
+		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+		//	vec3(13, 0, 30.0f * static_cast<float>(i) + 10.f), vec3(0, 1, 0), vec3(1, 1, 1)));
+		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+		//	vec3(16, 0, 30.0f * static_cast<float>(i) + 15.f), vec3(0, 1, 0), vec3(1, 1, 1)));
+		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+		//	vec3(25, 0, 30.0f * static_cast<float>(i) + 20.f), vec3(0, 1, 0), vec3(1, 1, 1)));
+		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+		//	vec3(11, 0, 30.0f * static_cast<float>(i) + 25.f), vec3(0, 1, 0), vec3(1, 1, 1)));
+		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+		//	vec3(-10, 0, 30.0f * static_cast<float>(i) + 5.f), vec3(0, 1, 0), vec3(1, 1, 1)));
+		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+		//	vec3(-15, 0, 30.0f * static_cast<float>(i) + 10.f), vec3(0, 1, 0), vec3(1, 1, 1)));
+		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+		//	vec3(-16, 0, 30.0f * static_cast<float>(i) + 15.f), vec3(0, 1, 0), vec3(1, 1, 1)));
+		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+		//	vec3(-20, 0, 30.0f * static_cast<float>(i) + 20.f), vec3(0, 1, 0), vec3(1, 1, 1)));
+		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+		//	vec3(-11, 0, 30.0f * static_cast<float>(i) + 25.f), vec3(0, 1, 0), vec3(1, 1, 1)));
 	}
 
 
@@ -186,8 +195,8 @@ void SnowShaderTestScene::CreateEntities()
 	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("soil"),
 	//	vec3(1, 1, 1), vec3(45, 0, 45), vec3(0.7f, 0.6f, 0.8f)));
 
-	//player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"));
-	//gameEntities.push_back(player);
+	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"));
+	gameEntities.push_back(player);
 
 	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds",
 		device,
@@ -243,14 +252,14 @@ void SnowShaderTestScene::Update(float deltaTime, float totalTime)
 
 	for (size_t i = 0; i < gameEntities.size() - 0; ++i) {
 		gameEntities[i]->Update();
-		gameEntities[i]->RotateOnAxis(0, 1, 0, 2.0f * deltaTime);
-		//
-		//if (gameEntities[i]->GetPosition().z < 0.0f) {
-		//	gameEntities[i]->TranslateBy(0.0f, 0.0f, 120.0f);
-		//}
+		gameEntities[i]->TranslateBy(0.0f, 0.0f, -.01f);
+
+		if (gameEntities[i]->GetPosition().z < 0.0f) {
+			gameEntities[i]->TranslateBy(0.0f, 0.0f, 120.0f);
+		}
 	}
 
-	//player->Update(deltaTime, totalTime);
+	player->Update(deltaTime, totalTime);
 
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
@@ -269,8 +278,8 @@ void SnowShaderTestScene::Draw(float deltaTime, float totalTime)
 	context->ClearRenderTargetView(backBufferRTV, color);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	
-	hullShader->SetShader();
-	domainShader->SetShader();
+	//hullShader->SetShader();
+	//domainShader->SetShader();
 	
 	renderMngr->Draw();
 

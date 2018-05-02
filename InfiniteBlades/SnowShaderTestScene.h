@@ -55,9 +55,6 @@ private:
 	ShaderManager* shaderMngr;
 	RenderManager* renderMngr;
 
-	SimpleHullShader* hullShader;
-	SimpleDomainShader* domainShader;
-
 	//camera
 	Camera* camera;
 
