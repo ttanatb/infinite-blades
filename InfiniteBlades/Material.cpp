@@ -17,7 +17,6 @@ Material::~Material()
 	if (diffuseSamplerPtr != nullptr) diffuseSamplerPtr->Release();
 	if (reflectionSamplerPtr != nullptr) reflectionSamplerPtr->Release();
 	if (normalSRVptr != nullptr) normalSRVptr->Release();
-	if (normalSamplerPtr != nullptr) normalSamplerPtr->Release();
 	if (reflectionSRVptr != nullptr) reflectionSRVptr->Release();
 }
 
@@ -44,15 +43,6 @@ void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pS
 	diffuseSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	diffuseSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	device->CreateSamplerState(&diffuseSamplerDesc, &diffuseSamplerPtr);
-
-	D3D11_SAMPLER_DESC normalSamplerDesc = D3D11_SAMPLER_DESC();
-	normalSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	normalSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	normalSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	normalSamplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-	normalSamplerDesc.MaxAnisotropy = 16;
-	normalSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	device->CreateSamplerState(&normalSamplerDesc, &normalSamplerPtr);
 
 	D3D11_SAMPLER_DESC reflectionSamplerDesc = D3D11_SAMPLER_DESC();
 	reflectionSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -111,7 +101,6 @@ void Material::PrepareMaterial(mat4* worldMat)
 	vertexShader->SetShader();
 
 	pixelShader->SetSamplerState("diffuseSampler", diffuseSamplerPtr);
-	pixelShader->SetSamplerState("normalSampler", normalSamplerPtr);
 	pixelShader->SetShaderResourceView("diffuseTexture", diffuseSRVptr);
 	pixelShader->SetShaderResourceView("normalTexture", normalSRVptr);
 	pixelShader->SetShaderResourceView("skyTexture", reflectionSRVptr);
@@ -127,7 +116,6 @@ void Material::PreparePlanarReflectionMaterial(mat4 * worldMat, mat4 * viewMat)
 	vertexShader->SetShader();
 
 	pixelShader->SetSamplerState("diffuseSampler", diffuseSamplerPtr);
-	pixelShader->SetSamplerState("normalSampler", normalSamplerPtr);
 	pixelShader->SetSamplerState("reflectionSampler", reflectionSamplerPtr);
 	pixelShader->SetShaderResourceView("diffuseTexture", diffuseSRVptr);
 	pixelShader->SetShaderResourceView("normalTexture", normalSRVptr);

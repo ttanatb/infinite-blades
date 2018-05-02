@@ -101,6 +101,8 @@ void GameplayScene::AddEntityToRender()
 			renderMngr->AddToOpqaue(gameEntities[i]);
 		}
 	}
+
+	renderMngr->AddToReflectionRender(player);
 }
 
 // --------------------------------------------------------

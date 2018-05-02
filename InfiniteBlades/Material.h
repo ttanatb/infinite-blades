@@ -20,7 +20,6 @@ private:
 	ID3D11SamplerState* diffuseSamplerPtr;
 
 	ID3D11ShaderResourceView* normalSRVptr;
-	ID3D11SamplerState* normalSamplerPtr;
 
 public:
   	Material(SimpleVertexShader * vShader,
