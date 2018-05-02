@@ -1,4 +1,4 @@
-#include "CollisionTestScene.h"
+#include "CollectibleTestScene.h"
 
 //remove later
 #include <iostream>
@@ -10,16 +10,15 @@ using namespace DirectX;
 //ImGui temp variables
 static float pos[3] = { 0.0f, 0.0f, 0.0f }; // Slider for object positions
 #endif
-
-											// --------------------------------------------------------
-											// Constructor
-											//
-											// DXCore (base class) constructor will set up underlying fields.
-											// DirectX itself, and our window, are not ready yet!
-											//
-											// hInstance - the application's OS-level handle (unique ID)
-											// --------------------------------------------------------
-CollisionTestScene::CollisionTestScene(HINSTANCE hInstance)
+// --------------------------------------------------------
+// Constructor
+//
+// DXCore (base class) constructor will set up underlying fields.
+// DirectX itself, and our window, are not ready yet!
+//
+// hInstance - the application's OS-level handle (unique ID)
+// --------------------------------------------------------
+CollectibleTestScene::CollectibleTestScene(HINSTANCE hInstance)
 
 //feed the handle, the name, width, and height
 	: DXCore(hInstance, "Infinite Blades", 1280, 720,
@@ -40,13 +39,14 @@ CollisionTestScene::CollisionTestScene(HINSTANCE hInstance)
 //  - Release all DirectX objects created here
 //  - Delete any objects to prevent memory leaks
 // --------------------------------------------------------
-CollisionTestScene::~CollisionTestScene()
+CollectibleTestScene::~CollectibleTestScene()
 {
 	// Release any (and all!) DirectX objects
 	// we've made in the Game class
 	for (size_t i = 0; i < gameEntities.size(); ++i)
 		delete gameEntities[i];
 	if (camera != nullptr) delete camera;
+	if (skybox != nullptr) delete skybox;
 
 	ImGui_ImplDX11_Shutdown();
 
@@ -60,25 +60,18 @@ CollisionTestScene::~CollisionTestScene()
 // Called once per program, after DirectX and the window
 // are initialized but before the game loop.
 // --------------------------------------------------------
-void CollisionTestScene::Init()
+void CollectibleTestScene::Init()
 {
 	//Initialize ImGui
 	ImGui_ImplDX11_Init(hWnd, device, context);
-
-	prevMousePos.x = width / 2;
-	prevMousePos.y = height / 2;
 
 	LoadShaderMeshMat();
 	CreateEntities();
 	InitInput();
 
-	directionalLight = { vec4(0.1f, 0.5f, 0.1f, 1.0f),
-		vec3(1.0f, 1.0f, 0.0f) };
-	directionalLight2 = { vec4(0.8f, 0.8f, 0.5f, 1.0f),
-		vec3(0.0f, -1.0f, 1.0f) };
-	pointLight = { vec4(0.1f, 0.1f, 0.8f, 1.0f),
-		vec3(0.0f, 5.0f, -5.0f) };
-	ambientLight = vec4(0.1f, 0.1f, 0.1f, 1.0f);
+	directionalLight = { vec4(0.8f, 0.85f, 0.9f, 1.0f),
+		vec3(-0.2f, -1.0f, 0.3f) };
+	ambientLight = vec4(0.1f, 0.1f, 0.2f, 1.0f);
 
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
@@ -90,13 +83,15 @@ void CollisionTestScene::Init()
 // Loads shaders, loads texture to build materials, and loads meshes
 // then adds them to the respective managers
 // --------------------------------------------------------
-void CollisionTestScene::LoadShaderMeshMat()
+void CollectibleTestScene::LoadShaderMeshMat()
 {
 	//shaders
 	shaderMngr = ShaderManager::GetInstancce();
 	shaderMngr->Init(device, context);
 	shaderMngr->AddVertexShader("vBasic");
 	shaderMngr->AddPixelShader("pBasic");
+	shaderMngr->AddVertexShader("SkyBoxVS");
+	shaderMngr->AddPixelShader("SkyBoxPS");
 
 	//hoisting shaders
 	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasic");
@@ -108,6 +103,9 @@ void CollisionTestScene::LoadShaderMeshMat()
 	matMngr->AddMat("concrete", vShader, pShader, L"Assets/Textures/concrete.jpg");
 	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/soil.jpg");
 	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/woodplanks.jpg");
+	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
+	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg");
+	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg");
 
 	//meshes
 	meshMngr = MeshManager::GetInstancce();
@@ -118,29 +116,54 @@ void CollisionTestScene::LoadShaderMeshMat()
 	meshMngr->AddMesh("sphere", "Assets/Models/sphere.obj");
 	meshMngr->AddMesh("torus", "Assets/Models/torus.obj");
 	meshMngr->AddMesh("cube", "Assets/Models/cube.obj");
+	meshMngr->AddMesh("ship", "Assets/Models/ship.obj");
+	meshMngr->AddMesh("floor", "Assets/Models/floor.obj");
+	meshMngr->AddMesh("snow", "Assets/Models/snowFloor.obj");
+	meshMngr->AddMesh("testFloor", "Assets/Models/testFloor.obj");
 }
 
-void CollisionTestScene::CreateEntities()
+void CollectibleTestScene::CreateEntities()
 {
 	//create camera
-	camera = new Camera((float)width, (float)height, vec3(0.0f, 0.0f, -5.0f), 0.0f, 0.0f);
+	camera = new Camera((float)width, (float)height, vec3(0.0f, 2.5f, 0.0f), 0.20f, 0.0f);
 
-	//create entities
-	sphere1 = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"), SPHERE,
-		vec3(0, 0, 0), vec3(0, 0, 0), 1.0f);
-	gameEntities.push_back(sphere1);
-	sphere1->CalculateCollider();
+	for (int i = 0; i < 4; i++) //gameEntity[7]
+	{
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("snow"), matMngr->GetMat("snow"),
+			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),
+			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+	}
 
-	cube1 = new GameEntity(meshMngr->GetMesh("cube"), matMngr->GetMat("soil"), BOX,
-		vec3(0.75, 0, 0), vec3(0, 0, 0), 0.75f);
-	gameEntities.push_back(cube1);
-	cube1->CalculateCollider();
+	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"), ColliderType::SPHERE); //gameEntity[8]
+	gameEntities.push_back(player);
+	player->CalculateCollider();
+
+	// Collectibles
+	for (int i = 9; i < 13; ++i) //gameEntity[9] - gameEntity[12]
+	{
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("woodplanks"), ColliderType::SPHERE,
+			vec3(0, 1, 5.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(0.5f, 0.5f, 0.5f)));
+		gameEntities[i]->CalculateCollider();
+	}
+	
+	//for (int i = 4; i < 10; ++i)
+	//{
+		//std::bitset<1> temp;
+		//collected.push_back(temp);
+	//}	
+
+	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds",
+		device,
+		shaderMngr->GetVertexShader("SkyBoxVS"),
+		shaderMngr->GetPixelShader("SkyBoxPS"),
+		meshMngr->GetMesh("cube"));
 }
 
-void CollisionTestScene::InitInput()
+void CollectibleTestScene::InitInput()
 {
 	//inputMngr = InputManager::GetInstance();
-	//char* usedChars = "WSAD XT";
+	//char* usedChars = "AD";
 	//inputMngr->AddKeysToPollFor(usedChars, strlen(usedChars));
 }
 
@@ -148,7 +171,7 @@ void CollisionTestScene::InitInput()
 // Handle resizing DirectX "stuff" to match the new window size.
 // For instance, updating our projection matrix's aspect ratio.
 // --------------------------------------------------------
-void CollisionTestScene::OnResize()
+void CollectibleTestScene::OnResize()
 {
 	// Handle base-level DX resize stuff
 	DXCore::OnResize();
@@ -160,8 +183,10 @@ void CollisionTestScene::OnResize()
 // --------------------------------------------------------
 // Update your game here - user input, move objects, AI, etc.
 // --------------------------------------------------------
-void CollisionTestScene::Update(float deltaTime, float totalTime)
+void CollectibleTestScene::Update(float deltaTime, float totalTime)
 {
+	//inputMngr->Update();
+
 	ImGuiIO& io = ImGui::GetIO();
 	io.DeltaTime = deltaTime;
 
@@ -169,10 +194,60 @@ void CollisionTestScene::Update(float deltaTime, float totalTime)
 	ImGui_ImplDX11_NewFrame();
 
 	camera->Update();
+	player->SetPosition(pos[0], pos[1], pos[2]);
 
-	sphere1->SetRotationQuaterniont(0.0f, 0.0f, 2 * deltaTime, 0.0f);
-	cube1->SetPosition(pos[0], pos[1], pos[2]);
-	CollisionSolver::DetectCollision(sphere1, cube1);
+	for (int i = 0; i < gameEntities.size(); ++i) 
+	{
+		gameEntities[i]->Update();
+		gameEntities[i]->TranslateBy(0.0f, 0.0f, -0.01f);
+
+		if (gameEntities[i]->GetPosition().z < 0.0f) 
+		{
+			gameEntities[i]->TranslateBy(0.0f, 0.0f, 120.0f);
+		}
+	}
+	for (int i = 9; i < 13; ++i)
+	{
+		CollisionSolver::DetectCollision(player, gameEntities[i]);
+	}
+
+	//player->Update(deltaTime, totalTime);
+
+	// Coin Pickups
+	/*
+	for (size_t i = 5; i < 15; i++)
+	{
+		if (collected[i - 5].to_ulong() == 0)
+		{
+			if (CollisionSolver::DetectCollision(player, gameEntities[i])) // assumming gameEntities[0] is the player
+			{
+				collected[i - 5].set();
+			}
+		}
+	}
+	// Loop Coins
+	if (gameEntities[8]->GetPosition().x < -7.0)
+	{
+		// Reset Position
+		gameEntities[6]->SetPosition(XMFLOAT3(10, gameEntities[6]->GetPosition().y, 0));
+		gameEntities[7]->SetPosition(XMFLOAT3(11, gameEntities[7]->GetPosition().y, 0));
+		gameEntities[8]->SetPosition(XMFLOAT3(12, gameEntities[8]->GetPosition().y, 0));
+		gameEntities[9]->SetPosition(XMFLOAT3(10, gameEntities[9]->GetPosition().y, 0));
+		gameEntities[10]->SetPosition(XMFLOAT3(11, gameEntities[10]->GetPosition().y, 0));
+		gameEntities[11]->SetPosition(XMFLOAT3(12, gameEntities[11]->GetPosition().y, 0));
+		gameEntities[12]->SetPosition(XMFLOAT3(10, gameEntities[12]->GetPosition().y, 0));
+		gameEntities[13]->SetPosition(XMFLOAT3(11, gameEntities[13]->GetPosition().y, 0));
+
+		// Reset Collected
+		for (int i = 6; i < 16; i++)
+		{
+			if (collected[i - 6].to_ulong() == 1)
+			{
+				collected[i - 6].set(0, 0);
+			}
+		}
+	}
+	*/
 
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
@@ -182,7 +257,7 @@ void CollisionTestScene::Update(float deltaTime, float totalTime)
 // --------------------------------------------------------
 // Clear the screen, redraw everything, present to the user
 // --------------------------------------------------------
-void CollisionTestScene::Draw(float deltaTime, float totalTime)
+void CollectibleTestScene::Draw(float deltaTime, float totalTime)
 {
 	// Background color (Cornflower Blue in this case) for clearing
 	const float color[4] = { clear_color.x, clear_color.y, clear_color.z, clear_color.w };
@@ -190,6 +265,9 @@ void CollisionTestScene::Draw(float deltaTime, float totalTime)
 	// Clear the render target and depth buffer (erases what's on the screen)
 	context->ClearRenderTargetView(backBufferRTV, color);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
 
 	//draw all the entities
 	for (size_t i = 0; i < gameEntities.size(); ++i)
@@ -205,8 +283,6 @@ void CollisionTestScene::Draw(float deltaTime, float totalTime)
 		SimplePixelShader* pixelShader = matPtr->GetPixelShader();
 		pixelShader->SetFloat4("ambientColor", ambientLight);
 		pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
-		pixelShader->SetData("directionalLight2", &directionalLight2, sizeof(DirectionalLight));
-		pixelShader->SetData("pointLight", &pointLight, sizeof(PointLight));
 		pixelShader->SetFloat3("cameraPos", camera->GetPos());
 
 		SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
@@ -216,28 +292,31 @@ void CollisionTestScene::Draw(float deltaTime, float totalTime)
 		//prepare per-object data
 		matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
 
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
-
 		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
 		context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
 		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
 	}
+
+	//render skybox
+	skybox->Render(context, camera, stride, offset);
+
+	// At the end of the frame, reset render states
+	context->RSSetState(0);
+	context->OMSetDepthStencilState(0, 0);
+
 	// 1. Show a simple window
 	{
 		static float f = 0.0f;
 		ImGui::Text("Collision Test Debugger");
 		ImGui::SliderFloat("float", &f, 0.0f, 1.0f); // Edit 1 float using a slider from 0 to 1
-		ImGui::SliderFloat3("cube1 Pos", pos, -5, 5); // Edit 3 floats using a slider from -5 to 5
+		ImGui::SliderFloat3("Player Pos", pos, -5, 5); // Edit 3 floats using a slider from -5 to 5
 		ImGui::ColorEdit3("clear color", (float*)&clear_color);
 		ImGui::Checkbox("Free Look Enabled", &freelookEnabled);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 	ImGui::Render();
-	// Present the back buffer to the user
-	//  - Puts the final frame we're drawing into the window so the user can see it
-	//  - Do this exactly ONCE PER FRAME (always at the very end of the frame)
+
 	swapChain->Present(0, 0);
 }
 
@@ -249,7 +328,7 @@ void CollisionTestScene::Draw(float deltaTime, float totalTime)
 // from the OS-level messages anyway, so these helpers have
 // been created to provide basic mouse input if you want it.
 // --------------------------------------------------------
-void CollisionTestScene::OnMouseDown(WPARAM buttonState, int x, int y)
+void CollectibleTestScene::OnMouseDown(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
 	ImGuiIO& io = ImGui::GetIO();
@@ -267,7 +346,7 @@ void CollisionTestScene::OnMouseDown(WPARAM buttonState, int x, int y)
 // --------------------------------------------------------
 // Helper method for mouse release
 // --------------------------------------------------------
-void CollisionTestScene::OnMouseUp(WPARAM buttonState, int x, int y)
+void CollectibleTestScene::OnMouseUp(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
 	ImGuiIO& io = ImGui::GetIO();
@@ -282,7 +361,7 @@ void CollisionTestScene::OnMouseUp(WPARAM buttonState, int x, int y)
 // if the mouse is currently over the window, or if we're 
 // currently capturing the mouse.
 // --------------------------------------------------------
-void CollisionTestScene::OnMouseMove(WPARAM buttonState, int x, int y)
+void CollectibleTestScene::OnMouseMove(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
 	ImGuiIO& io = ImGui::GetIO();
@@ -304,7 +383,7 @@ void CollisionTestScene::OnMouseMove(WPARAM buttonState, int x, int y)
 // WheelDelta may be positive or negative, depending 
 // on the direction of the scroll
 // --------------------------------------------------------
-void CollisionTestScene::OnMouseWheel(float wheelDelta, int x, int y)
+void CollectibleTestScene::OnMouseWheel(float wheelDelta, int x, int y)
 {
 	// Add any custom code here...
 }

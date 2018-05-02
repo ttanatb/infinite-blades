@@ -127,6 +127,9 @@
     <ClCompile Include="Imgui\imgui_impl_dx11.cpp">
       <Filter>External Libraries\Imgui</Filter>
     </ClCompile>
+    <ClCompile Include="CollectibleTestScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Mesh.h">
@@ -212,6 +215,9 @@
     </ClInclude>
     <ClInclude Include="Imgui\stb_truetype.h">
       <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="CollectibleTestScene.h">
+      <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

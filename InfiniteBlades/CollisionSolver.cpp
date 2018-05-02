@@ -17,7 +17,7 @@ bool CollisionSolver::DetectCollision(const GameEntity * a, const GameEntity * b
 	{
 		return DetectCollisionSphereBox(b, a);
 	}
-	else
+	else if (a->GetCollider().colliderType == BOX && b->GetCollider().colliderType == SPHERE)
 	{
 		return DetectCollisionSphereBox(a, b);
 	}
@@ -90,9 +90,9 @@ bool CollisionSolver::DetectCollisionSphereBox(const GameEntity * a, const GameE
 
 	if (distanceSq.x < radius * radius)
 	{
-		printf("Colliding: %f\n", radius);
+		printf("Sphere vs. Box. Colliding: %f\n", radius);
 		return true;
 	}
-	printf("Not colliding: %f \n", radius);
+	printf("Sphere vs. Box. Not colliding: %f \n", radius);
 	return false;
 }

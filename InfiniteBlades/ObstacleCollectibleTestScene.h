@@ -12,13 +12,13 @@
 #include "WICTextureLoader.h"
 #include <vector>
 
-class CollisionTestScene
+class ObstacleCollectibleTestScene
 	: public DXCore
 {
 
 public:
-	CollisionTestScene(HINSTANCE hInstance);
-	~CollisionTestScene();
+	ObstacleCollectibleTestScene(HINSTANCE hInstance);
+	~ObstacleCollectibleTestScene();
 
 	// Overridden setup and game loop methods, which
 	// will be called automatically
@@ -52,19 +52,21 @@ private:
 	InputManager* inputMngr;
 	ShaderManager* shaderMngr;
 
-	//camera
+	//Camera
 	Camera* camera;
 
-	// Game entities
+	//Game entities
 	std::vector<GameEntity*> gameEntities;
 
 	GameEntity* sphere1;
 	GameEntity* cube1;
 
-	//imgui Variables
+	GameEntity* cone1;
+
+	//Imgui Variables
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	// Keeps track of the old mouse position.  Useful for 
-	// determining how far the mouse moved in a single frame.
+	//Keeps track of the old mouse position.  Useful for 
+	//determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
 };

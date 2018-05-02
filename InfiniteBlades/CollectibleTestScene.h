@@ -11,14 +11,17 @@
 #include "Lights.h"
 #include "WICTextureLoader.h"
 #include <vector>
+#include "Player.h"
+#include "Skybox.h"
+#include <bitset>
 
-class CollisionTestScene
+class CollectibleTestScene
 	: public DXCore
 {
 
 public:
-	CollisionTestScene(HINSTANCE hInstance);
-	~CollisionTestScene();
+	CollectibleTestScene(HINSTANCE hInstance);
+	~CollectibleTestScene();
 
 	// Overridden setup and game loop methods, which
 	// will be called automatically
@@ -55,11 +58,20 @@ private:
 	//camera
 	Camera* camera;
 
+	//Player
+	Player* player;
+	Skybox* skybox;
+
+	GameEntity* sphere1;
+	GameEntity* coin1;
+	GameEntity* coin2;
+	GameEntity* coin3;
+
+
 	// Game entities
 	std::vector<GameEntity*> gameEntities;
 
-	GameEntity* sphere1;
-	GameEntity* cube1;
+	std::vector<std::bitset<1>> collected;
 
 	//imgui Variables
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -68,3 +80,4 @@ private:
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
 };
+
