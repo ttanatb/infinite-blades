@@ -52,7 +52,6 @@ public:
 	void SetVertexShader(SimpleVertexShader* newVertexShader);
 	void SetPixelShader(SimplePixelShader* newPixelShader);
 
-	void PrepareMaterial(mat4* worldMat);
+  void PrepareMaterial(mat4* worldMat = nullptr);
 	void PreparePlanarReflectionMaterial(mat4* worldMat, mat4* viewMat);
-	
 };
