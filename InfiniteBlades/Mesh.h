@@ -20,9 +20,10 @@ public:
 	int GetIndexCount();
 	int GetVertexCount();
 
-private:
-	void CreateBuffers(Vertex * vertices, int vertexCount, int * indices, int indexCount, ID3D11Device * device);
 
+private:
+	void CalculateTangents(Vertex* vertices, int vertexCount, int* indices);
+	void CreateBuffers(Vertex * vertices, int vertexCount, int * indices, int indexCount, ID3D11Device * device);
 	ID3D11Buffer* vertexBuffer = nullptr;
 	ID3D11Buffer* indexBuffer = nullptr;
 

@@ -43,11 +43,13 @@ GameplayScene::~GameplayScene()
 		delete gameEntities[i];
 	if (camera != nullptr) delete camera;
 	if (skybox != nullptr) delete skybox;
+	if (snowEmitter != nullptr) delete snowEmitter;
 
 	MaterialManager::ReleaseInstance();
 	MeshManager::ReleaseInstance();
 	InputManager::ReleaseInstance();
 	ShaderManager::ReleaseInstance();
+	RenderManager::ReleaseInstance();
 }
 
 // --------------------------------------------------------
@@ -58,17 +60,49 @@ void GameplayScene::Init()
 {
 	LoadShaderMeshMat();
 	CreateEntities();
+	//intialize render manager
+	renderMngr = RenderManager::GetInstance();
+	renderMngr->Init(device, context);
+	renderMngr->InitSkyBox(skybox);
+	renderMngr->InitCamera(camera);
+	AddEntityToRender();
+	//intialize input
 	InitInput();
 
 
-	directionalLight = { vec4(0.8f, 0.85f, 0.9f, 1.0f),
-						 vec3(-0.2f, -1.0f, 0.3f) };
-	ambientLight = vec4(0.1f, 0.1f, 0.2f, 1.0f);
+	directionalLight = { vec4(0.2f, 0.3f, 0.2f, 1.0f),
+		vec3(1.0f, 1.0f, 0.0f) };
+	directionalLight2 = { vec4(0.2f, 0.2f, 0.3f, 1.0f),
+		vec3(-1.0f, -2.0f, 0.0f) };
+	pointLight = { vec4(0.2f, 0.2f, 0.05f, 1.0f),
+		vec3(0.0f, 5.0f, 10.0f) };
+	ambientLight = vec4(0.1f, 0.1f, 0.1f, 1.0f);
+
+	renderMngr->AddDirectionalLight("directionalLight", directionalLight);
+	renderMngr->AddDirectionalLight("directionalLight2", directionalLight2);
+	renderMngr->AddPointLight("pointLight", pointLight);
+	renderMngr->AddAmbientLight(ambientLight);
 
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
 	// Essentially: "What kind of shape should the GPU draw with our data?"
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void GameplayScene::AddEntityToRender()
+{
+	for (int i = 0; i < gameEntities.size(); i++)
+	{
+		if (gameEntities[i]->GetMat()->GetTransparentBool()) {
+			renderMngr->AddToTransparent(gameEntities[i]);
+		}
+		else
+		{
+			renderMngr->AddToOpqaue(gameEntities[i]);
+		}
+	}
+
+	renderMngr->AddToReflectionRender(player);
 }
 
 // --------------------------------------------------------
@@ -84,6 +118,10 @@ void GameplayScene::LoadShaderMeshMat()
 	shaderMngr->AddPixelShader("pBasic");
 	shaderMngr->AddVertexShader("SkyBoxVS");
 	shaderMngr->AddPixelShader("SkyBoxPS");
+	shaderMngr->AddVertexShader("vParticle");
+	shaderMngr->AddPixelShader("pParticle");
+	shaderMngr->AddVertexShader("vReflection");
+	shaderMngr->AddPixelShader("pReflection");
 
 	//hoisting shaders
 	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasic");
@@ -92,26 +130,34 @@ void GameplayScene::LoadShaderMeshMat()
 	//materials
 	matMngr = MaterialManager::GetInstancce();
 	matMngr->Init(device, context);
-	matMngr->AddMat("concrete", vShader, pShader, L"Assets/Textures/concrete.jpg");
-	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/soil.jpg");
-	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/woodplanks.jpg");
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
-	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg");
-	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg");
+	matMngr->AddMat("goldfish", vShader, pShader, L"Assets/Textures/goldfish_albedo.jpg");
+	matMngr->AddMat("shark", vShader, pShader, L"Assets/Textures/shark_albedo.png");
+	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg", L"Assets/Textures/snowNormals.jpg");
+
+	matMngr->AddMat("ice", 
+		shaderMngr->GetVertexShader("vReflection"),
+		shaderMngr->GetPixelShader("pReflection"),
+		L"Assets/Textures/ice.jpg", 
+		L"Assets/Textures/iceNormals.jpg", 
+		true, 
+		0.80f, 
+		L"Assets/Textures/SunnyCubeMap.dds");
+	
+	matMngr->AddMat("particle", 
+		shaderMngr->GetVertexShader("vParticle"),
+		shaderMngr->GetPixelShader("pParticle"),
+		L"Assets/Textures/white_circle.png");
 
 	//meshes
 	meshMngr = MeshManager::GetInstancce();
 	meshMngr->Init(device); 
-	meshMngr->AddMesh("helix", "Assets/Models/helix.obj");
-	meshMngr->AddMesh("cone", "Assets/Models/cone.obj");
-	meshMngr->AddMesh("cylinder", "Assets/Models/cylinder.obj");
-	meshMngr->AddMesh("sphere", "Assets/Models/sphere.obj");
-	meshMngr->AddMesh("torus", "Assets/Models/torus.obj");
 	meshMngr->AddMesh("cube", "Assets/Models/cube.obj");
 	meshMngr->AddMesh("ship", "Assets/Models/ship.obj");
 	meshMngr->AddMesh("floor", "Assets/Models/floor.obj");
 	meshMngr->AddMesh("snow", "Assets/Models/snowFloor.obj");
-	meshMngr->AddMesh("testFloor", "Assets/Models/testFloor.obj");
+	meshMngr->AddMesh("goldfish", "Assets/Models/goldfish.obj");
+	meshMngr->AddMesh("shark", "Assets/Models/shark.obj"); 
 }
 
 void GameplayScene::CreateEntities()
@@ -124,26 +170,31 @@ void GameplayScene::CreateEntities()
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));  
 		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("goldfish"), matMngr->GetMat("goldfish"),
+			vec3(1, -1, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("shark"), matMngr->GetMat("shark"),
+			vec3(-1, -1, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 	}
-
-	//create entities
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("woodplanks"),
-	//	vec3(2, 1, 1), vec3(45, 45, 0), 0.69f));
-
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("cone"), matMngr->GetMat("concrete"),
-	//	vec3(1, -1, 1), vec3(45, 90, 45), 0.9f));
-
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("helix"), matMngr->GetMat("soil"),
-	//	vec3(0, 0, 5), vec3(45, 0, 45), 0.85f));
-
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"),
-	//	vec3(-1, 1, 0), vec3(45, 45, 90), 0.8f));
-
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("soil"),
-	//	vec3(1, 1, 1), vec3(45, 0, 45), vec3(0.7f, 0.6f, 0.8f)));
 
 	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"), BOX);
 	gameEntities.push_back(player);
+
+	snowEmitter = new Emitter(
+		device,								//device
+		matMngr->GetMat("particle"),		//material
+		vec4(0.85f, 0.95f, 1.00f, 1.0f),	//start color
+		vec4(0.85f, 0.95f, 1.00f, 0.5f),	//end color
+		vec3(0.f, -3.f, -2.f),				//velocity
+		0.05f,								//start size
+		0.05f,								//end size
+		4,									//lifetime (in seconds)
+		true,								//is loopable
+		true,								//is active
+		400,								//max amount of particles
+		100,								//emissions per second (for smooth emission, use maxParticles/lifetime)
+		vec3(0, 5, 0)						//position
+	);
+	snowEmitter->SetAsPlane(10, 20);		//Sets as a (horizontal) plane (width, depth), will emit as point otherwise
 
 	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds", 
 		device, 
@@ -207,6 +258,7 @@ void GameplayScene::Update(float deltaTime, float totalTime)
 	}
 
 	player->Update(deltaTime, totalTime);
+	snowEmitter->Update(deltaTime);
 
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
@@ -224,47 +276,48 @@ void GameplayScene::Draw(float deltaTime, float totalTime)
 	// Clear the render target and depth buffer (erases what's on the screen)
 	context->ClearRenderTargetView(backBufferRTV, color);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	renderMngr->Draw();
+	snowEmitter->RenderParticles(context, camera);
+	//UINT stride = sizeof(Vertex);
+	//UINT offset = 0;
 
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
+	////draw all the entities
+	//for (size_t i = 0; i < gameEntities.size(); ++i)
+	//{
+	//	//hoist the mesh and mat of the entity
+	//	Mesh* meshPtr = gameEntities[i]->GetMesh();
+	//	Material * matPtr = gameEntities[i]->GetMat();
 
-	//draw all the entities
-	for (size_t i = 0; i < gameEntities.size(); ++i)
-	{
-		//hoist the mesh and mat of the entity
-		Mesh* meshPtr = gameEntities[i]->GetMesh();
-		Material * matPtr = gameEntities[i]->GetMat();
+	//	//early exit
+	//	if (meshPtr == nullptr || matPtr == nullptr) continue;
 
-		//early exit
-		if (meshPtr == nullptr || matPtr == nullptr) continue;
+	//	/*This is Per-frame data that we can offset into a renderer class we won't have*/
+	//	SimplePixelShader* pixelShader = matPtr->GetPixelShader();
+	//	pixelShader->SetFloat4("ambientColor", ambientLight);
+	//	pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
+	//	pixelShader->SetData("directionalLight2", &directionalLight2, sizeof(DirectionalLight));
+	//	pixelShader->SetData("pointLight", &pointLight, sizeof(PointLight));
+	//	pixelShader->SetFloat3("cameraPos", camera->GetPos());
 
-		/*This is Per-frame data that we can offset into a renderer class we won't have*/
-		SimplePixelShader* pixelShader = matPtr->GetPixelShader();
-		pixelShader->SetFloat4("ambientColor", ambientLight);
-		pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
-		pixelShader->SetFloat3("cameraPos", camera->GetPos());
+	//	SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
+	//	vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
+	//	vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
 
-		SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
-		vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
-		vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
+	//	//prepare per-object data
+	//	matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
 
-		//prepare per-object data
-		matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
+	//	ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
+	//	context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
+	//	context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	//	context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
+	//}
 
-		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
-		context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
-		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
-	}
+	////render skybox
+	//skybox->Render(context, camera, stride, offset);
 
-	//render skybox
-	skybox->Render(context, camera, stride, offset);
-
-	// At the end of the frame, reset render states
+	//// At the end of the frame, reset render states
 	context->RSSetState(0);
 	context->OMSetDepthStencilState(0, 0);
-
-	swapChain->Present(0, 0);
 
 	swapChain->Present(0, 0);
 }

@@ -33,6 +33,24 @@ void Camera::CalcProjMatTransposed()
 	XMStoreFloat4x4(&projMatTransposed, XMMatrixTranspose(P)); // Transpose for HLSL!
 }
 
+void Camera::CalcReflectionMat(float height)
+{
+	vec3 up, pos, lookAt;
+	float radians;
+	up = vec3(0.0f, 1.0f, 0.0f);
+	pos = vec3(position.x, -position.y + (height * 2.0f), position.z);
+	//cakc the rotation in radians
+	//radians = rotY * 0.0174532925f;
+	radians = rotY * (XM_PI / 180.0f);
+	// Setup where the camera is looking.
+	lookAt.x = sinf(radians) + position.x;
+	lookAt.y = position.y;
+	lookAt.z = cosf(radians) + position.z;
+	// Create the view matrix from the three vectors.
+	XMMATRIX reflMatrix = XMMatrixLookAtLH(XMLoadFloat3(&pos), XMLoadFloat3(&lookAt), XMLoadFloat3(&up));
+	XMStoreFloat4x4(&reflectionMatTranposed, XMMatrixTranspose(reflMatrix));
+}
+
 Camera::Camera(float width, float height, vec3 pos, float rotX, float rotY)
 {
 	this->width = width;
@@ -78,9 +96,24 @@ mat4* Camera::GetProjMatTransposed()
 	return &projMatTransposed;
 }
 
+mat4 * Camera::GetReflectionMat()
+{
+	return &reflectionMatTranposed;
+}
+
 vec3 Camera::GetPos()
 {
 	return position;
+}
+
+int Camera::GetHeight()
+{
+	return height;
+}
+
+int Camera::GetWidth()
+{
+	return width;
 }
 
 void Camera::Move(float x, float y, float z)
@@ -116,7 +149,7 @@ void Camera::RotateAroundRight(float rotationAmt)
 	float newAmt = rotX + rotationAmt;
 	if (newAmt < XM_PIDIV2 && newAmt > -XM_PIDIV2) {
 		rotX = newAmt;
-	} 
+	}
 	CalcDirection();
 	shouldCalcViewMat = true;
 }

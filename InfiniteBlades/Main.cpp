@@ -1,7 +1,5 @@
 #include <Windows.h>
-#include "DefaultTestScene.h"
 #include "GameplayScene.h"
-#include "SkyboxTestScene.h"
 #include "CollisionTestScene.h"
 #include "CollectibleTestScene.h"
 
@@ -54,7 +52,6 @@ int WINAPI WinMain(
 	DXCore::CreateConsoleWindow(500, 120, 32, 120);
 	printf("Console window created successfully.  Feel free to printf() here.\n");
 #endif
-	//DefaultTestScene dxGame;
 
 	// Create the Game object using
 	// the app handle we got from WinMain
@@ -64,8 +61,10 @@ int WINAPI WinMain(
 	//DefaultTestScene dxGame(hInstance);
 	//GameplayScene dxGame(hInstance);
 	//CollisionTestScene dxGame(hInstance);
-	CollectibleTestScene dxGame(hInstance);
+	//CollectibleTestScene dxGame(hInstance);
 	//SkyboxTestScene dxGame(hInstance);
+	//LiveReflectionTestScene dxGame(hInstance);
+	GameplayScene dxGame(hInstance);    
 
 	// Result variable for function calls below
 	HRESULT hr = S_OK;

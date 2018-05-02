@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{65977631-3FF6-4C14-88F1-C1CD3F1B5EFF}</ProjectGuid>
     <RootNamespace>DX11Starter</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
     <ProjectName>InfiniteBladesEngine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -153,14 +153,17 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
     <ClCompile Include="CollectibleTestScene.cpp" />
     <ClCompile Include="CollisionSolver.cpp" />
     <ClCompile Include="CollisionTestScene.cpp" />
-    <ClCompile Include="DefaultTestScene.cpp" />
     <ClCompile Include="DXCore.cpp" />
+    <ClCompile Include="Emitter.cpp" />
     <ClCompile Include="GameplayScene.cpp" />
     <ClCompile Include="Imgui\imgui.cpp" />
     <ClCompile Include="Imgui\imgui_demo.cpp" />
     <ClCompile Include="Imgui\imgui_draw.cpp" />
     <ClCompile Include="Imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="LiveReflectionTestScene.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Reflection.cpp" />
+    <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="GameEntity.cpp" />
     <ClCompile Include="InputManager.cpp" />
@@ -171,7 +174,6 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
     <ClCompile Include="MeshManager.cpp" />
     <ClCompile Include="SimpleShader.cpp" />
     <ClCompile Include="Skybox.cpp" />
-    <ClCompile Include="SkyboxTestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -182,6 +184,7 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
     <ClInclude Include="DefaultTestScene.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="DXCore.h" />
+    <ClInclude Include="Emitter.h" />
     <ClInclude Include="GameplayScene.h" />
     <ClInclude Include="Imgui\imconfig.h" />
     <ClInclude Include="Imgui\imgui.h" />
@@ -190,7 +193,11 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
     <ClInclude Include="Imgui\stb_rect_pack.h" />
     <ClInclude Include="Imgui\stb_textedit.h" />
     <ClInclude Include="Imgui\stb_truetype.h" />
+    <ClInclude Include="LiveReflectionTestScene.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Reflection.h" />
+    <ClInclude Include="RenderManager.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="GameEntity.h" />
     <ClInclude Include="InputManager.h" />
@@ -201,15 +208,26 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
     <ClInclude Include="MeshManager.h" />
     <ClInclude Include="SimpleShader.h" />
     <ClInclude Include="Skybox.h" />
-    <ClInclude Include="SkyboxTestScene.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="pReflection.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="Shaders\pBasic.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\pParticle.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -245,13 +263,29 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="Shaders\vParticle.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="SkyBoxPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="SkyboxVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="vReflection.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -263,12 +297,12 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\directxtk_desktop_2015.2017.12.13.1\build\native\directxtk_desktop_2015.targets" Condition="Exists('..\packages\directxtk_desktop_2015.2017.12.13.1\build\native\directxtk_desktop_2015.targets')" />
+    <Import Project="..\packages\directxtk_desktop_2015.2018.4.23.1\build\native\directxtk_desktop_2015.targets" Condition="Exists('..\packages\directxtk_desktop_2015.2018.4.23.1\build\native\directxtk_desktop_2015.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\directxtk_desktop_2015.2017.12.13.1\build\native\directxtk_desktop_2015.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_desktop_2015.2017.12.13.1\build\native\directxtk_desktop_2015.targets'))" />
+    <Error Condition="!Exists('..\packages\directxtk_desktop_2015.2018.4.23.1\build\native\directxtk_desktop_2015.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_desktop_2015.2018.4.23.1\build\native\directxtk_desktop_2015.targets'))" />
   </Target>
 </Project>
