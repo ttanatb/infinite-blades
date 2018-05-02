@@ -23,6 +23,7 @@ Emitter::Emitter(ID3D11Device * device, Material* material)
 	this->depth = 0;
 	CreateParticles();
 	CreateBuffers(device);
+	CreateRenderStates(device);
 }
 
 Emitter::Emitter(ID3D11Device * device, 
@@ -59,12 +60,18 @@ Emitter::Emitter(ID3D11Device * device,
 	this->depth = 0;
 	CreateParticles();
 	CreateBuffers(device);
+	CreateRenderStates(device);
 }
 
 Emitter::~Emitter()
 {
 	if (emitterVertBuffer) emitterVertBuffer->Release();
 	if (emitterIndexBuffer) emitterIndexBuffer->Release();
+
+	//Release render states
+	depthState->Release();
+	blendState->Release();
+
 	delete[] particles;
 	delete[] localParticleVertices;
 }
@@ -186,6 +193,11 @@ void Emitter::CreateParticles()
 
 void Emitter::RenderParticles(ID3D11DeviceContext * context, Camera* camera)
 {
+	//set render states
+	float blend[4] = { 1,1,1,1 };
+	context->OMSetBlendState(blendState, blend, 0xffffffff);
+	context->OMSetDepthStencilState(depthState, 0);
+	
 	//Copy to the dynamic buffer
 	UpdateBuffers(context);
 	
@@ -218,11 +230,19 @@ void Emitter::RenderParticles(ID3D11DeviceContext * context, Camera* camera)
 		//Draw from alive to max
 		context->DrawIndexed((maxParticles - firstAliveIndex) * 6, firstAliveIndex * 6, 0);
 	}
+
+	//reset render states back to default
+	context->OMSetBlendState(0, blend, 0xffffffff);
+	context->OMSetDepthStencilState(0, 0);
 }
 
 ID3D11Buffer * Emitter::getVertexBuffer() { return emitterVertBuffer; }
 
 ID3D11Buffer * Emitter::getIndexBuffer() { return emitterIndexBuffer; }
+
+ID3D11DepthStencilState * Emitter::getDepthState(){ return depthState; }
+
+ID3D11BlendState * Emitter::getBlendState() { return blendState; }
 
 void Emitter::setVelocity(vec3 v) { velocity = v; }
 
@@ -278,6 +298,30 @@ void Emitter::CreateBuffers(ID3D11Device * device)
 	// - Once we do this, we'll NEVER CHANGE THE BUFFER AGAIN
 	device->CreateBuffer(&ibd, &initialIndexData, &emitterIndexBuffer);
 	delete[] indices;
+}
+
+void Emitter::CreateRenderStates(ID3D11Device * device)
+{
+	//particle depth state for blending
+	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // Turns off depth writing
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	device->CreateDepthStencilState(&dsDesc, &depthState);
+	
+	//particle blend state for blending
+	D3D11_BLEND_DESC blend = {};
+	blend.AlphaToCoverageEnable = false;
+	blend.IndependentBlendEnable = false;
+	blend.RenderTarget[0].BlendEnable = true;
+	blend.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blend.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blend.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	blend.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blend.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blend.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	blend.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	device->CreateBlendState(&blend, &blendState);
 }
 
 //Rebuild entire dynamic vertex buffer each frame

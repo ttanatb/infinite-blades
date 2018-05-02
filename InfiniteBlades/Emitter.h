@@ -36,8 +36,13 @@ private:
 	ID3D11Buffer* emitterVertBuffer;
 	ID3D11Buffer* emitterIndexBuffer;
 
+	//Render States
+	ID3D11DepthStencilState* depthState;
+	ID3D11BlendState* blendState;
+
 	void CreateParticles();
 	void CreateBuffers(ID3D11Device * device);
+	void CreateRenderStates(ID3D11Device * device);
 	void CopyLocalParticle(int index);
 	void UpdateParticle(int index, float deltaTime);
 	void SpawnParticle();
@@ -68,6 +73,8 @@ public:
 	void RenderParticles(ID3D11DeviceContext* context, Camera* camera);
 	ID3D11Buffer* getVertexBuffer();
 	ID3D11Buffer* getIndexBuffer();
+	ID3D11DepthStencilState* getDepthState();
+	ID3D11BlendState* getBlendState();
 	void setVelocity(vec3 v);
 	void SetAsPlane(float w, float d);
 };

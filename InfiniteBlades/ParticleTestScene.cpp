@@ -46,10 +46,6 @@ ParticleTestScene::~ParticleTestScene()
 	//delete emitter
 	if (testEmitter) delete testEmitter;
 
-	//Release render states
-	particleDepthState->Release();
-	particleBlendState->Release();
-
 	MaterialManager::ReleaseInstance();
 	MeshManager::ReleaseInstance();
 	InputManager::ReleaseInstance();
@@ -65,28 +61,6 @@ void ParticleTestScene::Init()
 	LoadShaderMeshMat();
 	CreateEntities();
 	InitInput();
-
-	//particle depth state for blending
-	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
-	dsDesc.DepthEnable = true;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // Turns off depth writing
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	device->CreateDepthStencilState(&dsDesc, &particleDepthState);
-
-
-	//particle blend state for blending
-	D3D11_BLEND_DESC blend = {};
-	blend.AlphaToCoverageEnable = false;
-	blend.IndependentBlendEnable = false;
-	blend.RenderTarget[0].BlendEnable = true;
-	blend.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blend.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-	blend.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
-	blend.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	blend.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	blend.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
-	blend.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-	device->CreateBlendState(&blend, &particleBlendState);
 
 	directionalLight = { vec4(0.1f, 0.5f, 0.1f, 1.0f),
 		vec3(1.0f, 1.0f, 0.0f) };
@@ -146,21 +120,21 @@ void ParticleTestScene::CreateEntities()
 	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"),
 		vec3(0, 0, 0), vec3(0, 0, 0), 0.1f));
 	testEmitter = new Emitter(
-		device,
-		matMngr->GetMat("particle"),
-		vec4(1.f, 1.f, 1.f, 1.f),
-		vec4(1.f, 1.f, 1.f, 1.f),
-		vec3(0.f, -3.f, -1.f),
-		0.05f,
-		0.05f,
-		4,
-		true,
-		true,
-		200,
-		50,
-		vec3(0, 5, 0)
+		device,								//device
+		matMngr->GetMat("particle"),		//material
+		vec4(1.f, 1.f, 1.f, 1.f),			//start color
+		vec4(1.f, 1.f, 1.f, 1.f),			//end color
+		vec3(0.f, -3.f, -1.f),				//velocity
+		0.05f,								//start size
+		0.05f,								//end size
+		4,									//lifetime (in seconds)
+		true,								//is loopable
+		true,								//is active
+		200,								//max amount of particles
+		50,									//emissions per second (for smooth emission, use maxParticles/lifetime)
+		vec3(0, 5, 0)						//position
 	);
-	testEmitter->SetAsPlane(15, 15);
+	testEmitter->SetAsPlane(15, 15);		//Sets as a (horizontal) plane (width, depth), will emit as point otherwise
 }
 
 void ParticleTestScene::InitInput()
@@ -268,17 +242,7 @@ void ParticleTestScene::Draw(float deltaTime, float totalTime)
 		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
 	}
 	//draw emitter
-	
-	//set render states
-	float blend[4] = { 1,1,1,1 };
-	context->OMSetBlendState(particleBlendState, blend, 0xffffffff);
-	context->OMSetDepthStencilState(particleDepthState, 0);
-
 	testEmitter->RenderParticles(context, camera);
-
-	//reset render states back to default
-	context->OMSetBlendState(0, blend, 0xffffffff);
-	context->OMSetDepthStencilState(0, 0);
 
 	//Present the back buffer
 	swapChain->Present(0, 0);
