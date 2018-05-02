@@ -13,6 +13,7 @@ protected:
 
 	Mesh* meshPtr = nullptr;
 	Material* matPtr = nullptr;
+	char* tag = "";
 
 	GameEntity* parent = nullptr;
 	std::vector<GameEntity*> children;
@@ -47,6 +48,7 @@ public:
 	Material * GetMat();
 	void SetMat(Material * newMat);
 	void SetParent(GameEntity* parent);
+	void SetTag(char* tag);
 
 	void SetPosition(vec3 newPos);
 	void SetPosition(float x, float y, float z);
