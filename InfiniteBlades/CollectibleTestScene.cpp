@@ -52,7 +52,7 @@ CollectibleTestScene::~CollectibleTestScene()
 
 	MaterialManager::ReleaseInstance();
 	MeshManager::ReleaseInstance();
-	//InputManager::ReleaseInstance();
+	InputManager::ReleaseInstance();
 	ShaderManager::ReleaseInstance();
 }
 
@@ -127,7 +127,7 @@ void CollectibleTestScene::CreateEntities()
 	//create camera
 	camera = new Camera((float)width, (float)height, vec3(0.0f, 2.5f, 0.0f), 0.20f, 0.0f);
 
-	for (int i = 0; i < 4; i++) //gameEntity[7]
+	for (int i = 0; i < 4; ++i) //gameEntity[7]
 	{
 		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("snow"), matMngr->GetMat("snow"),
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));

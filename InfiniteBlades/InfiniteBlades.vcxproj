@@ -98,11 +98,8 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
       <SDLCheck>false</SDLCheck>
     </ClCompile>
     <PostBuildEvent>
-      <Command>mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets
-mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Models
-copy $(ProjectDir)Assets\Models $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Models
-mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Textures
-copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Textures</Command>
+      <Command>
+      </Command>
       <Message>Copying asset files over</Message>
     </PostBuildEvent>
     <Link>
@@ -146,11 +143,8 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
       </AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets
-mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Models
-copy $(ProjectDir)Assets\Models $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Models
-mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Textures
-copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Textures</Command>
+      <Command>
+      </Command>
       <Message>Copying asset files over</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
