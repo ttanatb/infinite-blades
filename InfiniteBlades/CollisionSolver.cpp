@@ -40,11 +40,11 @@ bool CollisionSolver::DetectCollisionBoxBox(const GameEntity * a, const GameEnti
 
 		if (fabs(resultantY) <= aExtentY + bExtentY)
 		{
-			printf("Colliding: \n");
+			//printf("Colliding: \n");
 			return true;
 		}
 	}
-	printf("Not colliding: \n");
+	//printf("Not colliding: \n");
 	return false;
 }
 
@@ -62,10 +62,10 @@ bool CollisionSolver::DetectCollisionSphereSphere(const GameEntity * a, const Ga
 
 	if (distanceSq.x < radius * radius)
 	{
-		printf("Colliding: \n");
+		//printf("Colliding: \n");
 		return true;
 	}
-	printf("Not colliding: \n");
+	//printf("Not colliding: \n");
 	return false;
 }
 
@@ -90,9 +90,9 @@ bool CollisionSolver::DetectCollisionSphereBox(const GameEntity * a, const GameE
 
 	if (distanceSq.x < radius * radius)
 	{
-		printf("Sphere vs. Box. Colliding: %f\n", radius);
+		//printf("Colliding: %f\n", radius);
 		return true;
 	}
-	printf("Sphere vs. Box. Not colliding: %f \n", radius);
+	//printf("Not colliding: %f \n", radius);
 	return false;
 }

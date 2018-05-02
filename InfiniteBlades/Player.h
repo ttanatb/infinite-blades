@@ -18,6 +18,9 @@ private:
 	vec3 direction;
 	vec3 prevPosition;
 
+	byte health;
+	float lastTimeHit;
+
 	InputManager* inputMngr;
 
 	void Init();
@@ -31,4 +34,7 @@ public:
 	~Player();
 
 	void Update(float dt, float t);
+	byte GetHealth();
+	float GetLastTimeHit();
+	void DecrementHealth(float hitTime);
 };

@@ -125,3 +125,22 @@ void Player::Update(float dt, float t)
 
 	GameEntity::Update();
 }
+
+byte Player::GetHealth()
+{
+	return health;
+}
+
+void Player::DecrementHealth(float hitTime)
+{
+	if (health > 0)
+	{
+		health--;
+	}
+	lastTimeHit = hitTime;
+}
+
+float Player::GetLastTimeHit()
+{
+	return lastTimeHit;
+}

@@ -18,6 +18,8 @@ void GameEntity::Init()
 	meshPtr = nullptr;
 	matPtr = nullptr;
 
+	isActive = true;
+
 	//CalculateCollider();
 }
 

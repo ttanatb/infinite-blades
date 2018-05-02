@@ -135,7 +135,7 @@ void CollectibleTestScene::CreateEntities()
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 	}
 
-	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"), ColliderType::SPHERE); //gameEntity[8]
+	player = new Player(meshMngr->GetMesh("sphere"), matMngr->GetMat("concrete"), ColliderType::SPHERE); //gameEntity[8]
 	gameEntities.push_back(player);
 	player->CalculateCollider();
 
@@ -145,13 +145,10 @@ void CollectibleTestScene::CreateEntities()
 		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("woodplanks"), ColliderType::SPHERE,
 			vec3(0, 1, 5.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(0.5f, 0.5f, 0.5f)));
 		gameEntities[i]->CalculateCollider();
+		
+		std::bitset<1> temp;
+		collected.push_back(temp);
 	}
-	
-	//for (int i = 4; i < 10; ++i)
-	//{
-		//std::bitset<1> temp;
-		//collected.push_back(temp);
-	//}	
 
 	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds",
 		device,
@@ -206,48 +203,37 @@ void CollectibleTestScene::Update(float deltaTime, float totalTime)
 			gameEntities[i]->TranslateBy(0.0f, 0.0f, 120.0f);
 		}
 	}
-	for (int i = 9; i < 13; ++i)
-	{
-		CollisionSolver::DetectCollision(player, gameEntities[i]);
-	}
 
 	//player->Update(deltaTime, totalTime);
 
 	// Coin Pickups
-	/*
-	for (size_t i = 5; i < 15; i++)
+	for (int i = 9; i < 13; ++i)
 	{
-		if (collected[i - 5].to_ulong() == 0)
+		if (CollisionSolver::DetectCollision(player, gameEntities[i]))
 		{
-			if (CollisionSolver::DetectCollision(player, gameEntities[i])) // assumming gameEntities[0] is the player
-			{
-				collected[i - 5].set();
-			}
+			printf("Colliding w the coin");
+			gameEntities[i]->isActive = false;
 		}
 	}
 	// Loop Coins
-	if (gameEntities[8]->GetPosition().x < -7.0)
+	if (gameEntities[11]->GetPosition().z < 0)
 	{
 		// Reset Position
-		gameEntities[6]->SetPosition(XMFLOAT3(10, gameEntities[6]->GetPosition().y, 0));
-		gameEntities[7]->SetPosition(XMFLOAT3(11, gameEntities[7]->GetPosition().y, 0));
-		gameEntities[8]->SetPosition(XMFLOAT3(12, gameEntities[8]->GetPosition().y, 0));
-		gameEntities[9]->SetPosition(XMFLOAT3(10, gameEntities[9]->GetPosition().y, 0));
-		gameEntities[10]->SetPosition(XMFLOAT3(11, gameEntities[10]->GetPosition().y, 0));
-		gameEntities[11]->SetPosition(XMFLOAT3(12, gameEntities[11]->GetPosition().y, 0));
-		gameEntities[12]->SetPosition(XMFLOAT3(10, gameEntities[12]->GetPosition().y, 0));
-		gameEntities[13]->SetPosition(XMFLOAT3(11, gameEntities[13]->GetPosition().y, 0));
+		gameEntities[9]->SetPosition(vec3(0, 1, gameEntities[9]->GetPosition().z));
+		gameEntities[10]->SetPosition(vec3(0, 1, gameEntities[10]->GetPosition().z));
+		gameEntities[11]->SetPosition(vec3(0, 1, gameEntities[11]->GetPosition().z));
+		gameEntities[12]->SetPosition(vec3(0, 1, gameEntities[12]->GetPosition().z));
+		gameEntities[13]->SetPosition(vec3(0, 1, gameEntities[13]->GetPosition().z));
 
 		// Reset Collected
-		for (int i = 6; i < 16; i++)
+		for (int i = 9; i < 13; i++)
 		{
-			if (collected[i - 6].to_ulong() == 1)
+			if (collected[i - 9].to_ulong() == 1)
 			{
-				collected[i - 6].set(0, 0);
+				collected[i - 9].set(0, 0);
 			}
 		}
 	}
-	*/
 
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
@@ -272,30 +258,33 @@ void CollectibleTestScene::Draw(float deltaTime, float totalTime)
 	//draw all the entities
 	for (size_t i = 0; i < gameEntities.size(); ++i)
 	{
-		//hoist the mesh and mat of the entity
-		Mesh* meshPtr = gameEntities[i]->GetMesh();
-		Material * matPtr = gameEntities[i]->GetMat();
+		if (gameEntities[i]->isActive)
+		{
+			//hoist the mesh and mat of the entity
+			Mesh* meshPtr = gameEntities[i]->GetMesh();
+			Material * matPtr = gameEntities[i]->GetMat();
 
-		//early exit
-		if (meshPtr == nullptr || matPtr == nullptr) continue;
+			//early exit
+			if (meshPtr == nullptr || matPtr == nullptr) continue;
 
-		/*This is Per-frame data that we can offset into a renderer class we won't have*/
-		SimplePixelShader* pixelShader = matPtr->GetPixelShader();
-		pixelShader->SetFloat4("ambientColor", ambientLight);
-		pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
-		pixelShader->SetFloat3("cameraPos", camera->GetPos());
+			/*This is Per-frame data that we can offset into a renderer class we won't have*/
+			SimplePixelShader* pixelShader = matPtr->GetPixelShader();
+			pixelShader->SetFloat4("ambientColor", ambientLight);
+			pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
+			pixelShader->SetFloat3("cameraPos", camera->GetPos());
 
-		SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
-		vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
-		vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
+			SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
+			vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
+			vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
 
-		//prepare per-object data
-		matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
+			//prepare per-object data
+			matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
 
-		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
-		context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
-		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
+			ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
+			context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
+			context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+			context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
+		}
 	}
 
 	//render skybox
@@ -310,7 +299,7 @@ void CollectibleTestScene::Draw(float deltaTime, float totalTime)
 		static float f = 0.0f;
 		ImGui::Text("Collision Test Debugger");
 		ImGui::SliderFloat("float", &f, 0.0f, 1.0f); // Edit 1 float using a slider from 0 to 1
-		ImGui::SliderFloat3("Player Pos", pos, -5, 5); // Edit 3 floats using a slider from -5 to 5
+		ImGui::SliderFloat3("Player Pos", pos, -20, 20); // Edit 3 floats using a slider from -5 to 5
 		ImGui::ColorEdit3("clear color", (float*)&clear_color);
 		ImGui::Checkbox("Free Look Enabled", &freelookEnabled);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

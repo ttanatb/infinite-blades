@@ -128,7 +128,7 @@
       <Filter>External Libraries\Imgui</Filter>
     </ClCompile>
     <ClCompile Include="CollectibleTestScene.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

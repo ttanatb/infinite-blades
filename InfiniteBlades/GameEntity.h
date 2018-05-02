@@ -26,6 +26,8 @@ public:
 	GameEntity();
 	virtual ~GameEntity();
 
+	bool isActive;
+
 	GameEntity(Mesh * mesh, Material* material,
 		vec3 position = vec3(0, 0, 0),
 		vec3 rotation = vec3(0, 0, 0),
