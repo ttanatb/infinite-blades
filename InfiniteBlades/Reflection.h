@@ -13,6 +13,7 @@ public:
 	void Init();
 	void SetRenderTarget();
 	void ClearRenderTarget(float color[4]);
+	void ResetRenderTargets();
 	ID3D11RenderTargetView* GetRTV();
 	ID3D11ShaderResourceView* GetShaderResourceView();
 	void Release();

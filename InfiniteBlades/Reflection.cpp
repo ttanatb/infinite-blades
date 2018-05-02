@@ -72,6 +72,11 @@ void Reflection::ClearRenderTarget(float color[4])
 	context->ClearDepthStencilView(dynamicTexDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
+void Reflection::ResetRenderTargets() {
+	ID3D11RenderTargetView* nullViews[] = { nullptr };
+	context->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
+}
+
 ID3D11RenderTargetView * Reflection::GetRTV()
 {
 	return dynamicTexRTV;

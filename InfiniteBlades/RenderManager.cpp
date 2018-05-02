@@ -121,6 +121,7 @@ void RenderManager::RenderReflectionTexture()
 	camera->CalcReflectionMat(-10.0f);
 	//draw opaque objects upside down 
 	DrawAllOpaque(camera, *(camera->GetReflectionMat()));
+	ID3D11RenderTargetView* pNullRTV = NULL;
 	//reset render target 
 	context->OMSetRenderTargets(1, &previousRenderTarget, previousDSV);
 	previousRenderTarget->Release();
@@ -165,7 +166,9 @@ void RenderManager::Draw()
 	context->OMSetBlendState(blendState, 0, 0xFFFFFFFF);
 	SortOpqaue(transparentObjects, camera);
 	DrawObjects(transparentObjects, stride, offset, camera, *(camera->GetViewMatTransposed()));
-	//// At the end of the frame, reset render states
+	//// At the end of the frame, reset render states, shader resource views, depth stencil
+	ID3D11ShaderResourceView* nothing[16] = {};
+	context->PSSetShaderResources(0, 16, nothing);
 	context->RSSetState(0);
 	context->OMSetDepthStencilState(0, 0);
 }
