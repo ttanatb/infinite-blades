@@ -121,7 +121,6 @@ void RenderManager::RenderReflectionTexture()
 	camera->CalcReflectionMat(-10.0f);
 	//draw opaque objects upside down 
 	DrawAllOpaque(camera, *(camera->GetReflectionMat()));
-	ID3D11RenderTargetView* pNullRTV = NULL;
 	//reset render target 
 	context->OMSetRenderTargets(1, &previousRenderTarget, previousDSV);
 	previousRenderTarget->Release();
