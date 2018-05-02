@@ -38,7 +38,7 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 		SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
 		vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
 		vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
-		matPtr->PrepareMaterial(list[i]->GetWorldMat());
+		matPtr->PrepareMaterial(list[i]->GetWorldMat(), context);
 		//get vertex buffer
 		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
 		//set index buffer
@@ -110,15 +110,15 @@ void RenderManager::Draw()
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	//turn transparency off
-	context->OMSetBlendState(NULL, 0, 0xFFFFFFFF);
+	//context->OMSetBlendState(NULL, 0, 0xFFFFFFFF);
 	//draw opaque object
 	DrawObjects(opaqueObjects, stride, offset, camera);
 	//draw skybox
-	skybox->Render(context, camera, stride, offset);
+	//skybox->Render(context, camera, stride, offset);
 	//turn transparency on
-	context->OMSetBlendState(blendState, 0, 0xFFFFFFFF);
-	SortOpqaue(transparentObjects, camera);
-	DrawObjects(transparentObjects, stride, offset, camera);
+	//context->OMSetBlendState(blendState, 0, 0xFFFFFFFF);
+	//SortOpqaue(transparentObjects, camera);
+	//DrawObjects(transparentObjects, stride, offset, camera);
 }
 
 void RenderManager::InitSkyBox(Skybox * skybox)

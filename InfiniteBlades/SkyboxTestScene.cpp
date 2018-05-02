@@ -117,7 +117,7 @@ void SkyboxTestScene::Draw(float deltaTime, float totalTime)
 	vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
 
 	//prepare per-object data
-	matPtr->PrepareMaterial(sphere->GetWorldMat());
+	matPtr->PrepareMaterial(sphere->GetWorldMat(), context);
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;

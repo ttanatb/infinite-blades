@@ -232,7 +232,7 @@ void DefaultTestScene::Draw(float deltaTime, float totalTime)
 		vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
 
 		//prepare per-object data
-		matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
+		matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat(), context);
 
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;

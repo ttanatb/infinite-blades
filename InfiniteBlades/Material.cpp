@@ -9,8 +9,16 @@ Material::Material(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID
 	this->transparentStr = transparentStr;
 }
 
+Material::Material(SimpleVertexShader * vShader, SimpleHullShader * hShader, SimpleDomainShader * dShader, SimplePixelShader * pShader, ID3D11Device * device, ID3D11DeviceContext * context, const wchar_t * diffuseFileName, const wchar_t * normalFileName)
+{
+	InitMaterial(vShader, pShader, device, context, diffuseFileName, normalFileName, nullptr);
+	hullShader = hShader;
+	domainShader = dShader;
+	transparentBool = false;
+}
 
- 
+
+
 Material::~Material()
 {
 	if (diffuseSRVptr != nullptr) diffuseSRVptr->Release();
@@ -25,14 +33,16 @@ void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pS
 {
 	vertexShader = vShader;
 	pixelShader = pShader;
+	domainShader = nullptr;
+	hullShader = nullptr;
 
 	DirectX::CreateWICTextureFromFile(device, context, diffuseFileName, 0, &diffuseSRVptr);
 	if (normalFileName != nullptr)
 		DirectX::CreateWICTextureFromFile(device, context, normalFileName, 0, &normalSRVptr);
-	else 
+	else
 		DirectX::CreateWICTextureFromFile(device, context, L"Assets/Textures/defaultNormal.png", 0, &normalSRVptr);
 
-	if(reflectionFileName != nullptr)
+	if (reflectionFileName != nullptr)
 		DirectX::CreateDDSTextureFromFile(device, context, reflectionFileName, 0, &reflectionSRVptr);
 	else
 		DirectX::CreateDDSTextureFromFile(device, L"Assets/Textures/defaultReflection.dds", 0, &reflectionSRVptr);
@@ -55,7 +65,7 @@ void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pS
 	device->CreateSamplerState(&normalSamplerDesc, &normalSamplerPtr);
 }
 
- 
+
 
 SimpleVertexShader * Material::GetVertexShader()
 {
@@ -65,6 +75,16 @@ SimpleVertexShader * Material::GetVertexShader()
 SimplePixelShader * Material::GetPixelShader()
 {
 	return pixelShader;
+}
+
+SimpleDomainShader * Material::GetDomainShader()
+{
+	return domainShader;
+}
+
+SimpleHullShader * Material::GetHullShader()
+{
+	return hullShader;
 }
 
 bool Material::GetTransparentBool()
@@ -82,8 +102,16 @@ float Material::GetTransparentStr()
 	return transparentStr;
 }
 
-void Material::PrepareMaterial(mat4* worldMat)
+void Material::PrepareMaterial(mat4* worldMat, ID3D11DeviceContext* context)
 {
+	//if (domainShader == nullptr)
+	//	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//else {
+	//	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+	//	domainShader->SetShader();
+	//	hullShader->SetShader();
+	//}
+
 	vertexShader->SetMatrix4x4("world", *worldMat);
 	vertexShader->CopyAllBufferData();
 	vertexShader->SetShader();

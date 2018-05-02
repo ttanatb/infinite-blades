@@ -1,11 +1,10 @@
 #include <Windows.h>
-#include "DefaultTestScene.h"
 #include "GameplayScene.h"
 #include "SkyboxTestScene.h"
 #include "TransperancyTestScene.h"
 #include "ReflectionTestScene.h"
 #include "NormalMapTestScene.h"
-
+#include "SnowShaderTestScene.h"
 
 //**TO CHANGE SCENES: MAKE SURE TO INCLUDE THEM HERE**
 
@@ -56,18 +55,17 @@ int WINAPI WinMain(
 	DXCore::CreateConsoleWindow(500, 120, 32, 120);
 	printf("Console window created successfully.  Feel free to printf() here.\n");
 #endif
-	//DefaultTestScene dxGame;
 
 	// Create the Game object using
 	// the app handle we got from WinMain
 
-
 	//**TO CHANGE SCENES: MAKE SURE TO CHANGE THE FOLLOWING LINE**
-	//DefaultTestScene dxGame(hInstance);
 	//ReflectionTestScene dxGame(hInstance);
-	GameplayScene dxGame(hInstance);
+	//TransperancyTestScene dxGame(hInstance);
 	//SkyboxTestScene dxGame(hInstance);
 	//NormalMapTestScene dxGame(hInstance);
+	SnowShaderTestScene dxGame(hInstance);
+	//GameplayScene dxGame(hInstance);
 
 	// Result variable for function calls below
 	HRESULT hr = S_OK;

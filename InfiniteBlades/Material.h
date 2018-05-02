@@ -9,6 +9,9 @@ private:
 	SimpleVertexShader* vertexShader;
 	SimplePixelShader* pixelShader;
 
+	SimpleHullShader* hullShader;
+	SimpleDomainShader* domainShader;
+
 	bool transparentBool;// = false;
 	float transparentStr;
 
@@ -31,6 +34,15 @@ public:
 		float transparentStr = 0.5f,
 		const wchar_t* reflectionFileName = nullptr);
 
+	Material(SimpleVertexShader * vShader,
+		SimpleHullShader * hShader,
+		SimpleDomainShader * dShader,
+		SimplePixelShader* pShader,
+		ID3D11Device* device,
+		ID3D11DeviceContext* context,
+		const wchar_t* diffuseFileName,
+		const wchar_t* normalFileName = nullptr);
+
 	~Material();
 	//sets the vertex/pixel shader, creates texture, and creates sampler desc and state 
 	void InitMaterial(SimpleVertexShader * vShader, 
@@ -42,6 +54,9 @@ public:
 		const wchar_t * reflectionFileName);
 	SimpleVertexShader* GetVertexShader();
 	SimplePixelShader* GetPixelShader();
+	SimpleDomainShader* GetDomainShader();
+	SimpleHullShader* GetHullShader();
+	
 	bool GetTransparentBool();
 	void SetTransparentState(bool transparentBool);
 	float GetTransparentStr();
@@ -49,6 +64,6 @@ public:
 	void SetVertexShader(SimpleVertexShader* newVertexShader);
 	void SetPixelShader(SimplePixelShader* newPixelShader);
 
-	void PrepareMaterial(mat4* worldMat);
+	void PrepareMaterial(mat4* worldMat, ID3D11DeviceContext* context);
 	
 };

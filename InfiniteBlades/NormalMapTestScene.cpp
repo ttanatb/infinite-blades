@@ -227,7 +227,7 @@ void NormalMapTestScene::Draw(float deltaTime, float totalTime)
 		vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
 
 		//prepare per-object data
-		matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
+		matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat(), context);
 
 		ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
 		context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);

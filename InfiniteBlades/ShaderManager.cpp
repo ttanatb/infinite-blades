@@ -68,12 +68,21 @@ void ShaderManager::AddVertexShader(char * name)
 void ShaderManager::AddDomainShader(char * name)
 {
 	SimpleDomainShader * shader = new SimpleDomainShader(device, context);
+
+	wchar_t* fileName = ConvertName(name);
+	shader->LoadShaderFile(fileName);
+	delete[] fileName;
+
 	map.insert(std::pair<char*, ISimpleShader*>(name, shader));
 }
 
 void ShaderManager::AddHullShader(char * name)
 {
 	SimpleHullShader * shader = new SimpleHullShader(device, context);
+
+	wchar_t* fileName = ConvertName(name);
+	shader->LoadShaderFile(fileName);
+	delete[] fileName;
 	map.insert(std::pair<char*, ISimpleShader*>(name, shader));
 }
 
