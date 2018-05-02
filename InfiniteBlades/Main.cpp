@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include "GameplayScene.h"
+#include "LiveReflectionTestScene.h"
 
 //**TO CHANGE SCENES: MAKE SURE TO INCLUDE THEM HERE**
 
@@ -50,14 +51,14 @@ int WINAPI WinMain(
 	DXCore::CreateConsoleWindow(500, 120, 32, 120);
 	printf("Console window created successfully.  Feel free to printf() here.\n");
 #endif
-	//DefaultTestScene dxGame;
 
 	// Create the Game object using
 	// the app handle we got from WinMain
 
 
 	//**TO CHANGE SCENES: MAKE SURE TO CHANGE THE FOLLOWING LINE**
-	GameplayScene dxGame(hInstance);
+	//LiveReflectionTestScene dxGame(hInstance);
+	GameplayScene dxGame(hInstance);    
 
 	// Result variable for function calls below
 	HRESULT hr = S_OK;

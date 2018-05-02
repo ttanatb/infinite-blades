@@ -13,12 +13,13 @@ private:
 	float transparentStr;
 
 	ID3D11ShaderResourceView* reflectionSRVptr;
+	ID3D11ShaderResourceView* reflectionPlanarSRVptr;
+	ID3D11SamplerState* reflectionSamplerPtr;
 
 	ID3D11ShaderResourceView* diffuseSRVptr;
 	ID3D11SamplerState* diffuseSamplerPtr;
 
 	ID3D11ShaderResourceView* normalSRVptr;
-	ID3D11SamplerState* normalSamplerPtr;
 
 public:
   	Material(SimpleVertexShader * vShader,
@@ -45,9 +46,11 @@ public:
 	bool GetTransparentBool();
 	void SetTransparentState(bool transparentBool);
 	float GetTransparentStr();
-	void SetReflection(const wchar_t * reflectionFileName);
+	void SetReflectionFile(const wchar_t * reflectionFileName);
+	void SetReflectionSRV(ID3D11ShaderResourceView* srv);
 	void SetVertexShader(SimpleVertexShader* newVertexShader);
 	void SetPixelShader(SimplePixelShader* newPixelShader);
 
-	void PrepareMaterial(mat4* worldMat = nullptr);
+  void PrepareMaterial(mat4* worldMat = nullptr);
+	void PreparePlanarReflectionMaterial(mat4* worldMat, mat4* viewMat);
 };
