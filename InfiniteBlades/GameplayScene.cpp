@@ -118,6 +118,8 @@ void GameplayScene::LoadShaderMeshMat()
 	shaderMngr->AddPixelShader("SkyBoxPS");
 	shaderMngr->AddVertexShader("vParticle");
 	shaderMngr->AddPixelShader("pParticle");
+	shaderMngr->AddVertexShader("vReflection");
+	shaderMngr->AddPixelShader("pReflection");
 
 	//hoisting shaders
 	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasic");
@@ -129,9 +131,17 @@ void GameplayScene::LoadShaderMeshMat()
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
 	matMngr->AddMat("goldfish", vShader, pShader, L"Assets/Textures/goldfish_albedo.jpg");
 	matMngr->AddMat("shark", vShader, pShader, L"Assets/Textures/shark_albedo.png");
-	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg"  , L"Assets/Textures/iceNormals.jpg", true, 0.650f, L"Assets/Textures/SunnyCubeMap.dds");
 	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg", L"Assets/Textures/snowNormals.jpg");
 
+	matMngr->AddMat("ice", 
+		shaderMngr->GetVertexShader("vReflection"),
+		shaderMngr->GetPixelShader("pReflection"),
+		L"Assets/Textures/ice.jpg", 
+		L"Assets/Textures/iceNormals.jpg", 
+		true, 
+		0.80f, 
+		L"Assets/Textures/SunnyCubeMap.dds");
+	
 	matMngr->AddMat("particle", 
 		shaderMngr->GetVertexShader("vParticle"),
 		shaderMngr->GetPixelShader("pParticle"),

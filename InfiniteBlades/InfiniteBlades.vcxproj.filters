@@ -59,6 +59,8 @@
     <FxCompile Include="Shaders\vParticle.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\pUnlit.hlsl" />
+    <FxCompile Include="Shaders\vInstanceUnlit.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mesh.cpp">
@@ -111,6 +113,9 @@
     </ClCompile>
     <ClCompile Include="LiveReflectionTestScene.cpp">
       <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Reflection.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="LiveReflectionTestScene.h">
       <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Reflection.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
