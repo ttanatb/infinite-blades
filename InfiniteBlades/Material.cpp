@@ -10,7 +10,7 @@ Material::Material(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID
 }
 
 
- 
+
 Material::~Material()
 {
 	if (diffuseSRVptr != nullptr) diffuseSRVptr->Release();
@@ -29,10 +29,10 @@ void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pS
 	DirectX::CreateWICTextureFromFile(device, context, diffuseFileName, 0, &diffuseSRVptr);
 	if (normalFileName != nullptr)
 		DirectX::CreateWICTextureFromFile(device, context, normalFileName, 0, &normalSRVptr);
-	else 
+	else
 		DirectX::CreateWICTextureFromFile(device, context, L"Assets/Textures/defaultNormal.png", 0, &normalSRVptr);
 
-	if(reflectionFileName != nullptr)
+	if (reflectionFileName != nullptr)
 		DirectX::CreateDDSTextureFromFile(device, context, reflectionFileName, 0, &reflectionSRVptr);
 	else
 		DirectX::CreateDDSTextureFromFile(device, L"Assets/Textures/defaultReflection.dds", 0, &reflectionSRVptr);
@@ -55,7 +55,7 @@ void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pS
 	device->CreateSamplerState(&normalSamplerDesc, &normalSamplerPtr);
 }
 
- 
+
 
 SimpleVertexShader * Material::GetVertexShader()
 {
@@ -84,7 +84,8 @@ float Material::GetTransparentStr()
 
 void Material::PrepareMaterial(mat4* worldMat)
 {
-	vertexShader->SetMatrix4x4("world", *worldMat);
+	if (worldMat != nullptr)
+		vertexShader->SetMatrix4x4("world", *worldMat);
 	vertexShader->CopyAllBufferData();
 	vertexShader->SetShader();
 
@@ -96,4 +97,3 @@ void Material::PrepareMaterial(mat4* worldMat)
 	pixelShader->CopyAllBufferData();
 	pixelShader->SetShader();
 }
-
