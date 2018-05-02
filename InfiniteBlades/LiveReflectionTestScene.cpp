@@ -100,6 +100,7 @@ void LiveReflectionTestScene::AddEntityToRender()
 			renderMngr->AddToOpqaue(gameEntities[i]);
 		}
 	}
+	renderMngr->AddToReflectionRender(player);
 }
 
 // --------------------------------------------------------

@@ -61,6 +61,7 @@ public:
 	void Init(ID3D11Device * device, ID3D11DeviceContext * context);
 	void AddToTransparent(GameEntity* gameEntity);
 	void AddToOpqaue(GameEntity* gameEntity);
+	void AddToReflectionRender(GameEntity* gameEntity);
 	void AddAmbientLight(vec4 ambientLight);
 	void AddDirectionalLight(char* name, DirectionalLight directionalLight);
 	void AddPointLight(char* name, PointLight pointLight);

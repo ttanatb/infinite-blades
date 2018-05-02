@@ -193,21 +193,17 @@ void RenderManager::Init(ID3D11Device * device, ID3D11DeviceContext * context)
 
 void RenderManager::AddToTransparent(GameEntity* gameEntity)
 {
-	if(gameEntity != nullptr)
-		transparentObjects.push_back(gameEntity);
+	transparentObjects.push_back(gameEntity);
 }
 
 void RenderManager::AddToOpqaue(GameEntity* gameEntity)
 {
-	if (gameEntity != nullptr) 
-	{
-		opaqueObjects.push_back(gameEntity);
-		if (gameEntity->GetPosition().y >= 0) 
-		{
-			aboveGroundObjects.push_back(gameEntity);
-		}
-	}
+	opaqueObjects.push_back(gameEntity);
+}
 
+void RenderManager::AddToReflectionRender(GameEntity * gameEntity)
+{
+	aboveGroundObjects.push_back(gameEntity);
 }
 
 void RenderManager::AddAmbientLight(vec4 ambientLight)
