@@ -115,10 +115,20 @@ void RefractionTestScene::LoadShaderMeshMat()
 	shaderMngr->AddPixelShader("pBasic");
 	shaderMngr->AddVertexShader("SkyBoxVS");
 	shaderMngr->AddPixelShader("SkyBoxPS");
+	shaderMngr->AddVertexShader("vRefract");
+	shaderMngr->AddPixelShader("pRefract");
+	shaderMngr->AddPixelShader("pQuad");
+	shaderMngr->AddVertexShader("vQuad");
 	
 	//hoisting shaders
 	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasic");
 	SimplePixelShader* pShader = shaderMngr->GetPixelShader("pBasic");
+
+	SimpleVertexShader* vRefractShader = shaderMngr->GetVertexShader("vRefract");
+	SimplePixelShader* pRefractShader = shaderMngr->GetPixelShader("pRefract");
+
+	SimpleVertexShader* vQuadShader = shaderMngr->GetVertexShader("vQuad");
+	SimplePixelShader* pQuadShader = shaderMngr->GetPixelShader("pQuad");
 
 	//materials
 	matMngr = MaterialManager::GetInstancce();
@@ -126,6 +136,7 @@ void RefractionTestScene::LoadShaderMeshMat()
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
 	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg"  , L"Assets/Textures/iceNormals.jpg", true, 0.650f, L"Assets/Textures/SunnyCubeMap.dds");
 	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg", L"Assets/Textures/snowNormals.jpg");
+	matMngr->AddMat("invisible", vRefractShader, pRefractShader, L"Assets/Textures/ice.jpg", L"Assets/Textures/iceNormals.jpg", false);
 
 	//meshes
 	meshMngr = MeshManager::GetInstancce();
@@ -134,6 +145,7 @@ void RefractionTestScene::LoadShaderMeshMat()
 	meshMngr->AddMesh("ship", "Assets/Models/ship.obj");
 	meshMngr->AddMesh("floor", "Assets/Models/floor.obj");
 	meshMngr->AddMesh("snow", "Assets/Models/snowFloor.obj");
+	meshMngr->AddMesh("ball", "Assets/Models/sphere.obj");
 }
 
 void RefractionTestScene::CreateEntities()
@@ -148,6 +160,8 @@ void RefractionTestScene::CreateEntities()
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("cube"), matMngr->GetMat("ship"),
 			vec3(0, -5, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("ball"), matMngr->GetMat("invisible"),
+			vec3(0, 1, 15.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(3, 3, 3)));
 	}
 	  
 
@@ -169,6 +183,7 @@ void RefractionTestScene::CreateEntities()
 
 	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"));
 	gameEntities.push_back(player);
+
 
 	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds", 
 		device, 

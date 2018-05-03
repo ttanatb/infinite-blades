@@ -15,6 +15,7 @@ private:
 	ID3D11ShaderResourceView* reflectionSRVptr;
 	ID3D11ShaderResourceView* reflectionPlanarSRVptr;
 	ID3D11SamplerState* reflectionSamplerPtr;
+	ID3D11SamplerState* refractionSamplerPtr;
 
 	ID3D11ShaderResourceView* diffuseSRVptr;
 	ID3D11SamplerState* diffuseSamplerPtr;

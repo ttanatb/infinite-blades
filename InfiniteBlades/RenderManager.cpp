@@ -226,4 +226,7 @@ RenderManager::~RenderManager()
 {
 	ReleaseReflectionTexture();
 	ReleaseBlendState();
+
+	//if (alternateRTV) alternateRTV->Release();
+	//if (alternateSRV) alternateSRV->Release();
 }

@@ -51,6 +51,10 @@ private:
 	void RenderReflectionTexture();
 	void ReleaseReflectionTexture();
 
+	// Post-Process/Refraction
+	ID3D11RenderTargetView* alternateRTV;
+	ID3D11ShaderResourceView* alternateSRV;
+
 public:
 	static RenderManager* GetInstance();
 	static void ReleaseInstance();
