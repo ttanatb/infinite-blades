@@ -22,6 +22,10 @@ private:
 
 	std::unique_ptr<SpriteBatch> spriteBatch;
 	std::unique_ptr<SpriteFont> spriteFont;
+
+  DirectX::XMFLOAT3* rockPositions = nullptr;
+	int rockCount = 0;
+
 public:
 	static GameManager* GetInstancce();
 	static void ReleaseInstance();
@@ -36,6 +40,11 @@ public:
 	std::vector<GameEntity*> GetSceneryList();
 	std::vector<GameEntity*> GetCollectibleList();
 	std::vector<GameEntity*> GetObstacleList();
+
+	DirectX::XMFLOAT4X4* instanceWorldMatrices = nullptr;
+
+	DirectX::XMFLOAT4X4* GetWorldMatrices(); // = nullptr;
+	void InitInstancing(int count);
 
 	void ResolveCollectibleCollision();
 	void ResolveObstacleCollision();

@@ -32,8 +32,8 @@ public:
 	mat4* GetReflectionMat();
 	void CalcReflectionMat(float height);
 	vec3 GetPos();
-	int GetHeight();
-	int GetWidth();
+	float GetHeight();
+	float GetWidth();
 
 	void Move(float x, float y, float z);
 	void MoveAlongForward(float amt);

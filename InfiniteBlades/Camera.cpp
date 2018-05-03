@@ -107,12 +107,12 @@ vec3 Camera::GetPos()
 	return position;
 }
 
-int Camera::GetHeight()
+float Camera::GetHeight()
 {
 	return height;
 }
 
-int Camera::GetWidth()
+float Camera::GetWidth()
 {
 	return width;
 }

@@ -13,7 +13,7 @@ RenderManager::RenderManager()
 
 void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT offset, Camera* camera, mat4 ViewMatrix)
 {
-	for(size_t i = 0; i < list.size(); ++i)
+	for (size_t i = 0; i < list.size(); ++i)
 	{
 		GameEntity* object = list[i];
 		if (!object->isActive) continue;
@@ -37,6 +37,7 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 		pixelShader->SetFloat3("cameraPos", camera->GetPos());
 		//set transparency strength
 		pixelShader->SetFloat("transparentStrength", matPtr->GetTransparentStr());
+
 		SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
 		vertexShader->SetMatrix4x4("view", ViewMatrix);
 		vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
@@ -56,6 +57,57 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 		context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
 	}
+}
+
+
+void RenderManager::DrawInstanced(GameEntity * entityToInstance, Camera * camera)
+{
+	D3D11_MAPPED_SUBRESOURCE mapped = {};
+	context->Map(instanceWorldMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+	// Copy to the resource
+	memcpy(mapped.pData, gameManager->instanceWorldMatrices, sizeof(XMFLOAT4X4) * instanceCount);
+
+	// Unmap so the GPU can use it again
+	context->Unmap(instanceWorldMatrixBuffer, 0);
+
+	Mesh* meshPtr = entityToInstance->GetMesh();
+	Material * matPtr = entityToInstance->GetMat();
+
+	SimplePixelShader* pixelShader = matPtr->GetPixelShader();
+	pixelShader->SetFloat4("ambientColor", ambientLight);
+	//Set Directiona Lights
+	for (auto& light : directionaLightMap) {
+		pixelShader->SetData(light.first, &light.second, sizeof(light.second));
+	}
+	//Set Point Lights 
+	for (auto& light : pointLightMap) {
+		pixelShader->SetData(light.first, &light.second, sizeof(light.second));
+	}
+	pixelShader->SetFloat3("cameraPos", camera->GetPos());
+
+	SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
+	vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
+	vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
+	matPtr->PrepareMaterialHullDomain(entityToInstance->GetWorldMat());
+
+	ID3D11Buffer* ib = meshPtr->GetIndexBuffer();
+	ID3D11Buffer* vbs[2] = {
+		meshPtr->GetVertexBuffer(),	// Per-vertex data
+		instanceWorldMatrixBuffer			// Per-instance data
+	};
+
+	// Two buffers means two strides and two offsets!
+	UINT strides[2] = { sizeof(Vertex), sizeof(XMFLOAT4X4) };
+	UINT offsets[2] = { 0, 0 };
+
+	// Set both vertex buffers
+	context->IASetVertexBuffers(0, 2, vbs, strides, offsets);
+	context->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
+
+	context->DrawIndexedInstanced(
+		meshPtr->GetIndexCount(), // Number of indices from index buffer
+		instanceCount,					// Number of instances to actually draw
+		0, 0, 0);						// Offsets (unnecessary for us)
 }
 
 void RenderManager::DrawAllOpaque(Camera * camera, mat4 viewMatrix)
@@ -93,19 +145,36 @@ void RenderManager::InitBlendState()
 	device->CreateBlendState(&blendDesc, &blendState);
 }
 
-//helper function to get distance to camera squared
-float distanceToCameraSqr(GameEntity* gameEntity, Camera* camera) {
-	return pow(gameEntity->GetPosition().x - camera->GetPos().x, 2) + 
-		   pow(gameEntity->GetPosition().y - camera->GetPos().y, 2) +
-		   pow(gameEntity->GetPosition().z - camera->GetPos().z, 2);
+void RenderManager::InitInstanceRendering(int instanceCount)
+{
+	this->instanceCount = instanceCount;
+	isUsingInstanced = true;
+	gameManager = GameManager::GetInstancce();
+	gameManager->InitInstancing(instanceCount);
+
+	D3D11_BUFFER_DESC instDesc = {};
+	instDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	instDesc.ByteWidth = sizeof(XMFLOAT4X4) * instanceCount;
+	instDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	instDesc.MiscFlags = 0;
+	instDesc.StructureByteStride = 0;
+	instDesc.Usage = D3D11_USAGE_DYNAMIC;
+	device->CreateBuffer(&instDesc, 0, &instanceWorldMatrixBuffer);
 }
 
-void RenderManager::SortOpqaue(std::vector<GameEntity*> list, Camera* camera)
+//helper function to get distance to camera squared
+float distanceToCameraSqr(GameEntity* gameEntity, Camera* camera) {
+	return pow(gameEntity->GetPosition().x - camera->GetPos().x, 2) +
+		pow(gameEntity->GetPosition().y - camera->GetPos().y, 2) +
+		pow(gameEntity->GetPosition().z - camera->GetPos().z, 2);
+}
+
+void RenderManager::SortObjects(std::vector<GameEntity*> list, Camera* camera)
 {
-	std::sort(list.begin(), list.end(), 
+	std::sort(list.begin(), list.end(),
 		[&, camera](GameEntity* a, GameEntity* b) {
-			return (distanceToCameraSqr(a, camera) > distanceToCameraSqr(b, camera));
-		}
+		return (distanceToCameraSqr(a, camera) > distanceToCameraSqr(b, camera));
+	}
 	);
 }
 
@@ -150,7 +219,7 @@ void RenderManager::ReleaseInstance()
 
 void RenderManager::ReleaseBlendState()
 {
-	if (blendState != nullptr) 
+	if (blendState != nullptr)
 		blendState->Release();
 }
 
@@ -161,11 +230,19 @@ void RenderManager::Draw()
 	context->OMSetBlendState(NULL, 0, 0xFFFFFFFF);
 	//draw opaque object
 	DrawObjects(opaqueObjects, stride, offset, camera, *(camera->GetViewMatTransposed()));
+
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+	DrawInstanced(gameEntityToInstance, camera);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->DSSetShader(nullptr, 0, 0);
+	context->HSSetShader(nullptr, 0, 0);
+
 	//draw skybox
 	skybox->Render(context, camera, stride, offset);
 	//turn transparency on
 	context->OMSetBlendState(blendState, 0, 0xFFFFFFFF);
-	SortOpqaue(transparentObjects, camera);
+
+	SortObjects(transparentObjects, camera);
 	DrawObjects(transparentObjects, stride, offset, camera, *(camera->GetViewMatTransposed()));
 	//// At the end of the frame, reset render states, shader resource views, depth stencil
 	ID3D11ShaderResourceView* nothing[16] = {};
@@ -195,7 +272,8 @@ void RenderManager::Init(ID3D11Device * device, ID3D11DeviceContext * context)
 
 void RenderManager::AddToTransparent(GameEntity* gameEntity)
 {
-	transparentObjects.push_back(gameEntity);
+	if (gameEntity != nullptr)
+		transparentObjects.push_back(gameEntity);
 }
 
 void RenderManager::AddToTransparent(std::vector<GameEntity*> entityList)
@@ -236,6 +314,13 @@ void RenderManager::AddToReflectionRender(std::vector<GameEntity*> entityList)
 		aboveGroundObjects.push_back(entityList[i]);
 }
 
+void RenderManager::InitInstancedRendering(GameEntity * gameEntity, unsigned int instanceCount)
+{
+	InitInstanceRendering(instanceCount);
+	gameEntityToInstance = gameEntity;
+}
+
+
 void RenderManager::AddAmbientLight(vec4 ambientLight)
 {
 	this->ambientLight = ambientLight;
@@ -251,9 +336,10 @@ void RenderManager::AddPointLight(char* name, PointLight pointLight)
 	pointLightMap.insert(std::pair<char*, PointLight>(name, pointLight));
 }
 
-
 RenderManager::~RenderManager()
 {
 	ReleaseReflectionTexture();
 	ReleaseBlendState();
+	if (isUsingInstanced) instanceWorldMatrixBuffer->Release();
+	if (gameEntityToInstance != nullptr) delete gameEntityToInstance;
 }

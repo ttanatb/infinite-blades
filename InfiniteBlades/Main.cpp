@@ -1,8 +1,9 @@
 #include <Windows.h>
 #include "GameplayScene.h"
-#include "CollisionTestScene.h"
+
 #include "CollectibleTestScene.h"
 #include "LiveReflectionTestScene.h"
+#include "SnowShaderTestScene.h"
 
 //**TO CHANGE SCENES: MAKE SURE TO INCLUDE THEM HERE**
 
@@ -57,11 +58,10 @@ int WINAPI WinMain(
 	// Create the Game object using
 	// the app handle we got from WinMain
 
-
 	//**TO CHANGE SCENES: MAKE SURE TO CHANGE THE FOLLOWING LINE**
-	CollectibleTestScene dxGame(hInstance);
-	//LiveReflectionTestScene dxGame(hInstance);
-	//GameplayScene dxGame(hInstance);    
+	//SnowShaderTestScene dxGame(hInstance);
+	//CollectibleTestScene dxGame(hInstance);
+	GameplayScene dxGame(hInstance);
 
 	// Result variable for function calls below
 	HRESULT hr = S_OK;

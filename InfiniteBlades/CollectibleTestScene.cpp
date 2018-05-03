@@ -94,6 +94,9 @@ void CollectibleTestScene::Init()
 
 void CollectibleTestScene::AddEntityToRender()
 {
+	renderMngr->InitInstancedRendering(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+		vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 1)), 50);
+
 	renderMngr->AddToOpqaue(player);
 	renderMngr->AddToOpqaue(gameMngr->GetCollectibleList());
 	renderMngr->AddToOpqaue(gameMngr->GetObstacleList());
@@ -131,6 +134,10 @@ void CollectibleTestScene::LoadShaderMeshMat()
 	shaderMngr->AddPixelShader("SkyBoxPS");
 	shaderMngr->AddVertexShader("vReflection");
 	shaderMngr->AddPixelShader("pReflection");
+	shaderMngr->AddVertexShader("vSnow");
+	shaderMngr->AddPixelShader("pSnow");
+	shaderMngr->AddHullShader("hSnow");
+	shaderMngr->AddDomainShader("dSnow");
 
 	//hoisting shaders
 	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasic");
@@ -139,13 +146,11 @@ void CollectibleTestScene::LoadShaderMeshMat()
 	//materials
 	matMngr = MaterialManager::GetInstancce();
 	matMngr->Init(device, context);
-	matMngr->AddMat("concrete", vShader, pShader, L"Assets/Textures/concrete.jpg");
-	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/soil.jpg");
-	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/woodplanks.jpg");
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
 	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg", L"Assets/Textures/snowNormals.jpg");
 	matMngr->AddMat("metal", vShader, pShader, L"Assets/Textures/coin.jpg", L"Assets/Textures/coinNormals.jpg");
 	matMngr->AddMat("crate", vShader, pShader, L"Assets/Textures/crate_texture_color.jpg");
+	matMngr->AddMat("snowPile", shaderMngr->GetVertexShader("vSnow"), shaderMngr->GetHullShader("hSnow"), shaderMngr->GetDomainShader("dSnow"), shaderMngr->GetPixelShader("pSnow"), L"Assets/Textures/stoneDiffuse.jpg", L"Assets/Textures/stoneNormals.jpg");
 
 	matMngr->AddMat("ice",
 		shaderMngr->GetVertexShader("vReflection"),
@@ -158,16 +163,12 @@ void CollectibleTestScene::LoadShaderMeshMat()
 	//meshes
 	meshMngr = MeshManager::GetInstancce();
 	meshMngr->Init(device);
-	meshMngr->AddMesh("helix", "Assets/Models/helix.obj");
-	meshMngr->AddMesh("cone", "Assets/Models/cone.obj");
-	meshMngr->AddMesh("cylinder", "Assets/Models/cylinder.obj");
-	meshMngr->AddMesh("sphere", "Assets/Models/sphere.obj");
-	meshMngr->AddMesh("torus", "Assets/Models/torus.obj");
 	meshMngr->AddMesh("cube", "Assets/Models/cube.obj");
 	meshMngr->AddMesh("ship", "Assets/Models/ship.obj");
 	meshMngr->AddMesh("floor", "Assets/Models/floor.obj");
 	meshMngr->AddMesh("snow", "Assets/Models/snowFloor.obj");
 	meshMngr->AddMesh("crate", "Assets/Models/crate.obj");
+	meshMngr->AddMesh("stone", "Assets/Models/stone.obj");
 	meshMngr->AddMesh("coin", "Assets/Models/coin.obj");
 }
 

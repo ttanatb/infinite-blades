@@ -9,6 +9,14 @@ Material::Material(SimpleVertexShader * vShader, SimplePixelShader * pShader, ID
 	this->transparentStr = transparentStr;
 }
 
+Material::Material(SimpleVertexShader * vShader, SimpleHullShader * hShader, SimpleDomainShader * dShader, SimplePixelShader * pShader, ID3D11Device * device, ID3D11DeviceContext * context, const wchar_t * diffuseFileName, const wchar_t * normalFileName)
+{
+	InitMaterial(vShader, pShader, device, context, diffuseFileName, normalFileName, nullptr);
+	hullShader = hShader;
+	domainShader = dShader;
+	transparentBool = false;
+}
+
 
 
 Material::~Material()
@@ -24,6 +32,8 @@ void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pS
 {
 	vertexShader = vShader;
 	pixelShader = pShader;
+	domainShader = nullptr;
+	hullShader = nullptr;
 
 	DirectX::CreateWICTextureFromFile(device, context, diffuseFileName, 0, &diffuseSRVptr);
 	if (normalFileName != nullptr)
@@ -46,8 +56,8 @@ void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pS
 
 	D3D11_SAMPLER_DESC reflectionSamplerDesc = D3D11_SAMPLER_DESC();
 	reflectionSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	reflectionSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	reflectionSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	reflectionSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	reflectionSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	reflectionSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	reflectionSamplerDesc.MipLODBias = 0.0f;
 	reflectionSamplerDesc.MaxAnisotropy = 1;
@@ -73,6 +83,16 @@ SimplePixelShader * Material::GetPixelShader()
 	return pixelShader;
 }
 
+SimpleDomainShader * Material::GetDomainShader()
+{
+	return domainShader;
+}
+
+SimpleHullShader * Material::GetHullShader()
+{
+	return hullShader;
+}
+
 bool Material::GetTransparentBool()
 {
 	return transparentBool;
@@ -88,6 +108,23 @@ float Material::GetTransparentStr()
 	return transparentStr;
 }
 
+void Material::PrepareMaterialHullDomain(mat4* worldMat)
+{
+	domainShader->SetShader();
+	hullShader->SetShader();
+
+	vertexShader->SetMatrix4x4("world", *worldMat);
+	vertexShader->CopyAllBufferData();
+	vertexShader->SetShader();
+
+	pixelShader->SetSamplerState("diffuseSampler", diffuseSamplerPtr);
+	pixelShader->SetShaderResourceView("diffuseTexture", diffuseSRVptr);
+	pixelShader->SetShaderResourceView("normalTexture", normalSRVptr);
+	pixelShader->SetShaderResourceView("skyTexture", reflectionSRVptr);
+	pixelShader->CopyAllBufferData();
+	pixelShader->SetShader();
+}
+
 void Material::SetReflectionSRV(ID3D11ShaderResourceView * srv)
 {
 	this->reflectionPlanarSRVptr = srv;
@@ -97,6 +134,7 @@ void Material::PrepareMaterial(mat4* worldMat)
 {
 	if (worldMat != nullptr)
 		vertexShader->SetMatrix4x4("world", *worldMat);
+
 	vertexShader->CopyAllBufferData();
 	vertexShader->SetShader();
 
