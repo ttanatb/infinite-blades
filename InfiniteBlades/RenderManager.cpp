@@ -15,8 +15,10 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 {
 	for(size_t i = 0; i < list.size(); ++i)
 	{
-		Mesh* meshPtr = list[i]->GetMesh();
-		Material * matPtr = list[i]->GetMat();
+		GameEntity* object = list[i];
+		if (!object->isActive) continue;
+		Mesh* meshPtr	  = object->GetMesh();
+		Material * matPtr = object->GetMat();
 
 		//early exit
 		if (meshPtr == nullptr || matPtr == nullptr) continue;

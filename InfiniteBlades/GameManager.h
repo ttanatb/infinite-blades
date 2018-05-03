@@ -13,6 +13,8 @@ private:
 	std::vector<GameEntity*> collectibleList;
 	std::vector<GameEntity*> obstacleList;
 
+	float lanes[3];
+
 	Player* player;
 public:
 	static GameManager* GetInstancce();
