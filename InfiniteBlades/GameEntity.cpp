@@ -145,6 +145,9 @@ void GameEntity::SetCollider(XMFLOAT3 min, XMFLOAT3 max)
 	XMVECTOR vecToMin = XMVector3Transform(XMLoadFloat3(&min), XMMatrixScaling(this->scale.x, this->scale.y, this->scale.z));
 	XMVECTOR vecToMax = XMVector3Transform(XMLoadFloat3(&max), XMMatrixScaling(this->scale.x, this->scale.y, this->scale.z));
 
+	//XMVECTOR vecToMax = XMLoadFloat3(&max);//, XMMatrixScaling(this->scale.x, this->scale.y, this->scale.z));
+	//XMVECTOR vecToMin = XMLoadFloat3(&min);//, XMMatrixScaling(this->scale.x, this->scale.y, this->scale.z));
+
 	XMStoreFloat3(&coll.min, vecToMin);
 	XMStoreFloat3(&coll.max, vecToMax);
 }
@@ -167,7 +170,11 @@ void GameEntity::CalculateCollider()
 			max.x = fmax(max.x, vertices[i].Position.x);
 			max.y = fmax(max.y, vertices[i].Position.y);
 			max.z = fmax(max.z, vertices[i].Position.z);
+
 		}
+		max.x = (max.x - min.x) / 1.0f;
+		max.y = (max.y - min.y) / 1.0f;
+		max.z = (max.z - min.z) / 1.0f;
 		SetCollider(min, max);
 	}
 }

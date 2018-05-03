@@ -66,6 +66,7 @@ public:
 	void AddToOpaqueAndTransparent(std::vector<GameEntity*> entityList);
 
 	void AddToReflectionRender(GameEntity* gameEntity);
+	void AddToReflectionRender(std::vector<GameEntity*> entityList);
 	void AddAmbientLight(vec4 ambientLight);
 	void AddDirectionalLight(char* name, DirectionalLight directionalLight);
 	void AddPointLight(char* name, PointLight pointLight);

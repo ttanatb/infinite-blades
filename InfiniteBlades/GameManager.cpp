@@ -6,9 +6,9 @@ GameManager::GameManager()
 	sceneryList     = std::vector<GameEntity*>(); 
 	collectibleList = std::vector<GameEntity*>(); 
 	obstacleList	= std::vector<GameEntity*>(); 
-	lanes[0] = -2.5f;
+	lanes[0] = -2.f;
 	lanes[1] = 0.0f;
-	lanes[2] = 2.5f;
+	lanes[2] = 2.f;
 }
 
 GameManager::~GameManager()
@@ -130,8 +130,8 @@ void GameManager::UpdateWorld(float deltaTime)
 		collectibleList[i]->RotateOnAxis(vec3(0, 1, 0), rotateSpd);
 
 		if (obstacleList[i]->GetPosition().z < 0.0f) {
-			obstacleList[i]->SetPosition(lanes[rand() % 3], 0.75f, moveBackAmt);
-			collectibleList[i]->isActive = true;
+			obstacleList[i]->SetPosition(lanes[rand() % 3], 1.f, moveBackAmt);
+			obstacleList[i]->isActive = true;
 		}
 	}
 }

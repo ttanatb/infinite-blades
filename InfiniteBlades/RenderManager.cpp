@@ -230,6 +230,12 @@ void RenderManager::AddToReflectionRender(GameEntity * gameEntity)
 	aboveGroundObjects.push_back(gameEntity);
 }
 
+void RenderManager::AddToReflectionRender(std::vector<GameEntity*> entityList)
+{
+	for (int i = 0; i < entityList.size(); ++i)
+		aboveGroundObjects.push_back(entityList[i]);
+}
+
 void RenderManager::AddAmbientLight(vec4 ambientLight)
 {
 	this->ambientLight = ambientLight;

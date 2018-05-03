@@ -96,6 +96,9 @@ void CollectibleTestScene::AddEntityToRender()
 	renderMngr->AddToOpqaue(gameMngr->GetCollectibleList());
 	renderMngr->AddToOpqaue(gameMngr->GetObstacleList());
 	renderMngr->AddToOpaqueAndTransparent(gameMngr->GetSceneryList());
+
+	renderMngr->AddToReflectionRender(player);
+	renderMngr->AddToReflectionRender(gameMngr->GetCollectibleList());
 	/*
 	for (int i = 0; i < gameEntities.size(); i++)
 	{
@@ -140,6 +143,7 @@ void CollectibleTestScene::LoadShaderMeshMat()
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
 	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg", L"Assets/Textures/snowNormals.jpg");
 	matMngr->AddMat("metal", vShader, pShader, L"Assets/Textures/coin.jpg", L"Assets/Textures/coinNormals.jpg");
+	matMngr->AddMat("crate", vShader, pShader, L"Assets/Textures/crate_texture_color.jpg");
 
 	matMngr->AddMat("ice",
 		shaderMngr->GetVertexShader("vReflection"),
@@ -149,7 +153,6 @@ void CollectibleTestScene::LoadShaderMeshMat()
 		true,
 		0.80f,
 		L"Assets/Textures/SunnyCubeMap.dds");
-
 	//meshes
 	meshMngr = MeshManager::GetInstancce();
 	meshMngr->Init(device);
@@ -162,7 +165,7 @@ void CollectibleTestScene::LoadShaderMeshMat()
 	meshMngr->AddMesh("ship", "Assets/Models/ship.obj");
 	meshMngr->AddMesh("floor", "Assets/Models/floor.obj");
 	meshMngr->AddMesh("snow", "Assets/Models/snowFloor.obj");
-	//meshMngr->AddMesh("testFloor", "Assets/Models/testFloor.obj");
+	meshMngr->AddMesh("crate", "Assets/Models/crate.obj");
 	meshMngr->AddMesh("coin", "Assets/Models/coin.obj");
 }
 
@@ -186,21 +189,21 @@ void CollectibleTestScene::CreateEntities()
 	//gameEntities.push_back(player);
 
 	// Collectibles
-	float lanes[3] = { -2.5f, 0.0f, 2.5f };
+	float lanes[3] = { -2.f, 0.0f, 2.f };
 	for (int i = 0; i < 5; ++i)
 	{
 		float x = lanes[rand() % 3];
-		GameEntity* collectible = new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("concrete"), ColliderType::SPHERE,
-			vec3(x, 0.75f, 25.0f * static_cast<float>(i) + 2.5f), vec3(0, 0, 3.14159f), vec3(1, 1, 1));
+		GameEntity* collectible = new GameEntity(meshMngr->GetMesh("coin"), matMngr->GetMat("metal"), ColliderType::SPHERE, 
+			vec3(x, 0.75f, 25.0f * static_cast<float>(i) + 22.5f), vec3(0, 0, 0.0f), vec3(1.f, 1.f, 1.f));
 		collectible->CalculateCollider();
 		gameMngr->AddToCollectible(collectible);
 	}
-
+	 
 	for (int i = 0; i < 5; ++i)
 	{
 		float x = lanes[rand() % 3];
-		GameEntity* obstacle = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("soil"), ColliderType::SPHERE,
-			vec3(x, 0.75f, 25.0f * static_cast<float>(i) + 12.5f), vec3(0, 0, 0.0f), vec3(1, 1, 1));
+		GameEntity* obstacle = new GameEntity(meshMngr->GetMesh("crate"), matMngr->GetMat("crate"), ColliderType::SPHERE,
+			vec3(x, 1.f, 25.0f * static_cast<float>(i) + 32.5f), vec3(0, 0, 0.0f), vec3(1.f, 1.f, 1.f));
 		obstacle->CalculateCollider();
 		gameMngr->AddToObstacle(obstacle);
 	}
