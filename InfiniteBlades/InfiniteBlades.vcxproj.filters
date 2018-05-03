@@ -33,6 +33,12 @@
     <Filter Include="Source Files\Managers">
       <UniqueIdentifier>{55ff1803-b508-4c65-8a47-c8baf70191eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External Libraries">
+      <UniqueIdentifier>{d7e3a53a-5018-4672-b02d-6b4400aa2d97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External Libraries\Imgui">
+      <UniqueIdentifier>{413c0d2a-671e-41de-a1de-dee0fb0b4296}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\pBasic.hlsl">
@@ -47,6 +53,18 @@
     <FxCompile Include="SkyboxVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\dSnow.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\hSnow.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\pSnow.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\vSnow.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
     <FxCompile Include="pReflection.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -59,8 +77,6 @@
     <FxCompile Include="Shaders\vParticle.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\pUnlit.hlsl" />
-    <FxCompile Include="Shaders\vInstanceUnlit.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mesh.cpp">
@@ -114,8 +130,41 @@
     <ClCompile Include="LiveReflectionTestScene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="GameplayScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Reflection.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionSolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgui\imgui.cpp">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgui\imgui_demo.cpp">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgui\imgui_draw.cpp">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgui\imgui_impl_dx11.cpp">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="CollectibleTestScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="SnowShaderTestScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +213,9 @@
     <ClInclude Include="Skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameplayScene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -181,6 +233,48 @@
     </ClInclude>
     <ClInclude Include="Reflection.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionSolver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\imconfig.h">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\imgui.h">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\imgui_impl_dx11.h">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\imgui_internal.h">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\stb_rect_pack.h">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\stb_textedit.h">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgui\stb_truetype.h">
+      <Filter>External Libraries\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="CollectibleTestScene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultTestScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="SnowShaderTestScene.h">
+      <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,9 @@
 #pragma once
 #include "Mesh.h"
 #include "Material.h"
+#include "Collider.h"
 #include <vector>
+
 class GameEntity {
 protected:
 	mat4 worldMatrix;// = MAT4_IDENTITY;
@@ -13,6 +15,7 @@ protected:
 
 	Mesh* meshPtr = nullptr;
 	Material* matPtr = nullptr;
+	Collider coll;
 
 	GameEntity* parent = nullptr;
 	std::vector<GameEntity*> children;
@@ -23,17 +26,31 @@ public:
 	GameEntity();
 	virtual ~GameEntity();
 
-	GameEntity(Mesh * mesh, Material* material, 
-		vec3 position = vec3(0,0,0), 
-		vec3 rotation = vec3(0,0,0), 
-		vec3 scale = vec3(1,1,1));
+	bool isActive;
+
+	GameEntity(Mesh * mesh, Material* material,
+		vec3 position = vec3(0, 0, 0),
+		vec3 rotation = vec3(0, 0, 0),
+		vec3 scale = vec3(1, 1, 1));
 
 	GameEntity(Mesh * mesh, Material* material,
 		vec3 position = vec3(0, 0, 0),
 		vec3 rotation = vec3(0, 0, 0),
 		float scale = 1);
 
+	GameEntity(Mesh * mesh, Material* material, ColliderType colliderType,
+		vec3 position = vec3(0, 0, 0),
+		vec3 rotation = vec3(0, 0, 0),
+		vec3 scale = vec3(1, 1, 1));
+
+	GameEntity(Mesh * mesh, Material* material, ColliderType colliderType,
+		vec3 position = vec3(0, 0, 0),
+		vec3 rotation = vec3(0, 0, 0),
+		float scale = 1);
+
 	void Update();
+
+	XMFLOAT3 GetPositionFloat() const;
 
 	mat4* GetWorldMat();
 	vec3 GetPosition();
@@ -47,6 +64,12 @@ public:
 	Material * GetMat();
 	void SetMat(Material * newMat);
 	void SetParent(GameEntity* parent);
+
+	Collider GetCollider() const;
+	void SetCollider(XMFLOAT3 min, XMFLOAT3 max);
+	void CalculateCollider();
+
+	bool CheckCollision(const GameEntity& other);
 
 	void SetPosition(vec3 newPos);
 	void SetPosition(float x, float y, float z);

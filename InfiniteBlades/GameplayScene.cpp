@@ -39,17 +39,20 @@ GameplayScene::~GameplayScene()
 {
 	// Release any (and all!) DirectX objects
 	// we've made in the Game class
-	for (size_t i = 0; i < gameEntities.size(); ++i)
-		delete gameEntities[i];
 	if (camera != nullptr) delete camera;
 	if (skybox != nullptr) delete skybox;
 	if (snowEmitter != nullptr) delete snowEmitter;
+	if (player != nullptr) {
+		delete player;
+		player = nullptr;
+	}
 
 	MaterialManager::ReleaseInstance();
 	MeshManager::ReleaseInstance();
 	InputManager::ReleaseInstance();
 	ShaderManager::ReleaseInstance();
 	RenderManager::ReleaseInstance();
+	GameManager::ReleaseInstance();
 }
 
 // --------------------------------------------------------
@@ -91,6 +94,17 @@ void GameplayScene::Init()
 
 void GameplayScene::AddEntityToRender()
 {
+	renderMngr->InitInstancedRendering(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+		vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 1)), 50);
+
+	renderMngr->AddToOpqaue(player);
+	renderMngr->AddToOpqaue(gameMngr->GetCollectibleList());
+	renderMngr->AddToOpqaue(gameMngr->GetObstacleList());
+	renderMngr->AddToOpaqueAndTransparent(gameMngr->GetSceneryList());
+
+	renderMngr->AddToReflectionRender(player);
+	renderMngr->AddToReflectionRender(gameMngr->GetCollectibleList());
+	/*
 	for (int i = 0; i < gameEntities.size(); i++)
 	{
 		if (gameEntities[i]->GetMat()->GetTransparentBool()) {
@@ -101,8 +115,8 @@ void GameplayScene::AddEntityToRender()
 			renderMngr->AddToOpqaue(gameEntities[i]);
 		}
 	}
-
 	renderMngr->AddToReflectionRender(player);
+	*/
 }
 
 // --------------------------------------------------------
@@ -122,6 +136,10 @@ void GameplayScene::LoadShaderMeshMat()
 	shaderMngr->AddPixelShader("pParticle");
 	shaderMngr->AddVertexShader("vReflection");
 	shaderMngr->AddPixelShader("pReflection");
+	shaderMngr->AddVertexShader("vSnow");
+	shaderMngr->AddPixelShader("pSnow");
+	shaderMngr->AddHullShader("hSnow");
+	shaderMngr->AddDomainShader("dSnow");
 
 	//hoisting shaders
 	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasic");
@@ -134,6 +152,9 @@ void GameplayScene::LoadShaderMeshMat()
 	matMngr->AddMat("goldfish", vShader, pShader, L"Assets/Textures/goldfish_albedo.jpg");
 	matMngr->AddMat("shark", vShader, pShader, L"Assets/Textures/shark_albedo.png");
 	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg", L"Assets/Textures/snowNormals.jpg");
+	matMngr->AddMat("snowPile", shaderMngr->GetVertexShader("vSnow"), shaderMngr->GetHullShader("hSnow"), shaderMngr->GetDomainShader("dSnow"), shaderMngr->GetPixelShader("pSnow"), L"Assets/Textures/stoneDiffuse.jpg", L"Assets/Textures/stoneNormals.jpg");
+	matMngr->AddMat("metal", vShader, pShader, L"Assets/Textures/coin.jpg", L"Assets/Textures/coinNormals.jpg");
+	matMngr->AddMat("crate", vShader, pShader, L"Assets/Textures/crate_texture_color.jpg");
 
 	matMngr->AddMat("ice", 
 		shaderMngr->GetVertexShader("vReflection"),
@@ -157,27 +178,36 @@ void GameplayScene::LoadShaderMeshMat()
 	meshMngr->AddMesh("floor", "Assets/Models/floor.obj");
 	meshMngr->AddMesh("snow", "Assets/Models/snowFloor.obj");
 	meshMngr->AddMesh("goldfish", "Assets/Models/goldfish.obj");
-	meshMngr->AddMesh("shark", "Assets/Models/shark.obj"); 
+	meshMngr->AddMesh("crate", "Assets/Models/crate.obj");
+	meshMngr->AddMesh("coin", "Assets/Models/coin.obj");
+	meshMngr->AddMesh("shark", "Assets/Models/shark.obj");
+	meshMngr->AddMesh("stone", "Assets/Models/stone.obj");
 }
 
 void GameplayScene::CreateEntities()
 {
 	//create camera
 	camera = new Camera((float)width, (float)height, vec3(0.0f, 2.5f, 0.0f), 0.20f, 0.0f);
+	gameMngr = GameManager::GetInstancce();
 
-	for (int i = 0; i < 4; i++) {
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("snow"), matMngr->GetMat("snow"),
-			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));  
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),
+	for (int i = 0; i < 4; ++i)
+	{
+		gameMngr->AddToScenery(new GameEntity(meshMngr->GetMesh("snow"), matMngr->GetMat("snow"),
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("goldfish"), matMngr->GetMat("goldfish"),
-			vec3(1, -1, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("shark"), matMngr->GetMat("shark"),
-			vec3(-1, -1, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+		gameMngr->AddToScenery(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),
+			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 	}
 
-	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"));
-	gameEntities.push_back(player);
+	//for (int i = 0; i < 4; i++) {
+	//	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("goldfish"), matMngr->GetMat("goldfish"),
+	//		vec3(1, -1, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+	//	gameEntities.push_back(new GameEntity(meshMngr->GetMesh("shark"), matMngr->GetMat("shark"),
+	//		vec3(-1, -1, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
+	//}
+
+	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"), ColliderType::SPHERE); //gameEntity[8]
+	player->CalculateCollider();
+	gameMngr->SetPlayer(player);
 
 	snowEmitter = new Emitter(
 		device,								//device
@@ -195,6 +225,25 @@ void GameplayScene::CreateEntities()
 		vec3(0, 5, 0)						//position
 	);
 	snowEmitter->SetAsPlane(10, 20);		//Sets as a (horizontal) plane (width, depth), will emit as point otherwise
+
+	float lanes[3] = { -2.f, 0.0f, 2.f };
+	for (int i = 0; i < 5; ++i)
+	{
+		float x = lanes[rand() % 3];
+		GameEntity* collectible = new GameEntity(meshMngr->GetMesh("coin"), matMngr->GetMat("metal"), ColliderType::SPHERE,
+			vec3(x, 0.75f, 25.0f * static_cast<float>(i) + 22.5f), vec3(0, 0, 0.0f), vec3(1.f, 1.f, 1.f));
+		collectible->CalculateCollider();
+		gameMngr->AddToCollectible(collectible);
+	}
+
+	for (int i = 0; i < 5; ++i)
+	{
+		float x = lanes[rand() % 3];
+		GameEntity* obstacle = new GameEntity(meshMngr->GetMesh("crate"), matMngr->GetMat("crate"), ColliderType::SPHERE,
+			vec3(x, 1.f, 25.0f * static_cast<float>(i) + 32.5f), vec3(0, 0, 0.0f), vec3(1.f, 1.f, 1.f));
+		obstacle->CalculateCollider();
+		gameMngr->AddToObstacle(obstacle);
+	}
 
 	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds", 
 		device, 
@@ -247,17 +296,13 @@ void GameplayScene::Update(float deltaTime, float totalTime)
 		camera->Move(0, -0.01f, 0);
 	*/
 	camera->Update();
-	 
-	for (size_t i = 0; i < gameEntities.size() - 1; ++i) {
-		gameEntities[i]->Update();
-		gameEntities[i]->TranslateBy(0.0f, 0.0f, -0.01f);
 
-		if (gameEntities[i]->GetPosition().z < 0.0f) {
-			gameEntities[i]->TranslateBy(0.0f, 0.0f, 120.0f);
-		}
-	}
-
+	gameMngr->UpdateWorld(deltaTime);
 	player->Update(deltaTime, totalTime);
+
+	gameMngr->ResolveCollectibleCollision();
+	gameMngr->ResolveObstacleCollision();
+
 	snowEmitter->Update(deltaTime);
 
 	// Quit if the escape key is pressed

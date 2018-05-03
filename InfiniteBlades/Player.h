@@ -1,7 +1,8 @@
 #pragma once
 #include "InputManager.h"
 #include "GameEntity.h"
-class Player : 
+#include "Collider.h"
+class Player :
 	public GameEntity {
 private:
 	const int LANE_COUNT = 3;
@@ -17,6 +18,9 @@ private:
 	vec3 direction;
 	vec3 prevPosition;
 
+	byte health;
+	float lastTimeHit;
+
 	InputManager* inputMngr;
 
 	void Init();
@@ -26,8 +30,11 @@ private:
 	void UpdateForward(float dt);
 public:
 	Player();
-	Player(Mesh* mesh, Material* mat);
+	Player(Mesh* mesh, Material* mat, ColliderType colliderType);
 	~Player();
 
 	void Update(float dt, float t);
+	byte GetHealth();
+	float GetLastTimeHit();
+	void DecrementHealth(float hitTime);
 };

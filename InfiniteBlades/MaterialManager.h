@@ -24,6 +24,15 @@ public:
 		float transparentStr = 0.5f,
 		const wchar_t * reflectionFileName = nullptr);
 
+	void AddMat(char * name,
+		SimpleVertexShader * vShader,
+		SimpleHullShader * hShader,
+		SimpleDomainShader * dShader,
+		SimplePixelShader * pShader,
+		const wchar_t * diffuseFileName,
+		const wchar_t * normalFileName = nullptr);
+
+
 	void Init(ID3D11Device* device, ID3D11DeviceContext* context);
 	Material* GetMat(char* name);
 };

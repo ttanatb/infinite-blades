@@ -1,7 +1,7 @@
 #include "Player.h"
 
 using namespace DirectX;
-Player::Player(Mesh * mesh, Material * mat) : GameEntity(mesh, mat, vec3(0,0,6.0f), vec3(0, 0,0), vec3(1.0f, 1.0f, 1.0f))
+Player::Player(Mesh * mesh, Material * mat, ColliderType colliderType) : GameEntity(mesh, mat, colliderType, vec3(0, 0, 6.0f), vec3(0, 0, 0), vec3(1.0f, 1.0f, 1.0f))
 {
 	Init();
 }
@@ -57,7 +57,7 @@ void Player::CheckInput(float dt, float t)
 
 		//update/reset variables
 		prevLanePosition = position;
-		lerpPos.x = laneIndex * LANE_SIZE / 2.0f; 
+		lerpPos.x = laneIndex * LANE_SIZE / 2.0f;
 		currTimer = 0.0f;
 		direction = vec3(1.0f, 0.0f, 0.0f);
 	}
@@ -72,7 +72,7 @@ void Player::UpdatePos(float dt)
 
 	//if moving towards new position
 	if (currTimer < ANIM_TIME) {
-		
+
 		//position driven by lerp from prev lane pos to new lane pos
 		newPos = XMVectorLerp(XMLoadFloat3(&prevLanePosition),
 			currLerpPos,
@@ -109,8 +109,8 @@ void Player::UpdateForward(float dt)
 	XMVECTOR prevRot = XMLoadFloat4(&rotation);
 
 	//slerp from previous rotation towards turn rate
-	XMVECTOR newRot = XMQuaternionSlerp(prevRot, 
-		XMQuaternionRotationRollPitchYaw(0.0f, turnRate.x * 0.5f, 0.0f), 
+	XMVECTOR newRot = XMQuaternionSlerp(prevRot,
+		XMQuaternionRotationRollPitchYaw(0.0f, turnRate.x * 0.5f, 0.0f),
 		dt * 3.0f);
 
 	//save rotation
@@ -124,4 +124,23 @@ void Player::Update(float dt, float t)
 	UpdateForward(dt);
 
 	GameEntity::Update();
+}
+
+byte Player::GetHealth()
+{
+	return health;
+}
+
+void Player::DecrementHealth(float hitTime)
+{
+	if (health > 0)
+	{
+		health--;
+	}
+	lastTimeHit = hitTime;
+}
+
+float Player::GetLastTimeHit()
+{
+	return lastTimeHit;
 }
