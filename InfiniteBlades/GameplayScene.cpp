@@ -86,6 +86,8 @@ void GameplayScene::Init()
 	renderMngr->AddPointLight("pointLight", pointLight);
 	renderMngr->AddAmbientLight(ambientLight);
 
+	gameMngr->Init(device, context);
+
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
 	// Essentially: "What kind of shape should the GPU draw with our data?"
@@ -163,7 +165,7 @@ void GameplayScene::LoadShaderMeshMat()
 		L"Assets/Textures/iceNormals.jpg", 
 		true, 
 		0.80f, 
-		L"Assets/Textures/SunnyCubeMap.dds");
+		L"Assets/Textures/SkyCubeMap.dds");
 	
 	matMngr->AddMat("particle", 
 		shaderMngr->GetVertexShader("vParticle"),
@@ -245,7 +247,7 @@ void GameplayScene::CreateEntities()
 		gameMngr->AddToObstacle(obstacle);
 	}
 
-	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds", 
+	skybox = new Skybox(L"Assets/Textures/SkyCubeMap.dds", 
 		device, 
 		shaderMngr->GetVertexShader("SkyBoxVS"),
 		shaderMngr->GetPixelShader("SkyBoxPS"),
@@ -359,6 +361,7 @@ void GameplayScene::Draw(float deltaTime, float totalTime)
 
 	////render skybox
 	//skybox->Render(context, camera, stride, offset);
+	gameMngr->DrawUI(this->height);
 
 	//// At the end of the frame, reset render states
 	context->RSSetState(0);
@@ -412,10 +415,10 @@ void GameplayScene::OnMouseMove(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
 	
-	if (buttonState & 0x0001) {
-		camera->RotateAroundUp((x - prevMousePos.x) / 1000.0f);
-		camera->RotateAroundRight((y - prevMousePos.y) / 1000.0f);
-	}
+	//if (buttonState & 0x0001) {
+	//	camera->RotateAroundUp((x - prevMousePos.x) / 1000.0f);
+	//	camera->RotateAroundRight((y - prevMousePos.y) / 1000.0f);
+	//}
 	
 
 	// Save the previous mouse position, so we have it for the future
