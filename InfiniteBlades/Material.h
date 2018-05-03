@@ -66,7 +66,7 @@ public:
 	void SetVertexShader(SimpleVertexShader* newVertexShader);
 	void SetPixelShader(SimplePixelShader* newPixelShader);
 
-	void PrepareMaterialHullDomain(mat4* worldMat); // , ID3D11DeviceContext* context);
+	void PrepareMaterialHullDomain(mat4* worldMat, float snowAmt = 0.2f); // , ID3D11DeviceContext* context);
 	void PrepareMaterial(mat4* worldMat = nullptr);
 	void PreparePlanarReflectionMaterial(mat4* worldMat, mat4* viewMat);
 };

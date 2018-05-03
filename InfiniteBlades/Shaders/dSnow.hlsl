@@ -25,6 +25,11 @@ struct HS_CONSTANT_DATA_OUTPUT
 	float InsideTessFactor	: SV_InsideTessFactor; // e.g. would be Inside[2] for a quad domain
 };
 
+cbuffer snowAmt : register(b0)
+{
+	float snow;
+};
+
 #define NUM_CONTROL_POINTS 3
 
 [domain("tri")]
@@ -55,12 +60,13 @@ DS_OUTPUT main(
 		patch[1].tangent * domain.y +
 		patch[2].tangent * domain.z;
 
+	float snowScalar = clamp(snow, 0.2f, 1.25f);
 
 	float3 snowAngle = float3(0, 1.0f, 0);
-	float snowAmount = 1 - 0.7f;
-	float snowRiseAmount = 0.5f;
+	float snowAmount = 0.3f - 0.3f * snowScalar;
+	float snowRiseAmount = 0.5f * snowScalar;
 	float3 snowColor = float3(.05f, .05f, .1f);
-	float snowColorAmp = 10.f;
+	float snowColorAmp = 10.f* snowScalar;
 
 	float dotProduct = dot(Output.normal, snowAngle);
 	bool mask = dotProduct >= snowAmount;

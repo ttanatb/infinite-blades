@@ -22,6 +22,9 @@ GameManager::~GameManager()
 	for (size_t i = 0; i < collectibleList.size(); ++i)
 		delete collectibleList[i];
 
+	for (size_t i = 0; i < fishList.size(); ++i)
+		delete fishList[i];
+
 	if (instanceWorldMatrices != nullptr) delete[] instanceWorldMatrices;
 	if (rockPositions != nullptr) delete[] rockPositions;
 }
@@ -54,6 +57,11 @@ void GameManager::AddToObstacle(GameEntity * obstacle)
 void GameManager::AddToCollectible(GameEntity * collectible)
 {
 	collectibleList.push_back(collectible);
+}
+
+void GameManager::AddToFish(GameEntity * collectible)
+{
+	fishList.push_back(collectible);
 }
 
 void GameManager::Init(ID3D11Device * device, ID3D11DeviceContext * context)
@@ -90,6 +98,11 @@ std::vector<GameEntity*> GameManager::GetCollectibleList()
 std::vector<GameEntity*> GameManager::GetObstacleList()
 {
 	return obstacleList;
+}
+
+std::vector<GameEntity*> GameManager::GetFishList()
+{
+	return fishList;
 }
 
 DirectX::XMFLOAT4X4 * GameManager::GetWorldMatrices()
@@ -181,7 +194,26 @@ void GameManager::UpdateWorld(float deltaTime)
 		}
 	}
 
-	for (int i = 0; i < rockCount; i++) {
+	fishList[0]->Update();
+	fishList[0]->TranslateBy(speed, 0.0f, 0.0f);
+	if (fishList[0]->GetPosition().x < -10.0f) {
+		fishList[0]->SetPosition(
+			10.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (20.0f - 10.0f))),
+			-1.f,
+			5.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (10.0f - 5.0f))));
+	}
+
+	fishList[1]->Update();
+	fishList[1]->TranslateBy(speed * 1.35f, 0.0f, 0.0f);
+	if (fishList[1]->GetPosition().x < -10.0f) {
+		fishList[1]->SetPosition(
+			10.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (20.0f - 10.0f))),
+			-1.f,
+			5.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (10.0f - 5.0f))));
+	}
+
+
+	for (int i = 0; i < rockCount; ++i) {
 		rockPositions[i].z += speed;
 		if (rockPositions[i].z < 0.0f) {
 			rockPositions[i].z += moveBackAmt - 40.0f;
@@ -189,6 +221,7 @@ void GameManager::UpdateWorld(float deltaTime)
 
 		XMStoreFloat4x4(&instanceWorldMatrices[i], XMMatrixTranspose(XMMatrixTranslationFromVector(XMLoadFloat3(rockPositions + i))));
 	}
+
 }
 
 void GameManager::SetPlayer(Player * player)
