@@ -6,6 +6,9 @@ GameManager::GameManager()
 	sceneryList     = std::vector<GameEntity*>(); 
 	collectibleList = std::vector<GameEntity*>(); 
 	obstacleList	= std::vector<GameEntity*>(); 
+	lanes[0] = -2.5f;
+	lanes[1] = 0.0f;
+	lanes[2] = 2.5f;
 }
 
 GameManager::~GameManager()
@@ -95,6 +98,8 @@ void GameManager::ResolveObstacleCollision()
 void GameManager::UpdateWorld(float deltaTime)
 {
 	float speed = -3.f * deltaTime;
+	float moveBackAmt = 120.0f;
+	float rotateSpd = 3.0f * deltaTime;
 	
 	for (int i = 0; i < sceneryList.size(); ++i)
 	{
@@ -102,25 +107,32 @@ void GameManager::UpdateWorld(float deltaTime)
 		sceneryList[i]->TranslateBy(0.0f, 0.0f, speed);
 
 		if (sceneryList[i]->GetPosition().z < 0.0f)
-			sceneryList[i]->TranslateBy(0.0f, 0.0f, 120.0f);
+			sceneryList[i]->TranslateBy(0.0f, 0.0f, moveBackAmt);
 	}
 
 	for (int i = 0; i < collectibleList.size(); ++i)
 	{
 		collectibleList[i]->Update();
 		collectibleList[i]->TranslateBy(0.0f, 0.0f, speed);
+		collectibleList[i]->RotateOnAxis(vec3(0, 1, 0), rotateSpd);
 
-		if (collectibleList[i]->GetPosition().z < 0.0f)
-			collectibleList[i]->TranslateBy(0.0f, 0.0f, 120.0f); //also set it to active and randomize position
+		if (collectibleList[i]->GetPosition().z < 0.0f) {
+			collectibleList[i]->SetPosition(lanes[rand() % 3], 0.0f, moveBackAmt);
+			collectibleList[i]->isActive = true;
+
+		}
 	}
 
 	for (int i = 0; i < obstacleList.size(); ++i)
 	{
 		obstacleList[i]->Update();
 		obstacleList[i]->TranslateBy(0.0f, 0.0f, speed);
+		collectibleList[i]->RotateOnAxis(vec3(0, 1, 0), rotateSpd);
 
-		if (obstacleList[i]->GetPosition().z < 0.0f)
-			obstacleList[i]->TranslateBy(0.0f, 0.0f, 120.0f); //also set it to active and randomize position
+		if (obstacleList[i]->GetPosition().z < 0.0f) {
+			obstacleList[i]->SetPosition(lanes[rand() % 3], 0.0f, moveBackAmt);
+			collectibleList[i]->isActive = true;
+		}
 	}
 }
 

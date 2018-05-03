@@ -190,9 +190,9 @@ void CollectibleTestScene::CreateEntities()
 
 void CollectibleTestScene::InitInput()
 {
-	//inputMngr = InputManager::GetInstance();
-	//char* usedChars = "AD";
-	//inputMngr->AddKeysToPollFor(usedChars, strlen(usedChars));
+	inputMngr = InputManager::GetInstance();
+	char* usedChars = "AD";
+	inputMngr->AddKeysToPollFor(usedChars, strlen(usedChars));
 }
 
 // --------------------------------------------------------
@@ -218,6 +218,7 @@ void CollectibleTestScene::Update(float deltaTime, float totalTime)
 	//io.DeltaTime = deltaTime;
 	//All Imgui UI stuff must be done between imgui newFrame() and imgui render()
 	//ImGui_ImplDX11_NewFrame();
+	inputMngr->Update();
 
 	camera->Update();
 	//player->SetPosition(pos[0], pos[1], pos[2]);

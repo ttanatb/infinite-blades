@@ -5,6 +5,8 @@ using namespace DirectX;
 
 bool CollisionSolver::DetectCollision(const GameEntity * a, const GameEntity * b)
 {
+	if (!a->isActive || !b->isActive) return false;
+
 	if (a->GetCollider().colliderType == BOX && b->GetCollider().colliderType == BOX)
 	{
 		return DetectCollisionBoxBox(a, b);
@@ -26,6 +28,7 @@ bool CollisionSolver::DetectCollision(const GameEntity * a, const GameEntity * b
 // AABB vs. AABB
 bool CollisionSolver::DetectCollisionBoxBox(const GameEntity * a, const GameEntity * b)
 {
+	if (!a->isActive || !b->isActive) return false;
 	float resultantX = a->GetPositionFloat().x - b->GetPositionFloat().x;
 
 	float aExtentX = a->GetCollider().max.x;
@@ -51,6 +54,7 @@ bool CollisionSolver::DetectCollisionBoxBox(const GameEntity * a, const GameEnti
 // Sphere vs. sphere 
 bool CollisionSolver::DetectCollisionSphereSphere(const GameEntity * a, const GameEntity * b)
 {
+	if (!a->isActive || !b->isActive) return false;
 	XMFLOAT3 aPos = a->GetPositionFloat();
 	XMFLOAT3 bPos = b->GetPositionFloat();
 	XMVECTOR resultantVector = XMLoadFloat3(&aPos) - XMLoadFloat3(&bPos);
@@ -72,6 +76,7 @@ bool CollisionSolver::DetectCollisionSphereSphere(const GameEntity * a, const Ga
 // Sphere vs. AABB
 bool CollisionSolver::DetectCollisionSphereBox(const GameEntity * a, const GameEntity * b)
 {
+	if (!a->isActive || !b->isActive) return false;
 	XMFLOAT3 aPos = a->GetPositionFloat();
 	XMFLOAT3 bPos = b->GetPositionFloat();
 	XMVECTOR resultantVector = XMLoadFloat3(&aPos) - XMLoadFloat3(&bPos);
