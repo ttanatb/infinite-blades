@@ -56,6 +56,27 @@ void GameManager::AddToCollectible(GameEntity * collectible)
 	collectibleList.push_back(collectible);
 }
 
+void GameManager::Init(ID3D11Device * device, ID3D11DeviceContext * context)
+{
+	score = 0;
+	health = 3;
+	spriteBatch = std::make_unique<SpriteBatch>(context);
+	spriteFont = std::make_unique<SpriteFont>(device, L"Assets/Fonts/Arial.spritefont");
+}
+
+void GameManager::DrawUI(int height)
+{
+	spriteBatch->Begin();
+	spriteFont->DrawString(spriteBatch.get(), L"Infinite Blades of Glory", XMFLOAT2(0, 0));
+	std::wstring scoreStr = std::to_wstring(score);
+	spriteFont->DrawString(spriteBatch.get(), L"Score: ", XMFLOAT2(0, height - 100));
+	spriteFont->DrawString(spriteBatch.get(), scoreStr.c_str() , XMFLOAT2(100, height - 100));
+	std::wstring healthStr = std::to_wstring(health);
+	spriteFont->DrawString(spriteBatch.get(), L"Health: ", XMFLOAT2(0, height - 50));
+	spriteFont->DrawString(spriteBatch.get(), healthStr.c_str(), XMFLOAT2(100, height - 50));
+	spriteBatch->End();
+}
+
 std::vector<GameEntity*> GameManager::GetSceneryList()
 {
 	return sceneryList;
@@ -97,6 +118,7 @@ void GameManager::ResolveCollectibleCollision()
 		if (CollisionSolver::DetectCollision(player, collectible)) {
 			collectible->isActive = false;
 			//add score to player or something
+			score += 10;
 		}
 	}
 }
@@ -109,6 +131,11 @@ void GameManager::ResolveObstacleCollision()
 		if (CollisionSolver::DetectCollision(player, obstacle)) {
 			obstacle->isActive = false;
 			//destroy player or something
+			health -= 1;
+		}
+		if (health == 0)
+		{
+			player->isActive = false;
 		}
 	}
 }
