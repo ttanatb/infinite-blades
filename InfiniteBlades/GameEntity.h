@@ -68,6 +68,7 @@ public:
 	Collider GetCollider() const;
 	void SetCollider(XMFLOAT3 min, XMFLOAT3 max);
 	void CalculateCollider();
+	void CopyCalculateCollider(Collider collider);
 
 	bool CheckCollision(const GameEntity& other);
 
