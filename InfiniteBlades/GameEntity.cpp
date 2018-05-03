@@ -172,6 +172,26 @@ void GameEntity::CalculateCollider()
 	}
 }
 
+void GameEntity::CopyCalculateCollider(Collider collider)
+{
+	std::vector<Vertex> vertices = meshPtr->GetVertices();
+	XMFLOAT3 min = XMFLOAT3(FLT_MAX, FLT_MAX, FLT_MAX);
+	XMFLOAT3 max = XMFLOAT3(FLT_MIN, FLT_MIN, FLT_MIN);
+	for (int i = 0; i < meshPtr->GetVertexCount(); i++)
+	{
+		// Find mesh min xyz
+		collider.min.x = fmin(min.x, vertices[i].Position.x);
+		collider.min.y = fmin(min.y, vertices[i].Position.y);
+		collider.min.z = fmin(min.z, vertices[i].Position.z);
+
+		// Find mesh max xyz
+		collider.max.x = fmax(max.x, vertices[i].Position.x);
+		collider.max.y = fmax(max.y, vertices[i].Position.y);
+		collider.max.z = fmax(max.z, vertices[i].Position.z);
+	}
+	SetCollider(min, max);
+}
+
 bool GameEntity::CheckCollision(const GameEntity & other)
 {
 	XMFLOAT3 otherPos = other.GetPositionFloat();
