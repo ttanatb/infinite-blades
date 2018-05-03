@@ -60,7 +60,10 @@ public:
 	void InitCamera(Camera* camera);
 	void Init(ID3D11Device * device, ID3D11DeviceContext * context);
 	void AddToTransparent(GameEntity* gameEntity);
+	void AddToTransparent(std::vector<GameEntity*> entityList);
 	void AddToOpqaue(GameEntity* gameEntity);
+	void AddToOpqaue(std::vector<GameEntity*> entityList);
+
 	void AddToReflectionRender(GameEntity* gameEntity);
 	void AddAmbientLight(vec4 ambientLight);
 	void AddDirectionalLight(char* name, DirectionalLight directionalLight);

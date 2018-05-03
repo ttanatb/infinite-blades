@@ -98,8 +98,11 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
       <SDLCheck>false</SDLCheck>
     </ClCompile>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets
+mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Models
+copy $(ProjectDir)Assets\Models $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Models
+mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Textures
+copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Textures</Command>
       <Message>Copying asset files over</Message>
     </PostBuildEvent>
     <Link>
@@ -143,8 +146,11 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
       </AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets
+mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Models
+copy $(ProjectDir)Assets\Models $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Models
+mkdir $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Textures
+copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuration)\Assets\Textures</Command>
       <Message>Copying asset files over</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -155,6 +161,7 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
     <ClCompile Include="CollisionTestScene.cpp" />
     <ClCompile Include="DXCore.cpp" />
     <ClCompile Include="Emitter.cpp" />
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameplayScene.cpp" />
     <ClCompile Include="Imgui\imgui.cpp" />
     <ClCompile Include="Imgui\imgui_demo.cpp" />
@@ -185,6 +192,7 @@ copy $(ProjectDir)Assets\Textures $(SolutionDir)$(PlatformTarget)\$(Configuratio
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="DXCore.h" />
     <ClInclude Include="Emitter.h" />
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameplayScene.h" />
     <ClInclude Include="Imgui\imconfig.h" />
     <ClInclude Include="Imgui\imgui.h" />

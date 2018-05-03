@@ -1,20 +1,35 @@
 #pragma once
-#include <string>
-using namespace std;
+#include <vector>
+#include "Player.h"
+#include <iostream>
+#include "CollisionSolver.h"
+class GameManager {
+private:
+	GameManager();
+	~GameManager();
+	static GameManager* instance;
 
-enum GameState
-{
-	Menu,
-	Play,
-	GameOver
-};
+	std::vector<GameEntity*> sceneryList;
+	std::vector<GameEntity*> collectibleList;
+	std::vector<GameEntity*> obstacleList;
 
-class GameManager
-{
+	Player* player;
 public:
-	GameState state;
+	static GameManager* GetInstancce();
+	static void ReleaseInstance();
 
-	string GetStateName();
-	void NextState();
+	void AddToScenery(GameEntity* entity);
+	void AddToObstacle(GameEntity* obstacle);
+	void AddToCollectible(GameEntity* collectible);
 
+	std::vector<GameEntity*> GetSceneryList();
+	std::vector<GameEntity*> GetCollectibleList();
+	std::vector<GameEntity*> GetObstacleList();
+
+	void ResolveCollectibleCollision();
+	void ResolveObstacleCollision();
+
+	void UpdateWorld(float deltaTime);
+
+	void SetPlayer(Player* player);
 };

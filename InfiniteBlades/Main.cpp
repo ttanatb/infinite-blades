@@ -58,13 +58,9 @@ int WINAPI WinMain(
 
 
 	//**TO CHANGE SCENES: MAKE SURE TO CHANGE THE FOLLOWING LINE**
-	//DefaultTestScene dxGame(hInstance);
-	//GameplayScene dxGame(hInstance);
-	//CollisionTestScene dxGame(hInstance);
-	//CollectibleTestScene dxGame(hInstance);
-	//SkyboxTestScene dxGame(hInstance);
+	CollectibleTestScene dxGame(hInstance);
 	//LiveReflectionTestScene dxGame(hInstance);
-	GameplayScene dxGame(hInstance);    
+	//GameplayScene dxGame(hInstance);    
 
 	// Result variable for function calls below
 	HRESULT hr = S_OK;

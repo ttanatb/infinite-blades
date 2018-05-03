@@ -4,6 +4,7 @@
 #include "ShaderManager.h"
 #include "InputManager.h"
 #include "MaterialManager.h"
+#include "GameManager.h"
 #include "CollisionSolver.h"
 #include "MeshManager.h"
 #include "GameEntity.h"
@@ -12,6 +13,7 @@
 #include "WICTextureLoader.h"
 #include <vector>
 #include "Player.h"
+#include "RenderManager.h"
 #include "Skybox.h"
 #include <bitset>
 
@@ -43,6 +45,7 @@ private:
 	void LoadShaderMeshMat();
 	void CreateEntities();
 	void InitInput();
+	void AddEntityToRender();
 
 	vec4 ambientLight;
 	DirectionalLight directionalLight;
@@ -52,8 +55,10 @@ private:
 	//Some Managers
 	MaterialManager* matMngr;
 	MeshManager* meshMngr;
+	RenderManager* renderMngr;
 	InputManager* inputMngr;
 	ShaderManager* shaderMngr;
+	GameManager* gameMngr;
 
 	//camera
 	Camera* camera;
@@ -61,17 +66,6 @@ private:
 	//Player
 	Player* player;
 	Skybox* skybox;
-
-	GameEntity* sphere1;
-	GameEntity* coin1;
-	GameEntity* coin2;
-	GameEntity* coin3;
-
-
-	// Game entities
-	std::vector<GameEntity*> gameEntities;
-
-	std::vector<std::bitset<1>> collected;
 
 	//imgui Variables
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);

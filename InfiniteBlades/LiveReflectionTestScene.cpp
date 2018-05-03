@@ -172,7 +172,7 @@ void LiveReflectionTestScene::CreateEntities()
 	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("soil"),
 	//	vec3(1, 1, 1), vec3(45, 0, 45), vec3(0.7f, 0.6f, 0.8f)));
 
-	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"));
+	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"), ColliderType::SPHERE);
 	gameEntities.push_back(player);
 
 	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds",

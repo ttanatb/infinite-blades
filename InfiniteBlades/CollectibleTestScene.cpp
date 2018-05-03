@@ -43,10 +43,12 @@ CollectibleTestScene::~CollectibleTestScene()
 {
 	// Release any (and all!) DirectX objects
 	// we've made in the Game class
-	for (size_t i = 0; i < gameEntities.size(); ++i)
-		delete gameEntities[i];
 	if (camera != nullptr) delete camera;
 	if (skybox != nullptr) delete skybox;
+	if (player != nullptr) {
+		delete player;
+		player = nullptr;
+	}
 
 	ImGui_ImplDX11_Shutdown();
 
@@ -54,6 +56,8 @@ CollectibleTestScene::~CollectibleTestScene()
 	MeshManager::ReleaseInstance();
 	InputManager::ReleaseInstance();
 	ShaderManager::ReleaseInstance();
+	RenderManager::ReleaseInstance();
+	GameManager::ReleaseInstance();
 }
 
 // --------------------------------------------------------
@@ -64,19 +68,46 @@ void CollectibleTestScene::Init()
 {
 	//Initialize ImGui
 	ImGui_ImplDX11_Init(hWnd, device, context);
-
+	renderMngr = RenderManager::GetInstance();
 	LoadShaderMeshMat();
 	CreateEntities();
 	InitInput();
+	renderMngr->Init(device, context);
+	renderMngr->InitSkyBox(skybox);
+	renderMngr->InitCamera(camera);
+	AddEntityToRender();
 
 	directionalLight = { vec4(0.8f, 0.85f, 0.9f, 1.0f),
 		vec3(-0.2f, -1.0f, 0.3f) };
 	ambientLight = vec4(0.1f, 0.1f, 0.2f, 1.0f);
 
+	renderMngr->AddDirectionalLight("directionalLight", directionalLight);
+	renderMngr->AddAmbientLight(ambientLight);
+
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
 	// Essentially: "What kind of shape should the GPU draw with our data?"
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void CollectibleTestScene::AddEntityToRender()
+{
+	renderMngr->AddToOpqaue(player);
+	renderMngr->AddToOpqaue(gameMngr->GetCollectibleList());
+	renderMngr->AddToOpqaue(gameMngr->GetSceneryList());
+	/*
+	for (int i = 0; i < gameEntities.size(); i++)
+	{
+		if (gameEntities[i]->GetMat()->GetTransparentBool()) {
+			renderMngr->AddToTransparent(gameEntities[i]);
+		}
+		else
+		{
+			renderMngr->AddToOpqaue(gameEntities[i]);
+		}
+	}
+	renderMngr->AddToReflectionRender(player);
+	*/
 }
 
 // --------------------------------------------------------
@@ -126,28 +157,28 @@ void CollectibleTestScene::CreateEntities()
 {
 	//create camera
 	camera = new Camera((float)width, (float)height, vec3(0.0f, 2.5f, 0.0f), 0.20f, 0.0f);
+	gameMngr = GameManager::GetInstancce();
 
-	for (int i = 0; i < 4; ++i) //gameEntity[7]
+	for (int i = 0; i < 4; ++i)
 	{
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("snow"), matMngr->GetMat("snow"),
+		gameMngr->AddToScenery(new GameEntity(meshMngr->GetMesh("snow"), matMngr->GetMat("snow"),
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),
+		gameMngr->AddToScenery(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 	}
 
 	player = new Player(meshMngr->GetMesh("sphere"), matMngr->GetMat("concrete"), ColliderType::SPHERE); //gameEntity[8]
-	gameEntities.push_back(player);
 	player->CalculateCollider();
+	gameMngr->SetPlayer(player);
+	//gameEntities.push_back(player);
 
 	// Collectibles
-	for (int i = 9; i < 13; ++i) //gameEntity[9] - gameEntity[12]
+	for (int i = 0; i < 5; ++i)
 	{
-		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("woodplanks"), ColliderType::SPHERE,
-			vec3(0, 1, 5.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(0.5f, 0.5f, 0.5f)));
-		gameEntities[i]->CalculateCollider();
-		
-		std::bitset<1> temp;
-		collected.push_back(temp);
+		GameEntity* collectible = new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("woodplanks"), ColliderType::SPHERE,
+			vec3(0, 0, 10.0f * static_cast<float>(i) + 5.0f), vec3(0, 0, 0), vec3(1, 1, 1));
+		collectible->CalculateCollider();
+		gameMngr->AddToCollectible(collectible);
 	}
 
 	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds",
@@ -183,39 +214,23 @@ void CollectibleTestScene::OnResize()
 void CollectibleTestScene::Update(float deltaTime, float totalTime)
 {
 	//inputMngr->Update();
-
-	ImGuiIO& io = ImGui::GetIO();
-	io.DeltaTime = deltaTime;
-
+	//ImGuiIO& io = ImGui::GetIO();
+	//io.DeltaTime = deltaTime;
 	//All Imgui UI stuff must be done between imgui newFrame() and imgui render()
-	ImGui_ImplDX11_NewFrame();
+	//ImGui_ImplDX11_NewFrame();
 
 	camera->Update();
-	player->SetPosition(pos[0], pos[1], pos[2]);
+	//player->SetPosition(pos[0], pos[1], pos[2]);
 
-	for (int i = 0; i < gameEntities.size(); ++i) 
-	{
-		gameEntities[i]->Update();
-		gameEntities[i]->TranslateBy(0.0f, 0.0f, -0.01f);
+	gameMngr->UpdateWorld(deltaTime);
+	player->Update(deltaTime, totalTime);
 
-		if (gameEntities[i]->GetPosition().z < 0.0f) 
-		{
-			gameEntities[i]->TranslateBy(0.0f, 0.0f, 120.0f);
-		}
-	}
-
-	//player->Update(deltaTime, totalTime);
+	gameMngr->ResolveCollectibleCollision();
+	gameMngr->ResolveObstacleCollision();
 
 	// Coin Pickups
-	for (int i = 9; i < 13; ++i)
-	{
-		if (CollisionSolver::DetectCollision(player, gameEntities[i]))
-		{
-			printf("Colliding w the coin");
-			gameEntities[i]->isActive = false;
-		}
-	}
 	// Loop Coins
+	/*
 	if (gameEntities[11]->GetPosition().z < 0)
 	{
 		// Reset Position
@@ -234,6 +249,7 @@ void CollectibleTestScene::Update(float deltaTime, float totalTime)
 			}
 		}
 	}
+	*/
 
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
@@ -246,65 +262,29 @@ void CollectibleTestScene::Update(float deltaTime, float totalTime)
 void CollectibleTestScene::Draw(float deltaTime, float totalTime)
 {
 	// Background color (Cornflower Blue in this case) for clearing
-	const float color[4] = { clear_color.x, clear_color.y, clear_color.z, clear_color.w };
+	const float color[4] = { 0.4f, 0.6f, 0.75f, 0.0f };
 
 	// Clear the render target and depth buffer (erases what's on the screen)
 	context->ClearRenderTargetView(backBufferRTV, color);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	renderMngr->Draw();
 
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-
-	//draw all the entities
-	for (size_t i = 0; i < gameEntities.size(); ++i)
-	{
-		if (gameEntities[i]->isActive)
-		{
-			//hoist the mesh and mat of the entity
-			Mesh* meshPtr = gameEntities[i]->GetMesh();
-			Material * matPtr = gameEntities[i]->GetMat();
-
-			//early exit
-			if (meshPtr == nullptr || matPtr == nullptr) continue;
-
-			/*This is Per-frame data that we can offset into a renderer class we won't have*/
-			SimplePixelShader* pixelShader = matPtr->GetPixelShader();
-			pixelShader->SetFloat4("ambientColor", ambientLight);
-			pixelShader->SetData("directionalLight", &directionalLight, sizeof(DirectionalLight));
-			pixelShader->SetFloat3("cameraPos", camera->GetPos());
-
-			SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
-			vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
-			vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
-
-			//prepare per-object data
-			matPtr->PrepareMaterial(gameEntities[i]->GetWorldMat());
-
-			ID3D11Buffer * vertexBuffer = meshPtr->GetVertexBuffer();
-			context->IASetVertexBuffers(0, 1, &(vertexBuffer), &stride, &offset);
-			context->IASetIndexBuffer(meshPtr->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-			context->DrawIndexed(meshPtr->GetIndexCount(), 0, 0);
-		}
-	}
-
-	//render skybox
-	skybox->Render(context, camera, stride, offset);
 
 	// At the end of the frame, reset render states
 	context->RSSetState(0);
 	context->OMSetDepthStencilState(0, 0);
 
 	// 1. Show a simple window
-	{
-		static float f = 0.0f;
-		ImGui::Text("Collision Test Debugger");
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f); // Edit 1 float using a slider from 0 to 1
-		ImGui::SliderFloat3("Player Pos", pos, -20, 20); // Edit 3 floats using a slider from -5 to 5
-		ImGui::ColorEdit3("clear color", (float*)&clear_color);
-		ImGui::Checkbox("Free Look Enabled", &freelookEnabled);
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-	}
-	ImGui::Render();
+	//{
+	//	static float f = 0.0f;
+	//	ImGui::Text("Collision Test Debugger");
+	//	ImGui::SliderFloat("float", &f, 0.0f, 1.0f); // Edit 1 float using a slider from 0 to 1
+	//	ImGui::SliderFloat3("Player Pos", pos, -20, 20); // Edit 3 floats using a slider from -5 to 5
+	//	ImGui::ColorEdit3("clear color", (float*)&clear_color);
+	//	ImGui::Checkbox("Free Look Enabled", &freelookEnabled);
+	//	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	//}
+	//ImGui::Render();
 
 	swapChain->Present(0, 0);
 }
@@ -320,7 +300,7 @@ void CollectibleTestScene::Draw(float deltaTime, float totalTime)
 void CollectibleTestScene::OnMouseDown(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
-	ImGuiIO& io = ImGui::GetIO();
+	//ImGuiIO& io = ImGui::GetIO();
 
 	// Save the previous mouse position, so we have it for the future
 	prevMousePos.x = x;
@@ -353,10 +333,10 @@ void CollectibleTestScene::OnMouseUp(WPARAM buttonState, int x, int y)
 void CollectibleTestScene::OnMouseMove(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
-	ImGuiIO& io = ImGui::GetIO();
-	io.MousePos = ImVec2((float)x, (float)y);
+	//ImGuiIO& io = ImGui::GetIO();
+	//io.MousePos = ImVec2((float)x, (float)y);
 
-	if (buttonState && 0x0001 && freelookEnabled)
+	if (buttonState && 0x0001)
 	{
 		camera->RotateAroundUp((x - prevMousePos.x) / 1000.0f);
 		camera->RotateAroundRight((y - prevMousePos.y) / 1000.0f);

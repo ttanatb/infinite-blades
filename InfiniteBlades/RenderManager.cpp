@@ -196,9 +196,21 @@ void RenderManager::AddToTransparent(GameEntity* gameEntity)
 	transparentObjects.push_back(gameEntity);
 }
 
+void RenderManager::AddToTransparent(std::vector<GameEntity*> entityList)
+{
+	for (int i = 0; i < entityList.size(); ++i)
+		transparentObjects.push_back(entityList[i]);
+}
+
 void RenderManager::AddToOpqaue(GameEntity* gameEntity)
 {
 	opaqueObjects.push_back(gameEntity);
+}
+
+void RenderManager::AddToOpqaue(std::vector<GameEntity*> entityList)
+{
+	for (int i = 0; i < entityList.size(); ++i) 
+		opaqueObjects.push_back(entityList[i]);
 }
 
 void RenderManager::AddToReflectionRender(GameEntity * gameEntity)
