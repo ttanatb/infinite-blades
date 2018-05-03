@@ -62,9 +62,6 @@
     <FxCompile Include="Shaders\pUnlit.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\vInstanceUnlit.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\vRefract.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
