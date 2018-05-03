@@ -150,10 +150,8 @@ void CoinTestScene::CreateEntities()
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("cube"), matMngr->GetMat("ship"),
 			vec3(0, -5, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
-		GameEntity* coin = new GameEntity(meshMngr->GetMesh("coin"), matMngr->GetMat("metal"),
-			vec3(0, 1, 30.0f * static_cast<float>(i)), vec3(XM_PI / 2, 0, 0), vec3(1, 1, 1);
-		coin->SetTag("coin");
-		gameEntities.push_back(coin));
+		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("coin"), matMngr->GetMat("metal"),
+			vec3(0, 1, 30.0f * static_cast<float>(i)), vec3(XM_PI / 2, 0, 0), vec3(1, 1, 1)));
 	}
 
 

@@ -13,7 +13,6 @@ protected:
 
 	Mesh* meshPtr = nullptr;
 	Material* matPtr = nullptr;
-	char* tag = "";
 
 	GameEntity* parent = nullptr;
 	std::vector<GameEntity*> children;

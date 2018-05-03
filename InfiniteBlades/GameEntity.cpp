@@ -96,11 +96,6 @@ void GameEntity::SetParent(GameEntity * parent)
 	parent->children.push_back(this);
 }
 
-void GameEntity::SetTag(char * tag)
-{
-	this->tag = tag;
-}
-
 void GameEntity::TranslateBy(float x, float y, float z)
 {
 	TranslateBy(vec3(x, y, z));
