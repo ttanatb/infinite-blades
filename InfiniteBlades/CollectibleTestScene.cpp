@@ -188,6 +188,8 @@ void CollectibleTestScene::CreateEntities()
 		shaderMngr->GetVertexShader("SkyBoxVS"),
 		shaderMngr->GetPixelShader("SkyBoxPS"),
 		meshMngr->GetMesh("cube"));
+
+	delete sphere;
 }
 
 void CollectibleTestScene::InitInput()
