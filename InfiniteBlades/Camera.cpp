@@ -35,10 +35,11 @@ void Camera::CalcProjMatTransposed()
 
 void Camera::CalcReflectionMat(float height)
 {
+	float offset = 10.0f;
 	vec3 up, pos, lookAt;
 	float radians;
 	up = vec3(0.0f, 1.0f, 0.0f);
-	pos = vec3(position.x, -position.y + (height * 2.0f), position.z);
+	pos = vec3(position.x + offset, -position.y + (height * 2.0f), position.z + offset);
 	//cakc the rotation in radians
 	//radians = rotY * 0.0174532925f;
 	radians = rotY * (XM_PI / 180.0f);

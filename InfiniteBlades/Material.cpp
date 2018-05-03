@@ -56,8 +56,8 @@ void Material::InitMaterial(SimpleVertexShader * vShader, SimplePixelShader * pS
 
 	D3D11_SAMPLER_DESC reflectionSamplerDesc = D3D11_SAMPLER_DESC();
 	reflectionSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	reflectionSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	reflectionSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	reflectionSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	reflectionSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	reflectionSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	reflectionSamplerDesc.MipLODBias = 0.0f;
 	reflectionSamplerDesc.MaxAnisotropy = 1;
@@ -108,9 +108,11 @@ float Material::GetTransparentStr()
 	return transparentStr;
 }
 
-void Material::PrepareMaterialHullDomain(mat4* worldMat)
+void Material::PrepareMaterialHullDomain(mat4* worldMat, float snowAmt)
 {
 	domainShader->SetShader();
+	domainShader->SetFloat("snow", snowAmt);
+	domainShader->CopyAllBufferData();
 	hullShader->SetShader();
 
 	vertexShader->SetMatrix4x4("world", *worldMat);
