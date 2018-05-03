@@ -40,13 +40,12 @@ Texture2D diffuseTexture : register(t0);
 Texture2D normalTexture : register(t1);
 
 SamplerState diffuseSampler : register(s0);
-SamplerState normalSampler	: register(s1);
 TextureCube  skyTexture		: register(t2);
 
 
 //calculates normal based on normal map
 float3 recalculateNormals(float3 normal, float3 tangent, float2 uv) {
-	float3 normalFromMap = normalTexture.Sample(normalSampler, uv).rgb;
+	float3 normalFromMap = normalTexture.Sample(diffuseSampler, uv).rgb;
 	normalFromMap = normalFromMap * 2 - 1;
 
 	float3 N = normal;
@@ -96,7 +95,7 @@ float3 dirToCamera = normalize(cameraPos - input.worldPos);
 
 //reflections 
 float4 reflection = skyTexture.Sample(
-	normalSampler,
+	diffuseSampler,
 	reflect(-dirToCamera, input.normal));
 
 //lights in the scene 

@@ -1,9 +1,6 @@
 #include <Windows.h>
 #include "GameplayScene.h"
-#include "SkyboxTestScene.h"
-#include "TransperancyTestScene.h"
-#include "ReflectionTestScene.h"
-#include "NormalMapTestScene.h"
+#include "CollectibleTestScene.h"
 #include "SnowShaderTestScene.h"
 
 //**TO CHANGE SCENES: MAKE SURE TO INCLUDE THEM HERE**
@@ -60,12 +57,8 @@ int WINAPI WinMain(
 	// the app handle we got from WinMain
 
 	//**TO CHANGE SCENES: MAKE SURE TO CHANGE THE FOLLOWING LINE**
-	//ReflectionTestScene dxGame(hInstance);
-	//TransperancyTestScene dxGame(hInstance);
-	//SkyboxTestScene dxGame(hInstance);
-	//NormalMapTestScene dxGame(hInstance);
-	SnowShaderTestScene dxGame(hInstance);
-	//GameplayScene dxGame(hInstance);
+	//SnowShaderTestScene dxGame(hInstance);
+	CollectibleTestScene dxGame(hInstance);
 
 	// Result variable for function calls below
 	HRESULT hr = S_OK;

@@ -1,6 +1,8 @@
 #pragma once
 #include <map>
 #include "Mesh.h"
+#include "Collider.h"
+
 class MeshManager {
 private:
 	MeshManager();

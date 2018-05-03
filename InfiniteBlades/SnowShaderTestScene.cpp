@@ -91,8 +91,8 @@ void SnowShaderTestScene::Init()
 
 void SnowShaderTestScene::AddEntityToRender()
 {
-	renderMngr->InitInstancedRendering(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
-		vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 1)), 100);
+	//renderMngr->InitInstancedRendering(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
+	//	vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 1)), 100);
 
 	for (int i = 0; i < gameEntities.size(); i++)
 	{
@@ -156,46 +156,9 @@ void SnowShaderTestScene::CreateEntities()
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 		gameEntities.push_back(new GameEntity(meshMngr->GetMesh("floor"), matMngr->GetMat("ice"),
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
-		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
-		//	vec3(20, 0, 30.0f * static_cast<float>(i) + 5.f), vec3(0, 1, 0), vec3(1, 1, 1)));
-		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
-		//	vec3(13, 0, 30.0f * static_cast<float>(i) + 10.f), vec3(0, 1, 0), vec3(1, 1, 1)));
-		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
-		//	vec3(16, 0, 30.0f * static_cast<float>(i) + 15.f), vec3(0, 1, 0), vec3(1, 1, 1)));
-		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
-		//	vec3(25, 0, 30.0f * static_cast<float>(i) + 20.f), vec3(0, 1, 0), vec3(1, 1, 1)));
-		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
-		//	vec3(11, 0, 30.0f * static_cast<float>(i) + 25.f), vec3(0, 1, 0), vec3(1, 1, 1)));
-		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
-		//	vec3(-10, 0, 30.0f * static_cast<float>(i) + 5.f), vec3(0, 1, 0), vec3(1, 1, 1)));
-		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
-		//	vec3(-15, 0, 30.0f * static_cast<float>(i) + 10.f), vec3(0, 1, 0), vec3(1, 1, 1)));
-		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
-		//	vec3(-16, 0, 30.0f * static_cast<float>(i) + 15.f), vec3(0, 1, 0), vec3(1, 1, 1)));
-		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
-		//	vec3(-20, 0, 30.0f * static_cast<float>(i) + 20.f), vec3(0, 1, 0), vec3(1, 1, 1)));
-		//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("stone"), matMngr->GetMat("snowPile"),
-		//	vec3(-11, 0, 30.0f * static_cast<float>(i) + 25.f), vec3(0, 1, 0), vec3(1, 1, 1)));
 	}
 
-
-	//create entities
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("woodplanks"),
-	//	vec3(2, 1, 1), vec3(45, 45, 0), 0.69f));
-
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("cone"), matMngr->GetMat("concrete"),
-	//	vec3(1, -1, 1), vec3(45, 90, 45), 0.9f));
-
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("helix"), matMngr->GetMat("soil"),
-	//	vec3(0, 0, 5), vec3(45, 0, 45), 0.85f));
-
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("woodplanks"),
-	//	vec3(-1, 1, 0), vec3(45, 45, 90), 0.8f));
-
-	//gameEntities.push_back(new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("soil"),
-	//	vec3(1, 1, 1), vec3(45, 0, 45), vec3(0.7f, 0.6f, 0.8f)));
-
-	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"));
+	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"), ColliderType::SPHERE); //gameEntity[8]
 	gameEntities.push_back(player);
 
 	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds",
