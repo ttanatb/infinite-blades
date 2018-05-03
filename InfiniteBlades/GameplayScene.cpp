@@ -415,10 +415,10 @@ void GameplayScene::OnMouseMove(WPARAM buttonState, int x, int y)
 {
 	// Add any custom code here...
 	
-	if (buttonState & 0x0001) {
-		camera->RotateAroundUp((x - prevMousePos.x) / 1000.0f);
-		camera->RotateAroundRight((y - prevMousePos.y) / 1000.0f);
-	}
+	//if (buttonState & 0x0001) {
+	//	camera->RotateAroundUp((x - prevMousePos.x) / 1000.0f);
+	//	camera->RotateAroundRight((y - prevMousePos.y) / 1000.0f);
+	//}
 	
 
 	// Save the previous mouse position, so we have it for the future
