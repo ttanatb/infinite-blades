@@ -120,7 +120,7 @@ void RenderManager::RenderReflectionTexture()
 	//clear current reflection render target
 	reflectionTex->ClearRenderTarget(color);
 	//calc reflection matrix
-	camera->CalcReflectionMat(-10.0f);
+	camera->CalcReflectionMat(-12.0f);
 	//draw opaque objects upside down 
 	DrawAllOpaque(camera, *(camera->GetReflectionMat()));
 	//reset render target 

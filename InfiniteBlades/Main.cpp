@@ -2,6 +2,7 @@
 #include "GameplayScene.h"
 #include "CollisionTestScene.h"
 #include "CollectibleTestScene.h"
+#include "LiveReflectionTestScene.h"
 
 //**TO CHANGE SCENES: MAKE SURE TO INCLUDE THEM HERE**
 
