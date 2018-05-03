@@ -1,6 +1,5 @@
 #include <Windows.h>
 #include "GameplayScene.h"
-#include "LiveReflectionTestScene.h"
 
 //**TO CHANGE SCENES: MAKE SURE TO INCLUDE THEM HERE**
 

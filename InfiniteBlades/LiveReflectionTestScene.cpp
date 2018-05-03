@@ -175,7 +175,7 @@ void LiveReflectionTestScene::CreateEntities()
 	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"));
 	gameEntities.push_back(player);
 
-	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds",
+	skybox = new Skybox(L"Assets/Textures/SkyCubeMap.dds",
 		device,
 		shaderMngr->GetVertexShader("SkyBoxVS"),
 		shaderMngr->GetPixelShader("SkyBoxPS"),
