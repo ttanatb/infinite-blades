@@ -229,7 +229,7 @@ void GameplayScene::CreateEntities()
 	);
 	snowEmitter->SetAsPlane(10, 20);		//Sets as a (horizontal) plane (width, depth), will emit as point otherwise
 
-	float lanes[3] = { -2.f, 0.0f, 2.f };
+	float lanes[3] = { -2.5f, 0.0f, 2.f };
 	for (int i = 0; i < 5; ++i)
 	{
 		float x = lanes[rand() % 3];
