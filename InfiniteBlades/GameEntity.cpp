@@ -180,14 +180,14 @@ void GameEntity::CopyCalculateCollider(Collider collider)
 	for (int i = 0; i < meshPtr->GetVertexCount(); i++)
 	{
 		// Find mesh min xyz
-		collider.min.x = fmin(min.x, vertices[i].Position.x);
-		collider.min.y = fmin(min.y, vertices[i].Position.y);
-		collider.min.z = fmin(min.z, vertices[i].Position.z);
+		collider.min.x = fmin(collider.min.x, vertices[i].Position.x);
+		collider.min.y = fmin(collider.min.y, vertices[i].Position.y);
+		collider.min.z = fmin(collider.min.z, vertices[i].Position.z);
 
 		// Find mesh max xyz
-		collider.max.x = fmax(max.x, vertices[i].Position.x);
-		collider.max.y = fmax(max.y, vertices[i].Position.y);
-		collider.max.z = fmax(max.z, vertices[i].Position.z);
+		collider.max.x = fmax(collider.max.x, vertices[i].Position.x);
+		collider.max.y = fmax(collider.max.y, vertices[i].Position.y);
+		collider.max.z = fmax(collider.max.z, vertices[i].Position.z);
 	}
 	SetCollider(min, max);
 }
