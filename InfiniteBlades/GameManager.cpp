@@ -6,7 +6,7 @@ GameManager::GameManager()
 	sceneryList = std::vector<GameEntity*>();
 	collectibleList = std::vector<GameEntity*>();
 	obstacleList = std::vector<GameEntity*>();
-	lanes[0] = -2.f;
+	lanes[0] = -2.5f;
 	lanes[1] = 0.0f;
 	lanes[2] = 2.f;
 }
