@@ -3,6 +3,7 @@
 #include "Player.h"
 #include <iostream>
 #include "CollisionSolver.h"
+#include "SpriteFont.h"
 class GameManager {
 private:
 	GameManager();
@@ -16,10 +17,16 @@ private:
 
 	float lanes[3];
 
+	int score;
+	int health;
 	Player* player;
 
-	DirectX::XMFLOAT3* rockPositions = nullptr;
+	std::unique_ptr<SpriteBatch> spriteBatch;
+	std::unique_ptr<SpriteFont> spriteFont;
+
+  DirectX::XMFLOAT3* rockPositions = nullptr;
 	int rockCount = 0;
+
 public:
 	static GameManager* GetInstancce();
 	static void ReleaseInstance();
@@ -28,6 +35,9 @@ public:
 	void AddToObstacle(GameEntity* obstacle);
 	void AddToCollectible(GameEntity* collectible);
 	void AddToFish(GameEntity* collectible);
+
+	void Init(ID3D11Device * device, ID3D11DeviceContext * context);
+	void DrawUI(int height);
 
 	std::vector<GameEntity*> GetSceneryList();
 	std::vector<GameEntity*> GetCollectibleList();

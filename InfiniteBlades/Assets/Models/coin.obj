@@ -1,6 +1,5 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-g default
 v 0.062872 0.519431 -0.168774
 v 0.062872 0.441855 -0.321026
 v -0.059832 0.441855 -0.321026

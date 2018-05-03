@@ -2,6 +2,7 @@
 #include "GameplayScene.h"
 
 #include "CollectibleTestScene.h"
+#include "LiveReflectionTestScene.h"
 #include "SnowShaderTestScene.h"
 
 //**TO CHANGE SCENES: MAKE SURE TO INCLUDE THEM HERE**
