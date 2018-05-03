@@ -70,12 +70,35 @@ void Refraction::Release()
 	if (alternateSRV) alternateSRV->Release();
 }
 
-ID3D11ShaderResourceView * Refraction::GetSRV()
+// Setup the render targets
+void Refraction::SetRenderTarget()
 {
-	return nullptr;
+	context->OMSetRenderTargets(1, &alternateRTV, alternateDSV);
 }
 
-ID3D11RenderTargetView * Refraction::GetRTV()
+void Refraction::ClearRenderTarget(const float color[4])
 {
-	return nullptr;
+
+}
+
+void Refraction::ResetRenderTargets()
+{
+
+}
+
+// Return the alternative shader resource view
+ID3D11ShaderResourceView* Refraction::GetSRV()
+{
+	return alternateSRV;
+}
+
+// Return the alternative render target view
+ID3D11RenderTargetView* Refraction::GetRTV()
+{
+	return alternateRTV;
+}
+
+ID3D11SamplerState * Refraction::GetSampler()
+{
+	return alternateSampler;
 }

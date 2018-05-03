@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "DXCore.h"
 #include "Reflection.h"
+#include "Refraction.h"
 
 class RenderManager
 {
@@ -21,6 +22,7 @@ private:
 	unsigned int totalCount = 0; //number of objects in both list
 	Skybox* skybox;
 	Reflection* reflectionTex;
+	Refraction* refraction;
 	Camera* camera;
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
@@ -37,6 +39,7 @@ private:
 	std::vector<GameEntity*> opaqueObjects;
 	std::vector<GameEntity*> transparentObjects;
 	std::vector<GameEntity*> aboveGroundObjects;
+	std::vector<GameEntity*> refractingObjects;
 	//Lights in the scene 
 	vec4 ambientLight;
 	std::map<char*, DirectionalLight> directionaLightMap;
@@ -51,9 +54,27 @@ private:
 	void RenderReflectionTexture();
 	void ReleaseReflectionTexture();
 
+	// Default/Simple Sampler
+	ID3D11SamplerState* defaultSampler;
+
+	// Draw a quad to the screen
+	void DrawQuad(ID3D11ShaderResourceView* textureToRender);
+
+	// Quad shaders
+	SimpleVertexShader* quadVertexShader;
+	SimplePixelShader* quadPixelShader;
+
 	// Post-Process/Refraction
 	ID3D11RenderTargetView* alternateRTV;
 	ID3D11ShaderResourceView* alternateSRV;
+
+	SimpleVertexShader* refractionVS;
+	SimplePixelShader* refractionPS;
+
+	void DrawRefraction(std::vector<GameEntity*> refractingObjects, Camera* camera);
+
+	ID3D11DepthStencilView* depthStencilView;
+	ID3D11RenderTargetView* backBufferRTV;
 
 public:
 	static RenderManager* GetInstance();
@@ -62,10 +83,11 @@ public:
 	void Draw();
 	void InitSkyBox(Skybox* skybox);
 	void InitCamera(Camera* camera);
-	void Init(ID3D11Device * device, ID3D11DeviceContext * context);
+	void Init(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11RenderTargetView* backBufferRTV, ID3D11DepthStencilView* depthStencilView);
 	void AddToTransparent(GameEntity* gameEntity);
 	void AddToOpqaue(GameEntity* gameEntity);
 	void AddToReflectionRender(GameEntity* gameEntity);
+	void AddToRefractionRender(GameEntity* gameEntity);
 	void AddAmbientLight(vec4 ambientLight);
 	void AddDirectionalLight(char* name, DirectionalLight directionalLight);
 	void AddPointLight(char* name, PointLight pointLight);

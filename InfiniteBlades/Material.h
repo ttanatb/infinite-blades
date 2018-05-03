@@ -44,6 +44,7 @@ public:
 		const wchar_t * reflectionFileName);
 	SimpleVertexShader* GetVertexShader();
 	SimplePixelShader* GetPixelShader();
+	ID3D11ShaderResourceView* GetNormalSRV() const;
 	bool GetTransparentBool();
 	void SetTransparentState(bool transparentBool);
 	float GetTransparentStr();

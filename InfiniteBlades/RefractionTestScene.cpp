@@ -61,7 +61,7 @@ void RefractionTestScene::Init()
 	CreateEntities();
 	//intialize render manager
 	renderMngr = RenderManager::GetInstance();
-	renderMngr->Init(device, context);
+	renderMngr->Init(device, context, backBufferRTV, depthStencilView);
 	renderMngr->InitSkyBox(skybox);
 	renderMngr->InitCamera(camera);
 	AddEntityToRender();

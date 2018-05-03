@@ -73,6 +73,11 @@ SimplePixelShader * Material::GetPixelShader()
 	return pixelShader;
 }
 
+ID3D11ShaderResourceView * Material::GetNormalSRV() const
+{
+	return normalSRVptr;
+}
+
 bool Material::GetTransparentBool()
 {
 	return transparentBool;
