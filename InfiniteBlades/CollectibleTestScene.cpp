@@ -180,10 +180,8 @@ void CollectibleTestScene::CreateEntities()
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 	}
 
-	GameEntity* sphere = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("concrete"), ColliderType::SPHERE, vec3(0,0,0), vec3(0,0,0), vec3(1,1,1));
 	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"), ColliderType::SPHERE); //gameEntity[8]
 	player->CalculateCollider();
-	player->CopyCalculateCollider(sphere->GetCollider());
 	gameMngr->SetPlayer(player);
 	//gameEntities.push_back(player);
 
@@ -212,8 +210,6 @@ void CollectibleTestScene::CreateEntities()
 		shaderMngr->GetVertexShader("SkyBoxVS"),
 		shaderMngr->GetPixelShader("SkyBoxPS"),
 		meshMngr->GetMesh("cube"));
-
-	delete sphere;
 }
 
 void CollectibleTestScene::InitInput()
