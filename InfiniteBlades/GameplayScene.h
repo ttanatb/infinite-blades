@@ -55,6 +55,7 @@ private:
 	InputManager* inputMngr;
 	ShaderManager* shaderMngr;
 	RenderManager* renderMngr;
+	GameManager* gameMngr;
 
 	//camera
 	Camera* camera;
@@ -64,7 +65,6 @@ private:
 	Skybox* skybox;
 
 	// Game entities
-	std::vector<GameEntity*> gameEntities;
 	Emitter* snowEmitter;
 
 	// Keeps track of the old mouse position.  Useful for 

@@ -59,7 +59,8 @@ int WINAPI WinMain(
 
 	//**TO CHANGE SCENES: MAKE SURE TO CHANGE THE FOLLOWING LINE**
 	//SnowShaderTestScene dxGame(hInstance);
-	CollectibleTestScene dxGame(hInstance);
+	//CollectibleTestScene dxGame(hInstance);
+	GameplayScene dxGame(hInstance);
 
 	// Result variable for function calls below
 	HRESULT hr = S_OK;
