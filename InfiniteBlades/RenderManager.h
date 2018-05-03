@@ -63,6 +63,7 @@ public:
 	void AddToTransparent(std::vector<GameEntity*> entityList);
 	void AddToOpqaue(GameEntity* gameEntity);
 	void AddToOpqaue(std::vector<GameEntity*> entityList);
+	void AddToOpaqueAndTransparent(std::vector<GameEntity*> entityList);
 
 	void AddToReflectionRender(GameEntity* gameEntity);
 	void AddAmbientLight(vec4 ambientLight);

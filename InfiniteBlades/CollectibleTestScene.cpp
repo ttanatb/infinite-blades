@@ -94,7 +94,8 @@ void CollectibleTestScene::AddEntityToRender()
 {
 	renderMngr->AddToOpqaue(player);
 	renderMngr->AddToOpqaue(gameMngr->GetCollectibleList());
-	renderMngr->AddToOpqaue(gameMngr->GetSceneryList());
+	renderMngr->AddToOpqaue(gameMngr->GetObstacleList());
+	renderMngr->AddToOpaqueAndTransparent(gameMngr->GetSceneryList());
 	/*
 	for (int i = 0; i < gameEntities.size(); i++)
 	{
@@ -123,6 +124,8 @@ void CollectibleTestScene::LoadShaderMeshMat()
 	shaderMngr->AddPixelShader("pBasic");
 	shaderMngr->AddVertexShader("SkyBoxVS");
 	shaderMngr->AddPixelShader("SkyBoxPS");
+	shaderMngr->AddVertexShader("vReflection");
+	shaderMngr->AddPixelShader("pReflection");
 
 	//hoisting shaders
 	SimpleVertexShader* vShader = shaderMngr->GetVertexShader("vBasic");
@@ -135,8 +138,17 @@ void CollectibleTestScene::LoadShaderMeshMat()
 	matMngr->AddMat("soil", vShader, pShader, L"Assets/Textures/soil.jpg");
 	matMngr->AddMat("woodplanks", vShader, pShader, L"Assets/Textures/woodplanks.jpg");
 	matMngr->AddMat("ship", vShader, pShader, L"Assets/Textures/shipAlbedo.png");
-	matMngr->AddMat("ice", vShader, pShader, L"Assets/Textures/ice.jpg");
-	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg");
+	matMngr->AddMat("snow", vShader, pShader, L"Assets/Textures/snow.jpg", L"Assets/Textures/snowNormals.jpg");
+	matMngr->AddMat("metal", vShader, pShader, L"Assets/Textures/coin.jpg", L"Assets/Textures/coinNormals.jpg");
+
+	matMngr->AddMat("ice",
+		shaderMngr->GetVertexShader("vReflection"),
+		shaderMngr->GetPixelShader("pReflection"),
+		L"Assets/Textures/ice.jpg",
+		L"Assets/Textures/iceNormals.jpg",
+		true,
+		0.80f,
+		L"Assets/Textures/SunnyCubeMap.dds");
 
 	//meshes
 	meshMngr = MeshManager::GetInstancce();
@@ -150,7 +162,8 @@ void CollectibleTestScene::LoadShaderMeshMat()
 	meshMngr->AddMesh("ship", "Assets/Models/ship.obj");
 	meshMngr->AddMesh("floor", "Assets/Models/floor.obj");
 	meshMngr->AddMesh("snow", "Assets/Models/snowFloor.obj");
-	meshMngr->AddMesh("testFloor", "Assets/Models/testFloor.obj");
+	//meshMngr->AddMesh("testFloor", "Assets/Models/testFloor.obj");
+	meshMngr->AddMesh("coin", "Assets/Models/coin.obj");
 }
 
 void CollectibleTestScene::CreateEntities()
@@ -167,7 +180,7 @@ void CollectibleTestScene::CreateEntities()
 			vec3(0, 0, 30.0f * static_cast<float>(i)), vec3(0, 0, 0), vec3(1, 1, 1)));
 	}
 
-	GameEntity* sphere = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("concrete"), ColliderType::SPHERE, vec3(0,0,0), vec3(0,0,0), vec3(0,0,0));
+	GameEntity* sphere = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("concrete"), ColliderType::SPHERE, vec3(0,0,0), vec3(0,0,0), vec3(1,1,1));
 	player = new Player(meshMngr->GetMesh("ship"), matMngr->GetMat("ship"), ColliderType::SPHERE); //gameEntity[8]
 	player->CalculateCollider();
 	player->CopyCalculateCollider(sphere->GetCollider());
@@ -175,12 +188,23 @@ void CollectibleTestScene::CreateEntities()
 	//gameEntities.push_back(player);
 
 	// Collectibles
+	float lanes[3] = { -2.5f, 0.0f, 2.5f };
 	for (int i = 0; i < 5; ++i)
 	{
-		GameEntity* collectible = new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("woodplanks"), ColliderType::SPHERE,
-			vec3(0, 0, 10.0f * static_cast<float>(i) + 5.0f), vec3(0, 0, 0), vec3(1, 1, 1));
+		float x = lanes[rand() % 3];
+		GameEntity* collectible = new GameEntity(meshMngr->GetMesh("torus"), matMngr->GetMat("concrete"), ColliderType::SPHERE,
+			vec3(x, 0.75f, 25.0f * static_cast<float>(i) + 2.5f), vec3(0, 0, 3.14159f), vec3(1, 1, 1));
 		collectible->CalculateCollider();
 		gameMngr->AddToCollectible(collectible);
+	}
+
+	for (int i = 0; i < 5; ++i)
+	{
+		float x = lanes[rand() % 3];
+		GameEntity* obstacle = new GameEntity(meshMngr->GetMesh("sphere"), matMngr->GetMat("soil"), ColliderType::SPHERE,
+			vec3(x, 0.75f, 25.0f * static_cast<float>(i) + 12.5f), vec3(0, 0, 0.0f), vec3(1, 1, 1));
+		obstacle->CalculateCollider();
+		gameMngr->AddToObstacle(obstacle);
 	}
 
 	skybox = new Skybox(L"Assets/Textures/SunnyCubeMap.dds",

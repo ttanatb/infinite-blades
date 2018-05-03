@@ -215,6 +215,16 @@ void RenderManager::AddToOpqaue(std::vector<GameEntity*> entityList)
 		opaqueObjects.push_back(entityList[i]);
 }
 
+void RenderManager::AddToOpaqueAndTransparent(std::vector<GameEntity*> entityList)
+{
+	for (int i = 0; i < entityList.size(); ++i) {
+		if (entityList[i]->GetMat()->GetTransparentBool())
+			transparentObjects.push_back(entityList[i]);
+		else 
+			opaqueObjects.push_back(entityList[i]);
+	}
+}
+
 void RenderManager::AddToReflectionRender(GameEntity * gameEntity)
 {
 	aboveGroundObjects.push_back(gameEntity);

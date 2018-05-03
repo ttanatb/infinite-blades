@@ -117,7 +117,7 @@ void GameManager::UpdateWorld(float deltaTime)
 		collectibleList[i]->RotateOnAxis(vec3(0, 1, 0), rotateSpd);
 
 		if (collectibleList[i]->GetPosition().z < 0.0f) {
-			collectibleList[i]->SetPosition(lanes[rand() % 3], 0.0f, moveBackAmt);
+			collectibleList[i]->SetPosition(lanes[rand() % 3], 0.75f, moveBackAmt);
 			collectibleList[i]->isActive = true;
 
 		}
@@ -130,7 +130,7 @@ void GameManager::UpdateWorld(float deltaTime)
 		collectibleList[i]->RotateOnAxis(vec3(0, 1, 0), rotateSpd);
 
 		if (obstacleList[i]->GetPosition().z < 0.0f) {
-			obstacleList[i]->SetPosition(lanes[rand() % 3], 0.0f, moveBackAmt);
+			obstacleList[i]->SetPosition(lanes[rand() % 3], 0.75f, moveBackAmt);
 			collectibleList[i]->isActive = true;
 		}
 	}
