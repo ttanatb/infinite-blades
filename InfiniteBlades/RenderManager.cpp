@@ -62,6 +62,9 @@ void RenderManager::DrawObjects(std::vector<GameEntity*> list, UINT stride, UINT
 
 void RenderManager::DrawInstanced(GameEntity * entityToInstance, Camera * camera)
 {
+	static float snowAmt = 0.2f;
+	snowAmt += 0.00015f;
+
 	D3D11_MAPPED_SUBRESOURCE mapped = {};
 	context->Map(instanceWorldMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
 	// Copy to the resource
@@ -88,7 +91,7 @@ void RenderManager::DrawInstanced(GameEntity * entityToInstance, Camera * camera
 	SimpleVertexShader* vertexShader = matPtr->GetVertexShader();
 	vertexShader->SetMatrix4x4("view", *(camera->GetViewMatTransposed()));
 	vertexShader->SetMatrix4x4("projection", *(camera->GetProjMatTransposed()));
-	matPtr->PrepareMaterialHullDomain(entityToInstance->GetWorldMat());
+	matPtr->PrepareMaterialHullDomain(entityToInstance->GetWorldMat(),snowAmt);
 
 	ID3D11Buffer* ib = meshPtr->GetIndexBuffer();
 	ID3D11Buffer* vbs[2] = {

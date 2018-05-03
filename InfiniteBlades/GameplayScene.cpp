@@ -103,6 +103,7 @@ void GameplayScene::AddEntityToRender()
 	renderMngr->AddToOpqaue(gameMngr->GetCollectibleList());
 	renderMngr->AddToOpqaue(gameMngr->GetObstacleList());
 	renderMngr->AddToOpaqueAndTransparent(gameMngr->GetSceneryList());
+	renderMngr->AddToOpqaue(gameMngr->GetFishList());
 
 	renderMngr->AddToReflectionRender(player);
 	renderMngr->AddToReflectionRender(gameMngr->GetCollectibleList());
@@ -246,6 +247,11 @@ void GameplayScene::CreateEntities()
 		obstacle->CalculateCollider();
 		gameMngr->AddToObstacle(obstacle);
 	}
+
+	gameMngr->AddToFish(new GameEntity(meshMngr->GetMesh("goldfish"), matMngr->GetMat("goldfish"),
+		vec3(-7, -1, 7.0f), vec3(0, 0, 0), vec3(1, 1, 1)));
+	gameMngr->AddToFish(new GameEntity(meshMngr->GetMesh("shark"), matMngr->GetMat("shark"),
+		vec3(-12, -1, 5.0f), vec3(0, 0, 0), vec3(1, 1, 1)));
 
 	skybox = new Skybox(L"Assets/Textures/SkyCubeMap.dds", 
 		device, 
